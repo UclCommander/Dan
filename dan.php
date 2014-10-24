@@ -1,0 +1,12 @@
+<?php
+
+/**
+ * Dan loader file.
+ * Do not directly edit this file.
+ */
+define("ROOT_DIR", __DIR__);
+
+$dan = require(__DIR__ . '/bootloader.php');
+
+//Boot the bot
+$dan->boot();
