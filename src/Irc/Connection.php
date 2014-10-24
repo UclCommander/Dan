@@ -1,10 +1,8 @@
 <?php namespace Dan\Irc; 
 
-
 use Dan\Core\Config;
 use Dan\Core\Console;
 use Dan\Core\ConsoleColor;
-use Dan\Core\Dan;
 use Dan\Sockets\Socket;
 
 class Connection {
@@ -29,7 +27,14 @@ class Connection {
      */
     protected $recivedLines = 0;
 
+    /**
+     * @var Channel[]
+     */
+    protected $channels = [];
 
+    /**
+     * Create the connection..
+     */
     public function __construct()
     {
         $this->config = Config::get('irc');
@@ -56,7 +61,9 @@ class Connection {
         $this->run();
     }
 
-
+    /**
+     * Run the socket reader.
+     */
     public function run()
     {
         $this->running = true;
@@ -179,5 +186,27 @@ class Connection {
         $this->sendRaw("JOIN {$channel}" . ($password != '' ? " :{$password}" : ''));
     }
 
+
+    /*
+     * Channel functions
+     */
+
+    /**
+     * Add a channel to the list if it doesn't exist.
+     *
+     * @param $name
+     * @return \Dan\Irc\Channel
+     */
+    public function addChannel($name)
+    {
+        if(array_key_exists($name, $this->channels))
+            return $this->channels[$name];
+
+        $channel = new Channel($this, $name);
+
+        $this->channels[$name] = $channel;
+
+        return $channel;
+    }
 }
  

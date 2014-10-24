@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'server'    => 'irc.geekshed.net',
+    'server'    => 'Eldar.GeekShed.net',
     'port'      => 6667,
 
     'username'  => "TestBot",
