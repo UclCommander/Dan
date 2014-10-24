@@ -4,6 +4,7 @@
 use Dan\Core\Config;
 use Dan\Core\Console;
 use Dan\Core\ConsoleColor;
+use Dan\Core\Dan;
 use Dan\Sockets\Socket;
 
 class Connection {
@@ -22,6 +23,7 @@ class Connection {
      * @var int
      */
     protected $sentLines = 0;
+
     /**
      * @var int
      */
@@ -38,6 +40,9 @@ class Connection {
      */
     public function init()
     {
+        if($this->running)
+            return;
+
         Console::text('Starting Socket Reader..')->debug()->push();
 
         $this->socket = new Socket();
@@ -76,7 +81,6 @@ class Connection {
             $this->recivedLines++;
 
             $data = Parser::parseLine($line);
-
             $cmd = $data['cmd'];
             $user = new User($data['user']);
 
@@ -90,19 +94,21 @@ class Connection {
                 break;
             }
 
-            switch($cmd[0])
+            $packetClass = "Dan\\Irc\\Packets\\Packet" . ucfirst(strtolower($cmd[0]));
+
+            //Check for the packet class.
+            if(!class_exists($packetClass))
             {
-                case '004':
-                    foreach($this->config['channels'] as $autoJoinChannel)
-                        $this->joinChannel($autoJoinChannel[0], (isset($autoJoinChannel[1]) ? $autoJoinChannel[1] : null));
-
-                    break;
-
-
-                case "PING":
-                    $this->sendRaw("PONG {$cmd[1]}");
-                    break;
+                Console::text("Cannot find packet class for {$cmd[0]}")->debug()->warning()->push();
+                continue;
             }
+
+            $data = $cmd;
+            array_shift($data);
+
+            /** @var PacketInterface $packet */
+            $packet = new $packetClass();
+            $packet->run($this, $data, $user);
         }
     }
 
@@ -137,6 +143,31 @@ class Connection {
     }
 
     /**
+     * Sends a message to the given location
+     *
+     * @param $location
+     * @param $message
+     */
+    public function sendMessage($location, ...$message)
+    {
+        foreach($message as $msg)
+            $this->sendRaw("PRIVMSG {$location} :{$msg}");
+    }
+
+
+    /**
+     * Sends a notice
+     *
+     * @param $location
+     * @param $message
+     */
+    public function sendNotice($location, ...$message)
+    {
+        foreach($message as $msg)
+            $this->sendRaw("NOTICE {$location} :{$msg}");
+    }
+
+    /**
      * Joins a channel.
      *
      * @param $channel
@@ -144,8 +175,9 @@ class Connection {
      */
     public function joinChannel($channel, $password = null)
     {
-        Console::text("Joining channel {$channel}:{$password}")->debug()->push();
+        Console::text("Joining channel {$channel}:{$password}")->debug()->info()->push();
         $this->sendRaw("JOIN {$channel}" . ($password != '' ? " :{$password}" : ''));
     }
+
 }
  
