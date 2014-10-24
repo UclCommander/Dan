@@ -1,26 +1,29 @@
 <?php namespace Dan\Core;
 
 
+use Dan\Irc\Connection;
+
 class Dan {
 
     const VERSION = '3.0.0';
 
-    protected $config;
+    protected $irc;
 
     public function __construct()
     {
         session_start(); // Start sessions for flash data
 
-        $this->config = Config::load();
+        Config::load();
     }
 
     public function boot()
     {
         Console::text('Booting Dan...')->alert()->push();
 
+        Console::text('System Booted. Starting IRC connection. ')->alert()->push();
 
-
-        Console::text('System Booted.')->alert()->push();
+        $this->irc = new Connection();
+        $this->irc->init();
     }
 }
  

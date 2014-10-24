@@ -2,9 +2,15 @@
 
 
 class Console {
+
     private $text;
     private $color;
     private $backColor;
+
+    /**
+     * @var bool
+     */
+    private $debug = false;
 
     public function __construct($t)
     {
@@ -12,51 +18,82 @@ class Console {
     }
 
     /**
+     * Sets the message as a SUCCESS message.
+     *
      * @return $this
      */
     public function success()
     {
         $this->color = ConsoleColor::Green;
+        $this->text = "[SUCCESS] {$this->text}";
         return $this;
     }
+
     /**
+     * Sets the message as an INFO message.
+     *
      * @return $this
      */
     public function info()
     {
         $this->color = ConsoleColor::Blue;
+        $this->text = "[INFO] {$this->text}";
         return $this;
     }
 
     /**
+     * Sets the message as an ALERT message.
+     *
      * @return $this
      */
     public function alert()
     {
         $this->color = ConsoleColor::Yellow;
+        $this->text = "[ALERT] {$this->text}";
         return $this;
     }
 
     /**
+     * Sets the message as a WARNING message.
+     *
      * @return $this
      */
     public function warning()
     {
         $this->color = ConsoleColor::Red;
+        $this->text = "[WARNING] {$this->text}";
         return $this;
     }
 
     /**
+     * Sets the message as a DANGER message.
+     *
      * @return $this
      */
     public function danger()
     {
         $this->backColor = ConsoleColor::BackMagenta;
         $this->color = ConsoleColor::Red;
+        $this->text = "[DANGER] {$this->text}";
         return $this;
     }
 
     /**
+     * Sends a debug message ONLY if dan.debug is true.
+     *
+     * @return $this
+     */
+    public function debug()
+    {
+        $this->text = "[DEBUG] {$this->text}";
+        $this->debug = true;
+        return $this;
+    }
+
+
+    /**
+     * Sets the text color.
+     *
      * @param $color
      * @return $this
      */
@@ -67,6 +104,8 @@ class Console {
     }
 
     /**
+     * Sets the text back color.
+     *
      * @param $color
      * @return $this
      */
@@ -77,10 +116,13 @@ class Console {
     }
 
     /**
-     *
+     * Pushes the message.
      */
     public function push()
     {
+        //if($this->debug && !Config::get('dan.debug'))
+            //return null;
+
         if (!file_exists(ROOT_DIR . '/logs')) {
             mkdir(ROOT_DIR . '/logs', 0777, true);
         }
@@ -95,6 +137,8 @@ class Console {
     }
 
     /**
+     * Sets the text.
+     *
      * @param $text
      * @return Console
      */
