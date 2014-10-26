@@ -3,9 +3,15 @@
 use Dan\Core\Config;
 use Dan\Core\Console;
 use Dan\Core\ConsoleColor;
+use Dan\Irc\Contracts\ConnectionContract;
 use Dan\Sockets\Socket;
 
-class Connection {
+class Connection extends PacketHandler implements ConnectionContract {
+
+    /**
+     * @var array
+     */
+    protected $config   = [];
 
     /**
      * @var Socket
@@ -31,6 +37,7 @@ class Connection {
      * @var Channel[]
      */
     protected $channels = [];
+
 
     /**
      * Create the connection..
@@ -73,7 +80,7 @@ class Connection {
             $this->sendRaw("PASS {$this->config['server_pass']}");
 
         $this->sendRaw("USER {$this->config['username']} {$this->config['username']} * :{$this->config['realname']}");
-        $this->sendRaw("NICK {$this->config['nickname']}");
+        $this->setNick($this->config['nickname']);
 
         while($this->running)
         {
@@ -101,31 +108,40 @@ class Connection {
                 break;
             }
 
-            $packetClass = "Dan\\Irc\\Packets\\Packet" . ucfirst(strtolower($cmd[0]));
+            $name = ucfirst(strtolower($cmd[0]));
 
-            //Check for the packet class.
-            if(!class_exists($packetClass))
+            if(!method_exists($this, "packet{$name}"))
             {
-                Console::text("Cannot find packet class for {$cmd[0]}")->debug()->warning()->push();
+                Console::text("Cannot find packet method for {$cmd[0]}")->debug()->warning()->push();
                 continue;
             }
 
             $data = $cmd;
             array_shift($data);
 
-            /** @var PacketInterface $packet */
-            $packet = new $packetClass();
-            $packet->run($this, $data, $user);
+            $packet = "packet{$name}";
+            $this->$packet($data, $user);
         }
     }
-
-
 
     /*
      * -----------------------------------------------------------------------------------
      * Sending functions
      * -----------------------------------------------------------------------------------
      */
+
+    /**
+     * Sets the nickname
+     *
+     * @param $nick
+     */
+    public function setNick($nick)
+    {
+        if(array_key_exists('NICKLEN', $this->isupport))
+            $nick = substr($nick, 0, $this->isupport['NICKLEN']);
+
+        $this->sendRaw("NICK {$nick}");
+    }
 
     /**
      * Sends raw line(s) to the server.
@@ -182,10 +198,20 @@ class Connection {
      */
     public function joinChannel($channel, $password = null)
     {
-        Console::text("Joining channel {$channel}:{$password}")->debug()->info()->push();
+        if(count($this->channels) > $this->isupport['MAXCHANNELS'])
+        {
+            Console::text("Cannot join channel. Maximum number of channels allowed to join is {$this->isupport['MAXCHANNELS']}.")->alert()->push();
+            return;
+        }
+
+        if(!in_array(substr($channel, 0, 1), $this->isupport['CHANTYPES']))
+        {
+            Console::text("Invalid channel type.")->alert()->push();
+            return;
+        }
+
         $this->sendRaw("JOIN {$channel}" . ($password != '' ? " :{$password}" : ''));
     }
-
 
     /*
      * -----------------------------------------------------------------------------------

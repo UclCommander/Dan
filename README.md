@@ -21,5 +21,5 @@ Setting up the environment is easy. Rename the file `.env.example` to `.env`, th
 
 In the terminal, run the following:
 ```
-php dan.php
+php dan
 ```
