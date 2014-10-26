@@ -188,7 +188,9 @@ class Connection {
 
 
     /*
+     * -----------------------------------------------------------------------------------
      * Channel functions
+     * -----------------------------------------------------------------------------------
      */
 
     /**
@@ -207,6 +209,20 @@ class Connection {
         $this->channels[$name] = $channel;
 
         return $channel;
+    }
+
+    /**
+     * Gets a channel.
+     *
+     * @param $name
+     * @return \Dan\Irc\Channel|null
+     */
+    public function getChannel($name)
+    {
+        if(array_key_exists($name, $this->channels))
+            return $this->channels[$name];
+
+        return null;
     }
 }
  
