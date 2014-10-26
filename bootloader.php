@@ -13,4 +13,6 @@ require(__DIR__ . '/vendor/autoload.php');
 
 use Dan\Core\Dan;
 
+Dotenv::load(__DIR__);
+
 return new Dan();

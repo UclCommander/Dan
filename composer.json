@@ -3,5 +3,9 @@
         "psr-4": {
             "Dan\\" : "src/"
         }
+    },
+    "require": {
+        "vlucas/phpdotenv": "1.0.9",
+        "php": ">=5.6"
     }
 }
