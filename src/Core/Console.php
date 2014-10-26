@@ -85,7 +85,6 @@ class Console {
      */
     public function debug()
     {
-        $this->text = "[DEBUG] {$this->text}";
         $this->debug = true;
         return $this;
     }
@@ -120,19 +119,20 @@ class Console {
      */
     public function push()
     {
-        //if($this->debug && !Config::get('dan.debug'))
-            //return null;
+        if($this->debug && !Config::get('dan.debug'))
+            return null;
 
         if (!file_exists(ROOT_DIR . '/logs')) {
             mkdir(ROOT_DIR . '/logs', 0777, true);
         }
 
         $log = fopen('logs/' . date('Ymd') . '_' . session_id() . '.log', 'a');
-        fwrite($log, '[' . date('r') . '] ' . $this->text . "\n");
+        fwrite($log, '[' . date('r') . '] ' . ($this->debug ? '[DEBUG] ' : '') . $this->text . "\n");
         fclose($log);
 
-        echo $this->color . $this->text . ConsoleColor::Reset . "\n";
-        unset($this);
+        $text = ($this->debug ? ConsoleColor::Purple . "[DEBUG] " : '') . $this->color . $this->text;
+        echo $text . ConsoleColor::Reset . "\n";
+
         return $this->text;
     }
 
