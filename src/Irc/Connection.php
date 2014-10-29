@@ -3,7 +3,7 @@
 use Dan\Core\Config;
 use Dan\Core\Console;
 use Dan\Core\ConsoleColor;
-use Dan\Irc\Contracts\ConnectionContract;
+use Dan\Contracts\ConnectionContract;
 use Dan\Sockets\Socket;
 
 class Connection extends PacketHandler implements ConnectionContract {

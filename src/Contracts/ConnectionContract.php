@@ -1,4 +1,4 @@
-<?php namespace Dan\Irc\Contracts; 
+<?php namespace Dan\Contracts;
 
 
 interface ConnectionContract {

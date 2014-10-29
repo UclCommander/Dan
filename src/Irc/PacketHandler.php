@@ -3,7 +3,7 @@
 use Dan\Core\Config;
 use Dan\Core\Dan;
 use Dan\Events\Event;
-use Dan\Irc\Contracts\ConnectionContract;
+use Dan\Contracts\ConnectionContract;
 
 abstract class PacketHandler implements ConnectionContract {
 
