@@ -137,8 +137,8 @@ class Connection extends PacketHandler implements ConnectionContract {
      */
     public function setNick($nick)
     {
-        if(array_key_exists('NICKLEN', $this->isupport))
-            $nick = substr($nick, 0, $this->isupport['NICKLEN']);
+        if(Support::get('NICKLEN') !== false)
+            $nick = substr($nick, 0, Support::get('NICKLEN'));
 
         $this->sendRaw("NICK {$nick}");
     }
@@ -198,13 +198,13 @@ class Connection extends PacketHandler implements ConnectionContract {
      */
     public function joinChannel($channel, $password = null)
     {
-        if(count($this->channels) > $this->isupport['MAXCHANNELS'])
+        if(count($this->channels) > Support::get('MAXCHANNELS'))
         {
-            Console::text("Cannot join channel. Maximum number of channels allowed to join is {$this->isupport['MAXCHANNELS']}.")->alert()->push();
+            Console::text("Cannot join channel. Maximum number of channels allowed to join is " . Support::get('MAXCHANNELS') . ".")->alert()->push();
             return;
         }
 
-        if(!in_array(substr($channel, 0, 1), $this->isupport['CHANTYPES']))
+        if(!in_array(substr($channel, 0, 1), Support::get('CHANTYPES')))
         {
             Console::text("Invalid channel type.")->alert()->push();
             return;

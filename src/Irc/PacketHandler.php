@@ -2,10 +2,14 @@
 
 use Dan\Core\Config;
 use Dan\Core\Dan;
+use Dan\Events\Event;
 use Dan\Irc\Contracts\ConnectionContract;
 
 abstract class PacketHandler implements ConnectionContract {
 
+    /**
+     * @var bool
+     */
     private $is353 = false;
 
     /**
@@ -16,35 +20,12 @@ abstract class PacketHandler implements ConnectionContract {
     /**
      * @var array
      */
-    protected $isupport = [];
-
-    /**
-     * @var array
-     */
     protected $config   = [];
 
     /**
      * @var array
      */
     protected $motd   = [];
-
-    /**
-     * @param $key
-     * @param $value
-     */
-    public function setSupport($key, $value)
-    {
-        $this->isupport[$key] = $value;
-    }
-
-    /**
-     * @param $key
-     * @return mixed
-     */
-    public function getSupport($key)
-    {
-        return $this->isupport[$key];
-    }
 
     /*
      * -----------------------------------------------------------------------------------
@@ -103,7 +84,7 @@ abstract class PacketHandler implements ConnectionContract {
                     $value = count($kv) == 2 ? $kv[1] : null;
             }
 
-            $this->setSupport($kv[0], $value);
+            Support::put($kv[0], $value);
         }
     }
 
@@ -156,7 +137,7 @@ abstract class PacketHandler implements ConnectionContract {
             $channel->clearUsers();
         }
 
-        $channel->setNames($data[3]);
+        $channel->setNames(Parser::parseNames($data[3]));
     }
 
     /**
@@ -190,7 +171,10 @@ abstract class PacketHandler implements ConnectionContract {
 
 
         foreach($this->config['channels'] as $autoJoinChannel)
-            $this->joinChannel($autoJoinChannel[0], (isset($autoJoinChannel[1]) ? $autoJoinChannel[1] : null));
+        {
+            $password = explode(':', $autoJoinChannel);
+            $this->joinChannel($password[0], (isset($password[1]) ? $password[1] : null));
+        }
     }
 
     /**
@@ -199,6 +183,8 @@ abstract class PacketHandler implements ConnectionContract {
      */
     public function packetJoin(array $data, User $user)
     {
+        Event::fire('irc.packet.join', $data, $user);
+
         if($user->getNick() == Config::get('irc.nickname'))
         {
             $this->addChannel($data[0]);
@@ -211,7 +197,16 @@ abstract class PacketHandler implements ConnectionContract {
      */
     public function packetMode(array $data, User $user)
     {
+        Event::fire('irc.packet.mode', $data, $user);
+    }
 
+    /**
+     * @param array $data
+     * @param \Dan\Irc\User $user
+     */
+    public function packetNick(array $data, User $user)
+    {
+        Event::fire('irc.packet.nick', $data, $user);
     }
 
     /**
@@ -220,7 +215,7 @@ abstract class PacketHandler implements ConnectionContract {
      */
     public function packetNotice(array $data, User $user)
     {
-
+        Event::fire('irc.packet.notice', $data, $user);
     }
 
     /**
@@ -230,6 +225,7 @@ abstract class PacketHandler implements ConnectionContract {
     public function packetPing(array $data, User $user)
     {
         $this->sendRaw("PONG {$data[0]}");
+        Event::fire('irc.packet.ping', $data, $user);
     }
 
     /**
@@ -238,6 +234,8 @@ abstract class PacketHandler implements ConnectionContract {
      */
     public function packetPrivmsg(array $data, User $user)
     {
+        Event::fire('irc.packet.privmsg', $data, $user);
+
         if($data[1] == "\001VERSION\001")
         {
             $this->sendNotice($user->getNick(), "\001VERSION Dan " . Dan::VERSION . " - PHP " . phpversion() . "\001");

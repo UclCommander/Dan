@@ -1,6 +1,8 @@
 <?php namespace Dan\Irc; 
 
 
+use Dan\Events\Event;
+
 class Channel {
 
     /**
@@ -41,6 +43,11 @@ class Channel {
     {
         $this->setName($name);
         $this->connection = $connection;
+
+        Event::listen('irc.packet.mode', function($data)
+        {
+            $this->connection->sendRaw("NAMES {$this->name}");
+        });
     }
 
     /**
@@ -82,22 +89,12 @@ class Channel {
     }
 
     /**
-     * @param $names
+     * @param User[] $names
      */
     public function setNames($names)
     {
-        $names = explode(' ', $names);
-
-        foreach($names as $name)
-        {
-            $prefix     = substr($name, 0, 1);
-            $prefixList = $this->connection->getSupport('PREFIX')[1];
-
-            if(in_array($prefix, $prefixList))
-                $this->users[substr($name, 1, strlen($name))] = $prefix;
-            else
-                $this->users[$name] = null;
-        }
+        foreach($names as $user)
+            $this->users[$user->getNick()] = $user->getRank();
     }
 
     /**

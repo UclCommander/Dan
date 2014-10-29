@@ -8,6 +8,7 @@ class User
     public function getName() { return $this->data[1]; }
     public function getNick() { return $this->data[0]; }
     public function getHost() { return $this->data[2]; }
+    public function getRank() { return @$this->data[3]; }
 
     public function __construct(array $data)
     {

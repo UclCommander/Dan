@@ -6,8 +6,6 @@ interface ConnectionContract {
     public function init();
     public function run();
 
-    public function setSupport($key, $value);
-
     public function setNick($nick);
 
     public function sendRaw($data);
