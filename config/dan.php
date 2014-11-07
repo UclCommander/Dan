@@ -13,11 +13,9 @@ return [
      * .part #channel parting
      */
     'command_starter'   => '.',
+
     /*
-     * Command starter
-     * Example:
-     *
-     * .part #channel parting
+     * Show errors when a command doesn't exist?
      */
     'show_nonexistent_command_error'   => true,
 ];
