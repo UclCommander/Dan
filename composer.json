@@ -1,7 +1,8 @@
 {
     "autoload": {
         "psr-4": {
-            "Dan\\" : "src/"
+            "Dan\\"     : "src/",
+            "Plugins\\" : "plugins/"
         }
     },
     "require": {

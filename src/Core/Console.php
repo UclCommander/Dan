@@ -146,5 +146,17 @@ class Console {
     {
         return new Console($text);
     }
+
+    /**
+     * Throws an exception
+     *
+     * @param \Exception $exception
+     * @return \Dan\Core\Console
+     */
+    public static function exception(\Exception $exception)
+    {
+        $console = new Console($exception->getMessage());
+        return $console->warning();
+    }
 }
  
