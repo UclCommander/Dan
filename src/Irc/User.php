@@ -1,6 +1,8 @@
 <?php namespace Dan\Irc;
 
 
+use Dan\Core\Dan;
+
 class User
 {
     private $data = [];
@@ -15,14 +17,24 @@ class User
         $this->data = $data;
     }
 
+    /**
+     * Sends a message to the user.
+     *
+     * @param $message
+     */
     public function sendMessage($message)
     {
-        //App::base()->connection->sendMessage($this->getNick(), $message);
+        Dan::getApp('irc')->sendMessage($this->getNick(), $message);
     }
 
+    /**
+     * Sends a notice to the user.
+     *
+     * @param $message
+     */
     public function sendNotice($message)
     {
-        //App::base()->connection->sendNotice($this->getNick(), $message);
+        Dan::getApp('irc')->sendNotice($this->getNick(), $message);
     }
 }
 

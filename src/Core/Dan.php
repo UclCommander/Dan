@@ -12,14 +12,34 @@ class Dan {
     /** @var object[] */
     protected $apps = [];
 
+    protected static $dan;
 
+    /**
+     * Gets an app
+     *
+     * @param $key
+     * @return object
+     */
+    public static function getApp($key)
+    {
+        return static::$dan->apps[$key];
+    }
+
+    /**
+     * Load 'er up.
+     */
     public function __construct()
     {
         session_start(); // Start sessions for flash data
 
+        static::$dan = $this;
+
         Config::load();
     }
 
+    /**
+     * Boots Dan.
+     */
     public function boot()
     {
         Console::text('Booting Dan...')->info()->push();
@@ -44,8 +64,8 @@ class Dan {
 
         Console::text('System Booted. Starting IRC connection. ')->alert()->push();
 
-        $this->irc = new Connection();
-        $this->irc->init();
+        $this->apps['irc'] = new Connection();
+        $this->apps['irc']->init();
     }
 }
  

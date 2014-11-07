@@ -61,38 +61,47 @@ class PluginManager {
                 "<?php",
                 "namespace Plugins\\",
                 "use Plugins\\",
+                "\\Plugins\\{$name}\\",
+                "Plugins\\{$name}\\",
+                "Plugins\\\\{$name}\\\\",
             ], [
                 "",
                 "namespace Plugins\\{$key}\\",
                 "use Plugins\\{$key}\\",
+                "\\Plugins\\{$key}\\{$name}\\",
+                "Plugins\\{$key}\\{$name}\\",
+                "Plugins\\{$key}\\{$name}\\",
             ], $file);
 
             Console::text("Running inline eval for file {$loadable} in plugin {$name}")->debug()->info()->push();
 
             eval($file);
 
-            $className = basename($loadable, '.php');
-            $class = "Plugins\\{$key}\\{$name}\\{$className}";
+            $className  = str_replace(['.php', '/'], ['', '\\'], $loadable);
+            $class      = "Plugins\\{$key}\\{$name}\\{$className}";
 
             Console::text("Initializing {$class} for plugin {$name}")->debug()->info()->push();
 
-            if(!class_exists($class))
+            if(!interface_exists($class)) //ignore interfaces
             {
-                Console::text("Error loading {$class} for plugin {$name}")->debug()->info()->push();
-                throw new ClassLoadException("Error loading {$class} for plugin {$name}");
+                if (!class_exists($class))
+                {
+                    Console::text("Error loading {$class} for plugin {$name}")->debug()->info()->push();
+                    throw new ClassLoadException("Error loading {$class} for plugin {$name}");
+                }
+
+                /** @var \Dan\Contracts\PluginContract $plugin */
+                $plugin =  new $class;
+
+                if(in_array('Dan\Contracts\PluginContract', class_implements($plugin)))
+                {
+                    Console::text("Class {$class} extends PluginContract, registering plugin file for {$name}")->debug()->info()->push();
+                    $plugin->register();
+                }
+
+                Console::text("Plugin file {$loadable} loaded for plugin {$name}, adding class to cache array")->debug()->info()->push();
+                $this->loaded[$name][$key][$path] = $plugin;
             }
-
-            /** @var \Dan\Contracts\PluginContract $plugin */
-            $plugin =  new $class;
-
-            if(in_array('Dan\Contracts\PluginContract', class_implements($plugin)))
-            {
-                Console::text("Class {$class} extends PluginContract, registering plugin file for {$name}")->debug()->info()->push();
-                $plugin->register();
-            }
-
-            Console::text("Plugin file {$loadable} loaded for plugin {$name}, adding class to cache array")->debug()->info()->push();
-            $this->loaded[$name][$key][$path] = $plugin;
         }
     }
 
