@@ -26,7 +26,23 @@ class Event {
             {
                 foreach($list as $event)
                 {
-                    $response = $event($data);
+                    if(is_array($event))
+                    {
+                        //we need both a class and a method.
+                        if(count($event) < 2)
+                            continue;
+
+                        //not an object? bail.
+                        if(!is_object($event[0]))
+                            continue;
+
+                        $object = $event[0];
+                        $method = $event[1];
+
+                        $response = $object->$method($data);
+                    }
+                    else
+                        $response = $event($data);
 
                     if($response === false)
                         return;

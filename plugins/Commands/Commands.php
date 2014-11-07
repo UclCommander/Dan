@@ -10,12 +10,12 @@ class Commands extends Plugin implements PluginContract {
     public function register()
     {
         Console::text('PLUGIN LOADED')->debug()->success()->push();
-        Event::listen('irc.packet.privmsg', function($e) { var_dump($e); } ); //[$this, 'checkForCommand']
+        Event::listen('irc.packet.privmsg', [$this, 'checkForCommand']);
     }
 
 
     public function checkForCommand($event)
     {
-
+        var_dump($event);
     }
 }
