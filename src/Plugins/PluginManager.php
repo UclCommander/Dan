@@ -100,9 +100,45 @@ class PluginManager {
                 }
 
                 Console::text("Plugin file {$loadable} loaded for plugin {$name}, adding class to cache array")->debug()->info()->push();
-                $this->loaded[$name][$key][$path] = $plugin;
+                $this->loaded[strtolower($name)][$key][$path] = $plugin;
             }
         }
+    }
+
+
+    public function unloadPlugin($name)
+    {
+        //clean up name
+        $name = strtolower($name);
+
+        Console::text("Unloading plugin {$name}...")->debug()->alert()->push();
+
+        if(!array_key_exists($name, $this->loaded))
+        {
+            Console::text("Unable to find loaded plugin {$name}")->debug()->alert()->push();
+            return;
+        }
+
+        foreach($this->loaded[$name] as $id => $paths)
+        {
+            foreach($paths as $class)
+            {
+                /** @var \Dan\Contracts\PluginContract $class */
+
+                Console::text("Unloading " . get_class($class) . " for plugin {$name}")->debug()->info()->push();
+
+                if (in_array('Dan\Contracts\PluginContract', class_implements($class)))
+                {
+                    Console::text("Unregistering plugin entry point for plugin {$name}")->debug()->info()->push();
+                    $class->unregister();
+                }
+
+                unset($class);
+            }
+        }
+
+        unset($this->loaded[$name]);
+        Console::text("Plugin {$name} unloaded")->debug()->success()->push();
     }
 
     /**

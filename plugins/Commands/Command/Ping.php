@@ -8,6 +8,6 @@ class Ping implements CommandInterface {
 
     public function run(Channel $channel, User $user, $message)
     {
-        $channel->sendMessage('Pong');
+        $channel->sendMessage('Ping Pong!');
     }
 }

@@ -3,7 +3,6 @@
 use Dan\Contracts\PluginContract;
 use Dan\Core\Config;
 use Dan\Core\Console;
-use Dan\Events\Event;
 use Dan\Irc\Channel;
 use Dan\Irc\User;
 use Dan\Plugins\Plugin;
@@ -21,7 +20,7 @@ class Commands extends Plugin implements PluginContract {
     public function register()
     {
         Console::text('PLUGIN LOADED')->debug()->success()->push();
-        Event::listen('irc.packet.privmsg', [$this, 'checkForCommand']);
+        $this->addEvent('irc.packet.privmsg', [$this, 'checkForCommand']);
 
         foreach(glob(PLUGIN_DIR.'/Commands/Command/*.php') as $cmd)
         {
@@ -30,6 +29,14 @@ class Commands extends Plugin implements PluginContract {
             $class = "Plugins\\Commands\\Command\\{$className}";
             $this->commands[strtolower($command)] = new $class;
         }
+    }
+
+    /**
+     * Unregisters the plugin.
+     */
+    public function unregister()
+    {
+        parent::unregister();
     }
 
     /**

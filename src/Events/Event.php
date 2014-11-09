@@ -10,6 +10,45 @@ class Event {
      */
     protected static $events = [];
 
+    protected $id       = "";
+    protected $name     = "";
+    protected $function = "";
+    protected $priority = 0;
+
+    public function __construct($name, $function, $priority)
+    {
+        $this->id   = md5(microtime() . $name . $priority);
+        $this->name     = $name;
+        $this->function = $function;
+        $this->priority = $priority;
+    }
+
+    /**
+     * Adds an event.
+     */
+    public function add()
+    {
+        Console::text("Adding event: {$this->name} - PRIORITY LEVEL {$this->priority}")->alert()->debug()->push();
+
+        if(!array_key_exists($this->name, static::$events))
+            static::$events[$this->name] = [];
+
+        $list = static::$events[$this->name];
+        $list[$this->priority][$this->id] = $this->function;
+        ksort($list);
+        static::$events[$this->name] = $list;
+    }
+
+    /**
+     * Destroys the event.
+     */
+    public function destroy()
+    {
+        Console::text("Destroying event: {$this->name}")->alert()->debug()->push();
+
+        unset(static::$events[$this->name][$this->priority][$this->id]);
+    }
+
     /**
      * Fires an event.
      *
@@ -54,21 +93,18 @@ class Event {
     /**
      * Adds an event to the listen list.
      *
-     * @param $name
-     * @param $function
+     * @param     $name
+     * @param     $function
      * @param int $priority
+     * @return \Dan\Events\Event
      */
     public static function listen($name, $function, $priority = 5)
     {
-        Console::text("Adding event: {$name} - PRIORITY LEVEL {$priority}")->alert()->debug()->push();
+        $event = new static($name, $function, $priority);
 
-        if(!array_key_exists($name, static::$events))
-            static::$events[$name] = [];
+        $event->add();
 
-        $list = static::$events[$name];
-        $list[$priority][] = $function;
-        ksort($list);
-        static::$events[$name] = $list;
+        return $event;
     }
 }
  
