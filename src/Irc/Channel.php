@@ -83,6 +83,16 @@ class Channel {
     }
 
     /**
+     * Gets the channel name.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
      * Sets the channel name.
      *
      * @param $name

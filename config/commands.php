@@ -31,9 +31,9 @@ return [
      * x    = no rank
      */
     'ranks' => [
-        'join'      => '~',
+        'join'      => 'S',
         'ping'      => 'x+%@&~',
-        'part'      => '~',
+        'part'      => 'S',
         'config'    => 'S',
 
     ]

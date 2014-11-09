@@ -6,6 +6,7 @@ return [
 
         'Command/Config.php',
         'Command/Join.php',
+        'Command/Part.php',
         'Command/Ping.php',
 
         'Commands.php', //this loads __LAST___

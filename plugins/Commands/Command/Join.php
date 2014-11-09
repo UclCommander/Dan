@@ -1,4 +1,5 @@
 <?php namespace Plugins\Commands\Command; 
+
 use Dan\Core\Dan;
 use Dan\Irc\Channel;
 use Dan\Irc\User;

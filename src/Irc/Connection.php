@@ -213,6 +213,23 @@ class Connection extends PacketHandler implements ConnectionContract {
         $this->sendRaw("JOIN {$channel}" . ($password != '' ? " :{$password}" : ''));
     }
 
+    /**
+     * Parts a channel.
+     *
+     * @param        $channel
+     * @param string $reason
+     */
+    public function partChannel($channel, $reason = "Bye")
+    {
+        if(!in_array(substr($channel, 0, 1), Support::get('CHANTYPES')))
+        {
+            Console::text("Invalid channel type.")->alert()->push();
+            return;
+        }
+
+        $this->sendRaw("PART {$channel} :{$reason}");
+    }
+
     /*
      * -----------------------------------------------------------------------------------
      * Channel functions
