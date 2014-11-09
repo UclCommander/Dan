@@ -1,8 +1,11 @@
 <?php namespace Dan\Core;
 
 
+use Illuminate\Support\Arr;
+
 class Config {
 
+    /** @var array[] $config */
     private static $config = [];
 
     public static function load()
@@ -15,7 +18,7 @@ class Config {
             $temp[$name] = include($file);
         }
 
-        return static::$config = $temp;
+        static::$config = $temp;
     }
 
     /**
@@ -26,17 +29,18 @@ class Config {
      */
     public static function get($key)
     {
-        $item = static::$config;
+        return Arr::get(static::$config, $key);
+    }
 
-        foreach(explode('.', $key) as $k)
-        {
-            if(!array_key_exists($k, $item))
-                return null;
-
-            $item = $item[$k];
-        }
-
-        return $item;
+    /**
+     * Sets an item into the config.
+     *
+     * @param $key
+     * @param $value
+     */
+    public static function set($key, $value)
+    {
+        static::$config = Arr::set(static::$config, $key, $value);
     }
 }
  

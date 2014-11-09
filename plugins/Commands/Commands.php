@@ -4,6 +4,8 @@ use Dan\Contracts\PluginContract;
 use Dan\Core\Config;
 use Dan\Core\Console;
 use Dan\Events\Event;
+use Dan\Irc\Channel;
+use Dan\Irc\User;
 use Dan\Plugins\Plugin;
 
 class Commands extends Plugin implements PluginContract {
@@ -45,12 +47,12 @@ class Commands extends Plugin implements PluginContract {
         /** @var \Dan\Irc\User $user */
         $user    = $event[2];
 
-        $starter = Config::get('dan.command_starter');
+        $starter = Config::get('commands.command_starter');
 
         if(strpos($message, $starter) !== 0)
             return null;
 
-        $data   = explode(' ', $message);
+        $data   = explode(' ', $message, 2);
         $cmd    = substr($data[0], 1);
 
         if(!array_key_exists($cmd, $this->commands) && Config::get('dan.show_nonexistent_command_error'))
@@ -59,8 +61,37 @@ class Commands extends Plugin implements PluginContract {
             return false;
         }
 
+        if(!$this->hasPermission($channel, $user, $cmd))
+        {
+            $user->sendNotice("You do not have the required permission to run this command.");
+            return false;
+        }
+
         $this->commands[$cmd]->run($channel, $user, @$data[1]);
 
         return false;
+    }
+
+
+    protected function hasPermission(Channel $channel, User $user, $command)
+    {
+        $ranks = Config::get('commands.ranks');
+
+
+        if(!array_key_exists($command, $ranks))
+            return false;
+        //get the ranks required for the command
+        $ranks      = str_split($ranks[$command]);
+        $uranks     = $channel->getUser($user);
+
+
+        if(in_array('S', $ranks))
+        {
+            foreach(Config::get('dan.sudo_users') as $usr)
+                if(fnmatch($usr, "{$user->getNick()}!{$user->getName()}@{$user->getHost()}"))
+                    return true;
+        }
+
+        return in_array($uranks, $ranks);
     }
 }

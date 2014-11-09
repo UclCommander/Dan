@@ -7,15 +7,11 @@ return [
     'debug' => true,
 
     /*
-     * Command starter
-     * Example:
-     *
-     * .part #channel parting
+     * Sudo users. These users have special permissions
+     * Format: nick!user@host
+     * Accepts wildcards.
      */
-    'command_starter'   => '.',
-
-    /*
-     * Show errors when a command doesn't exist?
-     */
-    'show_nonexistent_command_error'   => true,
+    'sudo_users'    => [
+        'UclCommander!~UclComman@uclcommander.net',
+    ],
 ];

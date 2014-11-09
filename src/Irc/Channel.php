@@ -69,6 +69,20 @@ class Channel {
     }
 
     /**
+     * @param User|string $obj
+     * @return null
+     */
+    public function getUser($obj)
+    {
+        $nick = ($obj instanceof User) ? $obj->getNick() : $obj;
+
+        if(!array_key_exists($nick, $this->users))
+            return null;
+
+        return $this->users[$nick];
+    }
+
+    /**
      * Sets the channel name.
      *
      * @param $name
