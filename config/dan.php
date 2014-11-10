@@ -14,4 +14,5 @@ return [
     'sudo_users'    => [
         'UclCommander!~UclComman@uclcommander.net',
     ],
+
 ];

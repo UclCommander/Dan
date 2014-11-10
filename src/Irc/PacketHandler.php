@@ -1,6 +1,7 @@
 <?php namespace Dan\Irc; 
 
 use Dan\Core\Config;
+use Dan\Core\Console;
 use Dan\Core\Dan;
 use Dan\Events\Event;
 use Dan\Contracts\ConnectionContract;
@@ -168,6 +169,12 @@ abstract class PacketHandler implements ConnectionContract {
         foreach($this->numeric['004'] as $d)
             if(strpos($d, 'Unreal3') === 0)
                 $this->sendRaw("MODE {$this->config['nickname']} +B");
+
+        if(!empty(Config::get('irc.password')))
+        {
+            Console::text('Sending NickServ password..')->info()->debug()->push();
+            $this->sendRaw(sprintf(Config::get('irc.nickserv_auth_command'), Config::get('irc.password')));
+        }
 
 
         foreach($this->config['channels'] as $autoJoinChannel)

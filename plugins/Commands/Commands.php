@@ -9,6 +9,10 @@ use Dan\Plugins\Plugin;
 
 class Commands extends Plugin implements PluginContract {
 
+    protected $version      = '1.0';
+    protected $author       = "UclCommander";
+    protected $description  = "Dan's command plugin";
+
     /**
      * @var CommandInterface[]
      */

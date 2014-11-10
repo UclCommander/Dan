@@ -120,7 +120,7 @@ class Connection extends PacketHandler implements ConnectionContract {
             array_shift($data);
 
             $packet = "packet{$name}";
-            $this->$packet($data, $user);
+            $this->$packet($data, $user); //See PacketHandler.php
         }
     }
 
