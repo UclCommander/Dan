@@ -23,7 +23,6 @@ class Commands extends Plugin implements PluginContract {
      */
     public function register()
     {
-        Console::text('PLUGIN LOADED')->debug()->success()->push();
         $this->addEvent('irc.packet.privmsg', [$this, 'checkForCommand']);
 
         foreach(glob(PLUGIN_DIR.'/Commands/Command/*.php') as $cmd)

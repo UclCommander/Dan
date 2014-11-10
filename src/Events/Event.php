@@ -35,7 +35,7 @@ class Event {
 
         $list = static::$events[$this->name];
         $list[$this->priority][$this->id] = $this->function;
-        ksort($list);
+        krsort($list);
         static::$events[$this->name] = $list;
     }
 
@@ -61,7 +61,7 @@ class Event {
 
         if(array_key_exists($name, static::$events))
         {
-            foreach(static::$events[$name] as $list)
+            foreach(static::$events[$name] as $priority => $list)
             {
                 foreach($list as $event)
                 {
@@ -78,13 +78,23 @@ class Event {
                         $object = $event[0];
                         $method = $event[1];
 
+                        Console::text("Calling $method from " . get_class($object) . ", priority {$priority}")->info()->debug()->push();
+
                         $response = $object->$method($data);
                     }
                     else
+                    {
+                        Console::text("Calling closure event, priority {$priority}")->info()->debug()->push();
                         $response = $event($data);
+                    }
+
+                    Console::text("Event returned {$response}")->info()->debug()->push();
 
                     if($response === false)
+                    {
+                        Console::text("Event stopped execution of further events.")->info()->debug()->push();
                         return;
+                    }
                 }
             }
         }

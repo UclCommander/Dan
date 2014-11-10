@@ -94,9 +94,9 @@ class Connection extends PacketHandler implements ConnectionContract {
 
             $this->recivedLines++;
 
-            $data = Parser::parseLine($line);
-            $cmd = $data['cmd'];
-            $user = new User($data['user']);
+            $data   = Parser::parseLine($line);
+            $cmd    = $data['cmd'];
+            $user   = new User($data['user']);
 
             //Just incase we get errors from the parser.
             if(count($cmd) == 0)
