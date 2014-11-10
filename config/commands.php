@@ -34,6 +34,7 @@ return [
         'config'    => 'S',
         'hash'      => '+%@&~',
         'join'      => 'S',
+        'lenny'     => 'x+%@&~',
         'part'      => 'S',
         'ping'      => 'x+%@&~',
         'plugin'    => 'S',

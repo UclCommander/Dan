@@ -7,6 +7,7 @@ return [
         'Command/Config.php',
         'Command/Hash.php',
         'Command/Join.php',
+        'Command/Lenny.php',
         'Command/Part.php',
         'Command/Ping.php',
         'Command/Plugin.php',
