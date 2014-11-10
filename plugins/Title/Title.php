@@ -1,7 +1,6 @@
 <?php namespace Plugins\Title;
 
 use Dan\Contracts\PluginContract;
-use Dan\Core\Console;
 use Dan\Plugins\Plugin;
 
 class Title extends Plugin implements PluginContract {
@@ -10,7 +9,6 @@ class Title extends Plugin implements PluginContract {
     {
         $this->addEvent('irc.packet.privmsg', [$this, 'getTitle'], 4);
     }
-
 
     public function getTitle($event)
     {
@@ -59,7 +57,6 @@ class Title extends Plugin implements PluginContract {
                     $channel->sendMessage("[\x035 404 Not Found \x03]");
                     continue;
                 }
-
             }
 
             if($type == 'text/html' || $type == 'text/plain')

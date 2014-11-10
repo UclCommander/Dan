@@ -65,9 +65,14 @@ class Commands extends Plugin implements PluginContract {
         $data   = explode(' ', $message, 2);
         $cmd    = substr($data[0], 1);
 
-        if(!array_key_exists($cmd, $this->commands) && Config::get('dan.show_nonexistent_command_error'))
+        if(empty($cmd))
+            return null;
+
+        if(!array_key_exists($cmd, $this->commands))
         {
-            $user->sendNotice("Command {$cmd} doesn't exist.");
+            if(Config::get('commands.show_nonexistent_command_error'))
+                $user->sendNotice("Command {$cmd} doesn't exist.");
+
             return false;
         }
 

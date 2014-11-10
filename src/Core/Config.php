@@ -40,7 +40,7 @@ class Config {
      */
     public static function set($key, $value)
     {
-        static::$config = Arr::set(static::$config, $key, $value);
+        Arr::set(static::$config, $key, $value);
     }
 }
  
