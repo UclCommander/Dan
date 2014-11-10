@@ -14,4 +14,13 @@ interface CommandInterface {
      * @return void
      */
     public function run(Channel $channel, User $user, $message);
-} 
+
+    /**
+     * Command help.
+     *
+     * @param \Dan\Irc\User $user
+     * @param               $message
+     * @return mixed
+     */
+    public function help(User $user, $message);
+}

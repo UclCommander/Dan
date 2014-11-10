@@ -13,7 +13,6 @@ class Plugin implements CommandInterface {
      * @param \Dan\Irc\Channel $channel
      * @param \Dan\Irc\User    $user
      * @param                  $message
-     *
      * @return void
      */
     public function run(Channel $channel, User $user, $message)
@@ -45,4 +44,17 @@ class Plugin implements CommandInterface {
         }
     }
 
+    /**
+     * Command help.
+     *
+     * @param \Dan\Irc\User $user
+     * @param               $message
+     * @return mixed
+     */
+    public function help(User $user, $message)
+    {
+        $user->sendNotice("plugin load <plugin> - Loads <plugin>");
+        $user->sendNotice("plugin reload <plugin> - Reloads <plugin>");
+        $user->sendNotice("plugin unload <plugin> - Unloads <plugin>");
+    }
 }

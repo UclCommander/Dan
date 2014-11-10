@@ -32,6 +32,7 @@ return [
      */
     'ranks' => [
         'config'    => 'S',
+        'hash'      => '+%@&~',
         'join'      => 'S',
         'part'      => 'S',
         'ping'      => 'x+%@&~',
