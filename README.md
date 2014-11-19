@@ -9,7 +9,7 @@ Dan the IRC Bot.
 ###Installation
 Dan requires that you have composer installed. Download it from http://getcomposer.org
 
-To install Dan's dependicies, run `composer install`
+To install Dan's dependencies, run `composer install`
 
 
 ###Setting up the bot
