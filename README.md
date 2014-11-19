@@ -19,7 +19,7 @@ Setting up the environment is easy. Rename the file `.env.example` to `.env`, th
 
 ###Running the bot
 
-In the terminal, run the following:
+In the terminal, run the following in the project directory:
 ```
-php dan
+./dan
 ```
