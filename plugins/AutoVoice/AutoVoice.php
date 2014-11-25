@@ -2,6 +2,7 @@
 
 use Dan\Contracts\PluginContract;
 use Dan\Core\Dan;
+use Dan\Events\EventArgs;
 use Dan\Plugins\Plugin;
 
 class AutoVoice extends Plugin implements PluginContract {
@@ -19,9 +20,9 @@ class AutoVoice extends Plugin implements PluginContract {
     /**
      * @param $event
      */
-    public function voiceUser($event)
+    public function voiceUser(EventArgs $event)
     {
         //TODO: prevent errors
-        Dan::app('irc')->sendRaw("MODE {$event[0][0]} +v {$event[1]->getNick()}");
+        Dan::app('irc')->sendRaw("MODE {$event->channel->getName()} +v {$event->user->getNick()}");
     }
 }

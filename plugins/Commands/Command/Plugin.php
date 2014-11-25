@@ -23,6 +23,9 @@ class Plugin implements CommandInterface {
         {
             switch ($data[0])
             {
+                case 'loaded':
+                    $user->sendNotice("Loaded Plugins: " . implode(', ', Dan::app('pluginManager')->loaded()));
+                    break;
                 case 'load':
                     Dan::app('pluginManager')->loadPlugin($data[1]);
                     $user->sendNotice("Plugin {$data[1]} loaded.");

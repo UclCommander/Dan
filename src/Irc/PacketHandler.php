@@ -190,12 +190,12 @@ abstract class PacketHandler implements ConnectionContract {
      */
     public function packetJoin(array $data, User $user)
     {
-        Event::fire('irc.packet.join', ['message' => $data, 'user' => $user]);
-
         if($user->getNick() == Config::get('irc.nickname'))
         {
             $this->addChannel($data[0]);
         }
+
+        Event::fire('irc.packet.join', ['channel' => $this->getChannel($data[0]), 'user' => $user]);
     }
 
     /**

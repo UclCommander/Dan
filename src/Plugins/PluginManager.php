@@ -24,6 +24,16 @@ class PluginManager {
     }
 
     /**
+     * Gets the loaded plugins.
+     *
+     * @return array
+     */
+    public function loaded()
+    {
+        return array_keys($this->loaded);
+    }
+
+    /**
      * Loads a plugin
      *
      * @param $name
