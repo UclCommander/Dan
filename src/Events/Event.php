@@ -17,7 +17,7 @@ class Event {
 
     public function __construct($name, $function, $priority)
     {
-        $this->id   = md5(microtime() . $name . $priority);
+        $this->id       = md5(microtime() . $name . $priority);
         $this->name     = $name;
         $this->function = $function;
         $this->priority = $priority;
@@ -52,10 +52,10 @@ class Event {
     /**
      * Fires an event.
      *
-     * @param $name
-     * @param $data
+     * @param string $name
+     * @param array $data
      */
-    public static function fire($name, ...$data)
+    public static function fire($name, array $data)
     {
         Console::text("FIRING EVENT {$name}")->alert()->debug()->push();
 
@@ -80,12 +80,12 @@ class Event {
 
                         Console::text("Calling $method from " . get_class($object) . ", priority {$priority}")->info()->debug()->push();
 
-                        $response = $object->$method($data);
+                        $response = $object->$method(new EventArgs($data));
                     }
                     else
                     {
                         Console::text("Calling closure event, priority {$priority}")->info()->debug()->push();
-                        $response = $event($data);
+                        $response = $event(new EventArgs($data));
                     }
 
                     Console::text("Event returned {$response}")->info()->debug()->push();

@@ -24,7 +24,7 @@ class User
      */
     public function sendMessage($message)
     {
-        Dan::getApp('irc')->sendMessage($this->getNick(), $message);
+        Dan::app('irc')->sendMessage($this->getNick(), $message);
     }
 
     /**
@@ -34,7 +34,7 @@ class User
      */
     public function sendNotice($message)
     {
-        Dan::getApp('irc')->sendNotice($this->getNick(), $message);
+        Dan::app('irc')->sendNotice($this->getNick(), $message);
     }
 }
 

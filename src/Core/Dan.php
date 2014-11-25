@@ -2,28 +2,17 @@
 
 use Dan\Irc\Connection;
 use Dan\Plugins\PluginManager;
+use Illuminate\Support\Collection;
 
 class Dan {
 
     const VERSION = '3.0.0';
 
-    protected $irc;
-
     /** @var object[] */
     protected $apps = [];
 
+    /** @var static */
     protected static $dan;
-
-    /**
-     * Gets an app
-     *
-     * @param $key
-     * @return object
-     */
-    public static function getApp($key)
-    {
-        return static::$dan->apps[$key];
-    }
 
     /**
      * Load 'er up.
@@ -32,7 +21,8 @@ class Dan {
     {
         session_start(); // Start sessions for flash data
 
-        static::$dan = $this;
+        static::$dan    = $this;
+        $this->apps     = new Collection();
 
         Config::load();
     }
@@ -51,11 +41,14 @@ class Dan {
             Console::text("Debug mode is active!")->debug()->alert()->push();
         }
 
-        $this->apps['pluginManager'] = new PluginManager();
+        $this->apps->put('pluginManager', new PluginManager());
 
         try
         {
-            $this->apps['pluginManager']->loadPlugin("commands");
+            $this->apps->get('pluginManager')->loadPlugin("commands");
+            $this->apps->get('pluginManager')->loadPlugin("fun");
+            $this->apps->get('pluginManager')->loadPlugin("title");
+            $this->apps->get('pluginManager')->loadPlugin("youtube");
         }
         catch (\Exception $e)
         {
@@ -64,8 +57,22 @@ class Dan {
 
         Console::text('System Booted. Starting IRC connection. ')->alert()->push();
 
-        $this->apps['irc'] = new Connection();
-        $this->apps['irc']->init();
+        $this->apps->put('irc', new Connection());
+        $this->apps->get('irc')->init();
+    }
+
+    /**
+     * Gets an app or the application collection.
+     *
+     * @param $key
+     * @return object|Collection
+     */
+    public static function app($key = null)
+    {
+        if($key == null)
+            return static::$dan->apps;
+
+        return static::$dan->apps->get($key);
     }
 }
  

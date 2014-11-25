@@ -28,7 +28,7 @@ class Part implements CommandInterface {
             $msg = $cmd[0];
         }
 
-        Dan::getApp('irc')->partChannel($partFrom, $msg);
+        Dan::app('irc')->partChannel($partFrom, $msg);
     }
 
 

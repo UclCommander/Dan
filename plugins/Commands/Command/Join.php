@@ -18,7 +18,7 @@ class Join implements CommandInterface {
     public function run(Channel $channel, User $user, $message)
     {
         $cmd = explode(' ', $message);
-        Dan::getApp('irc')->joinChannel($cmd[0]);
+        Dan::app('irc')->joinChannel($cmd[0]);
     }
 
     /**

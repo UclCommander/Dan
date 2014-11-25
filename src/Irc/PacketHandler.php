@@ -190,7 +190,7 @@ abstract class PacketHandler implements ConnectionContract {
      */
     public function packetJoin(array $data, User $user)
     {
-        Event::fire('irc.packet.join', $data, $user);
+        Event::fire('irc.packet.join', ['message' => $data, 'user' => $user]);
 
         if($user->getNick() == Config::get('irc.nickname'))
         {
@@ -204,7 +204,7 @@ abstract class PacketHandler implements ConnectionContract {
      */
     public function packetMode(array $data, User $user)
     {
-        Event::fire('irc.packet.mode', $data, $user);
+        Event::fire('irc.packet.mode', ['data' => $data, 'user' => $user]);
     }
 
     /**
@@ -213,7 +213,7 @@ abstract class PacketHandler implements ConnectionContract {
      */
     public function packetNick(array $data, User $user)
     {
-        Event::fire('irc.packet.nick', $data, $user);
+        Event::fire('irc.packet.nick', ['data' => $data, 'user' => $user]);
     }
 
     /**
@@ -222,7 +222,7 @@ abstract class PacketHandler implements ConnectionContract {
      */
     public function packetNotice(array $data, User $user)
     {
-        Event::fire('irc.packet.notice', $data, $user);
+        Event::fire('irc.packet.notice', ['data' => $data, 'user' => $user]);
     }
 
     /**
@@ -232,7 +232,7 @@ abstract class PacketHandler implements ConnectionContract {
     public function packetPing(array $data, User $user)
     {
         $this->sendRaw("PONG {$data[0]}");
-        Event::fire('irc.packet.ping', $data, $user);
+        Event::fire('irc.packet.ping', ['data' => $data, 'user' => $user]);
     }
 
     /**
@@ -241,7 +241,11 @@ abstract class PacketHandler implements ConnectionContract {
      */
     public function packetPrivmsg(array $data, User $user)
     {
-        Event::fire('irc.packet.privmsg', $this->getChannel($data[0]), $data[1], $user);
+        Event::fire('irc.packet.privmsg', [
+            'channel'   => $this->getChannel($data[0]),
+            'message'   => $data[1],
+            'user'      => $user
+        ]);
 
         if($data[1] == "\001VERSION\001")
         {
@@ -264,10 +268,8 @@ abstract class PacketHandler implements ConnectionContract {
         if($message == '.users')
         {
             $channel = $this->getChannel($data[0]);
-
             $channel->sendMessage(json_encode($channel->getUsers()));
         }
-        //$connection->sendMessage($data[0], $data[1]);
     }
 
     /**

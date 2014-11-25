@@ -1,6 +1,7 @@
 <?php namespace Plugins\Title;
 
 use Dan\Contracts\PluginContract;
+use Dan\Events\EventArgs;
 use Dan\Plugins\Plugin;
 
 class Title extends Plugin implements PluginContract {
@@ -10,11 +11,11 @@ class Title extends Plugin implements PluginContract {
         $this->addEvent('irc.packet.privmsg', [$this, 'getTitle'], 4);
     }
 
-    public function getTitle($event)
+    public function getTitle(EventArgs $event)
     {
         /** @var \Dan\Irc\Channel $channel */
-        $channel = $event[0];
-        $message = $event[1];
+        $channel = $event->channel;
+        $message = $event->message;
 
         $match = [];
 

@@ -3,8 +3,11 @@
 use Dan\Core\Console;
 use Dan\Exceptions\ClassLoadException;
 use Dan\Exceptions\PluginDoesNotExistException;
+use Illuminate\Support\Collection;
 
 class PluginManager {
+
+    protected $classMap;
 
     protected $loaded = [];
 
@@ -16,6 +19,8 @@ class PluginManager {
 
         if(!file_exists($this->tempDir))
             mkdir($this->tempDir);
+
+        $this->classMap = new Collection();
     }
 
     /**
@@ -56,22 +61,25 @@ class PluginManager {
 
             $path = $pluginDir . $loadable;
 
-            $file = file_get_contents($path);
-            $file = str_replace([
+            $find       = $this->classMap->keys();
+            $replace    = array_values($this->classMap->toArray()); //because ->values() causes issues...
+
+            $find       = array_merge($find,    [
                 "<?php",
                 "namespace Plugins\\",
-                "use Plugins\\",
                 "\\Plugins\\{$name}\\",
-                "Plugins\\{$name}\\",
                 "Plugins\\\\{$name}\\\\",
-            ], [
+            ]);
+
+            $replace    = array_merge($replace, [
                 "",
                 "namespace Plugins\\{$key}\\",
-                "use Plugins\\{$key}\\",
                 "\\Plugins\\{$key}\\{$name}\\",
                 "Plugins\\{$key}\\{$name}\\",
-                "Plugins\\{$key}\\{$name}\\",
-            ], $file);
+            ]);
+
+            $file = file_get_contents($path);
+            $file = str_replace($find, $replace, $file);
 
             Console::text("Running inline eval for file {$loadable} in plugin {$name}")->debug()->info()->push();
 
@@ -85,10 +93,7 @@ class PluginManager {
             if(!interface_exists($class)) //ignore interfaces
             {
                 if (!class_exists($class))
-                {
-                    Console::text("Error loading {$class} for plugin {$name}")->debug()->info()->push();
                     throw new ClassLoadException("Error loading {$class} for plugin {$name}");
-                }
 
                 /** @var \Dan\Contracts\PluginContract $plugin */
                 $plugin =  new $class;
@@ -102,6 +107,10 @@ class PluginManager {
                 Console::text("Plugin file {$loadable} loaded for plugin {$name}, adding class to cache array")->debug()->info()->push();
                 $this->loaded[strtolower($name)][$key][$path] = $plugin;
             }
+
+            // Put the class in the class map for plugins to reference if needed.
+            // This is done last incase of exceptions.
+            $this->classMap->put("Plugins\\{$name}\\{$className}", "Plugins\\{$key}\\{$name}\\{$className}");
         }
     }
 

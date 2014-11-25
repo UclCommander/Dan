@@ -7,6 +7,12 @@ use Plugins\Commands\CommandInterface;
 
 class Config implements CommandInterface {
 
+    protected $guarded = [
+        'irc.password',
+        'irc.channels',
+        'dan.sudo_users',
+    ];
+
     /**
      * Runs the command.
      *
@@ -18,6 +24,15 @@ class Config implements CommandInterface {
     public function run(Channel $channel, User $user, $message)
     {
         $data = explode(' ', $message);
+
+        if(isset($data[1]))
+        {
+            if (in_array($data[1], $this->guarded))
+            {
+                $user->sendNotice('This value is guarded.');
+                return;
+            }
+        }
 
         switch($data[0])
         {

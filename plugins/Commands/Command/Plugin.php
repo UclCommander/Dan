@@ -24,16 +24,19 @@ class Plugin implements CommandInterface {
             switch ($data[0])
             {
                 case 'load':
-                    Dan::getApp('pluginManager')->loadPlugin($data[1]);
+                    Dan::app('pluginManager')->loadPlugin($data[1]);
+                    $user->sendNotice("Plugin {$data[1]} loaded.");
                     break;
 
                 case 'reload':
-                    Dan::getApp('pluginManager')->unloadPlugin($data[1]);
-                    Dan::getApp('pluginManager')->loadPlugin($data[1]);
+                    Dan::app('pluginManager')->unloadPlugin($data[1]);
+                    Dan::app('pluginManager')->loadPlugin($data[1]);
+                    $user->sendNotice("Plugin {$data[1]} reloaded.");
                     break;
 
                 case 'unload':
-                    Dan::getApp('pluginManager')->unloadPlugin($data[1]);
+                    Dan::app('pluginManager')->unloadPlugin($data[1]);
+                    $user->sendNotice("Plugin {$data[1]} unloaded.");
                     break;
             }
 
