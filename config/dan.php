@@ -15,4 +15,13 @@ return [
         'UclCommander!~UclComman@uclcommander.net',
     ],
 
+    /*
+     * The plugins to autoload.
+     */
+    'plugins' => [
+        'commands',
+        'title',
+        'youtube',
+        'fun',
+    ]
 ];

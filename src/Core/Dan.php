@@ -45,10 +45,8 @@ class Dan {
 
         try
         {
-            $this->apps->get('pluginManager')->loadPlugin("commands");
-            $this->apps->get('pluginManager')->loadPlugin("fun");
-            $this->apps->get('pluginManager')->loadPlugin("title");
-            $this->apps->get('pluginManager')->loadPlugin("youtube");
+            foreach(Config::get('dan.plugins') as $plugin)
+                $this->apps->get('pluginManager')->loadPlugin($plugin);
         }
         catch (\Exception $e)
         {
