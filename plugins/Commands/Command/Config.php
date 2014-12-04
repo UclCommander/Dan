@@ -38,10 +38,12 @@ class Config implements CommandInterface {
         {
             case 'reload':
                 Cfg::load();
+                $user->sendNotice("Config reloaded");
                 break;
 
             case 'set':
                 Cfg::set($data[1], $data[2]);
+                $user->sendNotice("Config key {$data[1]} set to {$data[2]}");
                 break;
 
             case 'get':

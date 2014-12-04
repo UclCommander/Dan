@@ -31,13 +31,19 @@ return [
      * x    = no rank
      */
     'ranks' => [
+        //Commands plugin
         'config'    => 'S',
         'hash'      => '+%@&~',
         'join'      => 'S',
-        'lenny'     => 'x+%@&~',
+        'memory'    => 'S',
         'part'      => 'S',
         'ping'      => 'x+%@&~',
         'plugin'    => 'S',
+        'say'       => 'S',
 
+        //Fun plugin
+        'lenny'     => 'x+%@&~',
+        'nbc'       => 'x+%@&~',
+        'trp'       => 'x+%@&~',
     ]
 ];

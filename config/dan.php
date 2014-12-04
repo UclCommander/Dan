@@ -4,7 +4,7 @@ return [
     /*
     * Debug mode -- shows massive amounts of information
     */
-    'debug' => true,
+    'debug' => getenv('DEBUG'),
 
     /*
      * Sudo users. These users have special permissions
@@ -18,10 +18,5 @@ return [
     /*
      * The plugins to autoload.
      */
-    'plugins' => [
-        'commands',
-        'title',
-        'youtube',
-        'fun',
-    ]
+    'plugins' => explode('|', getenv("PLUGINS")),
 ];
