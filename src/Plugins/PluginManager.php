@@ -11,15 +11,8 @@ class PluginManager {
 
     protected $loaded = [];
 
-    private $tempDir = null;
-
     public function __construct()
     {
-        $this->tempDir = STORAGE_DIR . '/plugins/';
-
-        if(!file_exists($this->tempDir))
-            mkdir($this->tempDir);
-
         $this->classMap = new Collection();
     }
 
