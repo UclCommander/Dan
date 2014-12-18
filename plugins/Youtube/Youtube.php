@@ -60,8 +60,8 @@ class Youtube extends Plugin implements PluginContract{
 
             $duration   = implode(':', [$hours, $minutes, $seconds]);
             $ratingData = $xml->children('gd', true)->rating->attributes();
-            $average    = (($ratingData->average / 5) * 10);
-            $likebar    = str_repeat("\x033+", floor($average)) . str_repeat("\x034-", (10 - floor($average)));
+            $average    = (((floor(floatval($ratingData->average) * 2) / 2) / 5) * 10);
+            $likebar    = str_repeat("\x033+", $average) . str_repeat("\x034-", (10 - $average));
 
             $event->channel->sendMessage("[\x035 {$title}\x03 |\x038 {$user}\x03 | {$likebar}\x03 |\x0310 {$views} views\x03 |\x0311 {$duration}\x03 ]");
         }
