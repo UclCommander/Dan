@@ -41,7 +41,8 @@ class Textreplace extends Plugin implements PluginContract {
             {
                 if(strpos($data['message'], $replace[1]) !== false)
                 {
-                    $newMessage = preg_replace("/{$replace[1]}/", $replace[2], $data['message'], 1);
+                    $save = preg_quotes($replace[1]);
+                    $newMessage = preg_replace("/{$safe}/", $replace[2], $data['message'], 1);
                     $this->messages[$time]['message'] = $newMessage;
                     $e->channel->sendMessage("[{$data['user']->getNick()}] {$newMessage}");
 
