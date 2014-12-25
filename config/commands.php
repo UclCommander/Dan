@@ -8,7 +8,7 @@ return [
      *
      * .part #channel parting
      */
-    'command_starter'   => '.',
+    'command_starter'   => getenv("COMMAND_STARTER"),
 
     /*
      * Show errors when a command doesn't exist?

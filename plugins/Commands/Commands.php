@@ -20,7 +20,7 @@ class Commands extends Plugin implements PluginContract {
     {
         $this->manager = new CommandManager();
 
-        $this->addEvent('irc.packet.privmsg', [$this->manager, 'checkForCommand'], 8);
+        $this->listenForEvent('irc.packet.privmsg', [$this->manager, 'checkForCommand'], 8);
 
     }
 

@@ -1,4 +1,6 @@
 <?php namespace Dan\Exceptions;
 
-class PluginDoesNotExistException extends \Exception {}
 class ClassLoadException extends \Exception {}
+class RequiredPluginNeedsToBeLoadedException extends \Exception {}
+class PluginDoesNotExistException extends \Exception {}
+class PluginIsNotLoadedException extends \Exception {}

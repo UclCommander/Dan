@@ -88,10 +88,7 @@ class CommandManager {
         $starter = Config::get('commands.command_starter');
 
         if(strpos($message, $starter) !== 0)
-        {
-            Console::text("Wrong command starter - '{$message}' should be {$starter}")->debug()->info()->push();
             return null;
-        }
 
         $data   = explode(' ', $message, 2);
         $cmd    = substr($data[0], 1);

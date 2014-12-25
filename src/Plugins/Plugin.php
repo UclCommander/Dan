@@ -5,6 +5,8 @@ use Dan\Events\Event;
 
 abstract class Plugin implements PluginContract {
 
+    protected $key          = null;
+
     protected $version      = null;
     protected $author       = null;
     protected $description  = null;
@@ -12,15 +14,35 @@ abstract class Plugin implements PluginContract {
     /** @var Event[] $events */
     protected $events       = [];
 
+    /**
+     * Sets the plugin key.
+     *
+     * @param string $key
+     */
+    public function setKey($key)
+    {
+        if($this->key == null)
+            $this->key = $key;
+    }
+
+    /**
+     * Gets the plugin key.
+     *
+     * @return string
+     */
+    public function getKey()
+    {
+        return $this->key;
+    }
 
     /**
      * Adds an event to the bucket.
      *
-     * @param     $name
-     * @param     $function
+     * @param string $name
+     * @param callable|array $function
      * @param int $priority
      */
-    public function addEvent($name, $function, $priority = 5)
+    public function listenForEvent($name, $function, $priority = 5)
     {
         $this->events[] = Event::listen($name, $function, $priority);
     }

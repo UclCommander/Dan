@@ -1,19 +1,46 @@
 <?php namespace Dan\Plugins; 
 
 use Dan\Core\Console;
-use Dan\Exceptions\ClassLoadException;
 use Dan\Exceptions\PluginDoesNotExistException;
+use Dan\Exceptions\PluginIsNotLoadedException;
+use Dan\Exceptions\RequiredPluginNeedsToBeLoadedException;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use ReflectionClass;
 
 class PluginManager {
 
+    /** @var \Illuminate\Support\Collection $classMap */
     protected $classMap;
 
-    protected $loaded = [];
+    /** @var \Illuminate\Support\Collection $loaded */
+    protected $loaded;
 
+    protected $required = [];
+
+    /** @var string $storageDir */
+    protected $storageDir;
+
+    /** @var string $loadingDir */
+    protected $loadingDir;
+
+    /** @var \Illuminate\Filesystem\Filesystem $filesystem */
+    protected $filesystem;
+
+    /**
+     * Plugin manager class.
+     */
     public function __construct()
     {
-        $this->classMap = new Collection();
+        $this->filesystem   = new Filesystem();
+        $this->classMap     = new Collection();
+        $this->loaded       = new Collection();
+        $this->storageDir   = STORAGE_DIR . '/plugins/';
+        $this->loadingDir   = '';
+
+        // Clear out the plugins directory
+        $this->filesystem->cleanDirectory($this->storageDir);
     }
 
     /**
@@ -23,134 +50,83 @@ class PluginManager {
      */
     public function loaded()
     {
-        return array_keys($this->loaded);
+        return array_keys($this->loaded->toArray());
     }
 
     /**
-     * Loads a plugin
+     * @param $name
+     * @return bool
+     */
+    public function pluginLoaded($name)
+    {
+        $name = $this->getPluginName($name);
+        return $this->loaded->has($name);
+    }
+
+    /**
+     * Loads a plugin.
      *
      * @param $name
-     * @throws \Dan\Exceptions\ClassLoadException
+     * @return bool
      * @throws \Dan\Exceptions\PluginDoesNotExistException
+     * @throws \Dan\Exceptions\RequiredPluginNeedsToBeLoadedException
      */
     public function loadPlugin($name)
     {
-        //normalize the name
-        $name = ucfirst(strtolower($name));
+        $name = $this->getPluginName($name);
 
-        Console::text("Attempting to load plugin {$name}..")->debug()->info()->push();
+        Console::text("Loading plugin {$name}")->info()->push();
 
         if(!$this->pluginExists($name))
-        {
-            Console::text("Plugin {$name} does not exist -- throwing exception")->debug()->info()->push();
             throw new PluginDoesNotExistException("Plugin $name does not exist");
-        }
 
-        $pluginDir = PLUGIN_DIR . "/{$name}/";
+        $this->loadingDir = PLUGIN_DIR . "/{$name}/";
 
-        Console::text("Loading config for plugin {$name}")->debug()->info()->push();
-        $config = require($pluginDir . 'config.inc');
+        $config = $this->loadConfig($name);
 
-        //random load key
-        //Add "P" to make sure it always starts with a letter, else errors will throw like crazy
-        $key = "P" . md5(time().$name.microtime());
+        $key = "{$name}_" . $this->generateKey($name);
 
-        Console::text("Generated one time key for plugin {$name}: {$key}")->debug()->info()->push();
+        $this->copyPLuginFiles($name, $config, $key);
+        $this->initializePlugin($name, $config, $key);
 
-        //ONLY load files that are given
-        foreach($config['files'] as $loadable)
-        {
-            Console::text("Loading plugin file {$loadable} for plugin {$name}")->debug()->info()->push();
+        $this->loadingDir = '';
 
-            $path = $pluginDir . $loadable;
+        Console::text("Plugin {$name} loaded")->success()->push();
 
-            $find       = $this->classMap->keys();
-            $replace    = array_values($this->classMap->toArray()); //because ->values() causes issues...
-
-            $find       = array_merge($find,    [
-                "<?php",
-                "namespace Plugins\\",
-                "\\Plugins\\{$name}\\",
-                "Plugins\\\\{$name}\\\\",
-            ]);
-
-            $replace    = array_merge($replace, [
-                "",
-                "namespace Plugins\\{$key}\\",
-                "\\Plugins\\{$key}\\{$name}\\",
-                "Plugins\\{$key}\\{$name}\\",
-            ]);
-
-            $file = file_get_contents($path);
-            $file = str_replace($find, $replace, $file);
-
-            Console::text("Running inline eval for file {$loadable} in plugin {$name}")->debug()->info()->push();
-
-            eval($file);
-
-            $className  = str_replace(['.php', '/'], ['', '\\'], $loadable);
-            $class      = "Plugins\\{$key}\\{$name}\\{$className}";
-
-            Console::text("Initializing {$class} for plugin {$name}")->debug()->info()->push();
-
-            if(!interface_exists($class)) //ignore interfaces
-            {
-                if (!class_exists($class))
-                    throw new ClassLoadException("Error loading {$class} for plugin {$name}");
-
-                /** @var \Dan\Contracts\PluginContract $plugin */
-                $plugin =  new $class;
-
-                if(in_array('Dan\Contracts\PluginContract', class_implements($plugin)))
-                {
-                    Console::text("Class {$class} extends PluginContract, registering plugin file for {$name}")->debug()->info()->push();
-                    $plugin->register();
-                }
-
-                Console::text("Plugin file {$loadable} loaded for plugin {$name}, adding class to cache array")->debug()->info()->push();
-                $this->loaded[strtolower($name)][$key][$path] = $plugin;
-            }
-
-            // Put the class in the class map for plugins to reference if needed.
-            // This is done last incase of exceptions.
-            $this->classMap->put("Plugins\\{$name}\\{$className}", "Plugins\\{$key}\\{$name}\\{$className}");
-        }
+        return true;
     }
 
-
+    /**
+     * Unloads a plugin.
+     *
+     * @param string $name
+     * @throws \Dan\Exceptions\PluginIsNotLoadedException
+     */
     public function unloadPlugin($name)
     {
         //clean up name
-        $name = strtolower($name);
+        $name = $this->getPluginName($name);
 
-        Console::text("Unloading plugin {$name}...")->debug()->alert()->push();
+        if(!$this->pluginLoaded($name))
+            throw new PluginIsNotLoadedException($name);
 
-        if(!array_key_exists($name, $this->loaded))
+
+        /*foreach($this->required as $plugin => $needs)
         {
-            Console::text("Unable to find loaded plugin {$name}")->debug()->alert()->push();
-            return;
-        }
+            if($needs == $name)
+                throw new
+        }*/
 
-        foreach($this->loaded[$name] as $id => $paths)
-        {
-            foreach($paths as $class)
-            {
-                /** @var \Dan\Contracts\PluginContract $class */
+        /** @var \Dan\Contracts\PluginContract|\Dan\Plugins\Plugin $plugin */
+        $plugin = $this->loaded->get($name);
 
-                Console::text("Unloading " . get_class($class) . " for plugin {$name}")->debug()->info()->push();
+        $key = $plugin->getKey();
+        $plugin->unregister();
 
-                if (in_array('Dan\Contracts\PluginContract', class_implements($class)))
-                {
-                    Console::text("Unregistering plugin entry point for plugin {$name}")->debug()->info()->push();
-                    $class->unregister();
-                }
+        $this->loaded->forget($name);
+        $this->classMap->forget("Plugins\\{$name}");
 
-                unset($class);
-            }
-        }
-
-        unset($this->loaded[$name]);
-        Console::text("Plugin {$name} unloaded")->debug()->success()->push();
+        $this->filesystem->deleteDirectory($this->storageDir.$key);
     }
 
     /**
@@ -161,7 +137,206 @@ class PluginManager {
      */
     public function pluginExists($name)
     {
-        return file_exists(PLUGIN_DIR . "/{$name}/{$name}.php");
+        $name = $this->getPluginName($name);
+
+        return $this->filesystem->exists(PLUGIN_DIR . "/{$name}/{$name}.php");
+    }
+
+
+    /**
+     * Recursively scans a directory and returns a one dimensional array of all files with their paths.
+     *
+     * @param string $scan
+     * @param string $prepend
+     * @return array
+     */
+    public function recursiveScan($scan, $prepend = '')
+    {
+        $result = [];
+
+        $pluginDir = array_diff(scandir($scan), ['..', '.']);
+
+        foreach($pluginDir as $dir)
+        {
+            if(is_dir($scan . $dir))
+            {
+                $result[] = $this->recursiveScan($scan . $dir.'/', $prepend.$dir.'/');
+                continue;
+            }
+
+            // Ignore config.inc because we don't need it right now (possibly future needs).
+            if($dir == 'config.inc')
+                continue;
+
+            $result[] = $prepend.$dir;
+        }
+
+        return Arr::flatten($result);
+    }
+
+    /**
+     * Gets a plugin name as it is on the file system.
+     *
+     * @param $name
+     * @return string
+     */
+    public function getPluginName($name)
+    {
+        $match  = [];
+        $safe   = preg_quote($name);
+
+        $map = array_map(function($d) {
+            return basename($d);
+        }, glob(PLUGIN_DIR . '/*'));
+
+        preg_match("/{$safe}/i", implode(' ', $map), $match);
+
+        return reset($match);
+    }
+
+    /**
+     * Generate a key.
+     *
+     * @param $name
+     * @return string
+     */
+    public function generateKey($name)
+    {
+        return md5(time().$name.microtime());
+    }
+
+    /**
+     * Copy all plugin files to a temp directory.
+     *
+     * @param $name
+     * @param $config
+     * @param $key
+     */
+    protected function copyPluginFiles($name, $config, $key)
+    {
+        foreach($config['files'] as $loadable)
+        {
+            $dir    = dirname($loadable);
+            $temp   = "{$this->storageDir}{$key}/" . ($dir == '.' ? '' : $dir);
+
+            $file    = $this->parsePluginFile($loadable, $name, $key);
+
+            if (!file_exists("{$this->storageDir}{$key}"))
+                mkdir("{$this->storageDir}{$key}");
+
+            if (!file_exists($temp))
+                mkdir($temp);
+
+            $this->filesystem->put("{$temp}/" . basename($loadable), $file);
+        }
+    }
+
+    /**
+     * Parse a plugin file for dynamic loading.
+     *
+     * @param $path
+     * @param $name
+     * @param $key
+     * @return mixed|string
+     */
+    protected function parsePluginFile($path, $name, $key)
+    {
+        $path = $this->loadingDir . $path;
+        $file = $this->filesystem->get($path);
+
+        $arr = $this->classMap->toArray();
+
+        $find = array_keys($arr);
+
+        $keys = array_merge($find, [
+            "Plugins\\{$name}",
+            "Plugins\\{$name}\\",
+        ]);
+
+        $replace = array_values($arr);
+
+        $values = array_merge($replace, [
+            "PluginTemp\\{$key}",
+            "PluginTemp\\{$key}\\",
+        ]);
+
+        $file = str_replace($keys, $values, $file);
+
+        return $file;
+    }
+
+    /**
+     * Initialize a plugin.
+     *
+     * @param       $name
+     * @param array $config
+     * @param       $key
+     */
+    protected function initializePlugin($name, array $config, $key)
+    {
+        $files = $this->recursiveScan($this->storageDir . $key);
+
+        // Loop through those files and load them.
+        foreach($files as $relative)
+        {
+            $path = $this->loadingDir . $relative;
+
+            if (is_dir($path))
+                continue;
+
+            $file       = basename($path);
+            $className  = str_replace(['.php', '/'], ['', '\\'], $file);
+            $class      = "PluginTemp\\{$key}\\{$className}";
+
+            $check = new ReflectionClass($class);
+
+            if ($check->isInterface() || $check->isAbstract())
+                continue;
+
+            if (!$check->implementsInterface('Dan\Contracts\PluginContract'))
+                continue;
+
+            /** @var \Dan\Contracts\PluginContract|\Dan\Plugins\Plugin $plugin */
+            $plugin = new $class;
+            $plugin->register();
+            $plugin->setKey($key);
+
+            $this->loaded->put($name, $plugin);
+
+            $this->classMap->put("Plugins\\{$name}", "PluginTemp\\{$key}");
+        }
+    }
+
+    /**
+     * Loads the config for a plugin
+     *
+     * @param $name
+     * @return array
+     * @throws \Dan\Exceptions\RequiredPluginNeedsToBeLoadedException
+     * @throws \Illuminate\Filesystem\FileNotFoundException
+     */
+    protected function loadConfig($name)
+    {
+        $config = [];
+        $config['required'] = [];
+
+        $inc = [];
+
+        if ($this->filesystem->exists($this->loadingDir . 'config.inc'))
+            $inc = $this->filesystem->getRequire($this->loadingDir . 'config.inc');
+
+        $config = array_merge($config, $inc);
+        $config['files'] = $this->recursiveScan($this->loadingDir);
+
+        foreach ($config['required'] as $plugin)
+        {
+            if (!$this->pluginLoaded($plugin))
+                throw new RequiredPluginNeedsToBeLoadedException("Plugin '{$plugin}' needs to be loaded for plugin '{$name}' to work.");
+
+            $this->required[$name] = $plugin;
+        }
+
+        return $config;
     }
 }
 

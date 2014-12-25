@@ -10,6 +10,10 @@ use Plugins\Fun\Commands\Trp;
 
 class Fun extends Plugin implements PluginContract {
 
+    protected $requires = [
+        'Commands'
+    ];
+
     public function register()
     {
         /** @var \Plugins\Commands\CommandManager $command */

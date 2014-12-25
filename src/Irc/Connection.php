@@ -244,12 +244,12 @@ class Connection extends PacketHandler implements ConnectionContract {
      */
     public function addChannel($name)
     {
-        if(array_key_exists($name, $this->channels))
-            return $this->channels[$name];
+        if(array_key_exists(strtolower($name), $this->channels))
+            return $this->channels[strtolower($name)];
 
         $channel = new Channel($this, $name);
 
-        $this->channels[$name] = $channel;
+        $this->channels[strtolower($name)] = $channel;
 
         return $channel;
     }
@@ -262,8 +262,8 @@ class Connection extends PacketHandler implements ConnectionContract {
      */
     public function getChannel($name)
     {
-        if(array_key_exists($name, $this->channels))
-            return $this->channels[$name];
+        if(array_key_exists(strtolower($name), $this->channels))
+            return $this->channels[strtolower($name)];
 
         return null;
     }

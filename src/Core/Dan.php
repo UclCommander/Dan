@@ -6,7 +6,7 @@ use Illuminate\Support\Collection;
 
 class Dan {
 
-    const VERSION = '3.0.0';
+    const VERSION = '3.1.0';
 
     /** @var object[] */
     protected $apps = [];
@@ -30,7 +30,7 @@ class Dan {
     /**
      * Boots Dan.
      */
-    public function boot()
+    public function boot($args)
     {
         Console::text('Booting Dan...')->info()->push();
 
@@ -41,19 +41,28 @@ class Dan {
             Console::text("Debug mode is active!")->debug()->alert()->push();
         }
 
+
         $this->apps->put('pluginManager', new PluginManager());
 
-        try
+        if(!in_array('--safemode', $args))
         {
-            foreach(Config::get('dan.plugins') as $plugin)
-                $this->apps->get('pluginManager')->loadPlugin($plugin);
-        }
-        catch (\Exception $e)
-        {
-            Console::exception($e)->push();
+            foreach (Config::get('dan.plugins') as $plugin)
+            {
+                try
+                {
+                    $this->apps->get('pluginManager')->loadPlugin($plugin);
+                }
+                catch (\Exception $e)
+                {
+                    Console::exception($e)->push();
+                }
+            }
         }
 
         Console::text('System Booted. Starting IRC connection. ')->alert()->push();
+
+        if(in_array('--dry', $args))
+            die;
 
         $this->apps->put('irc', new Connection());
         $this->apps->get('irc')->init();

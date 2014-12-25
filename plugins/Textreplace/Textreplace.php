@@ -3,9 +3,11 @@
 
 use Dan\Contracts\PluginContract;
 use Dan\Events\EventArgs;
+use Dan\Irc\Channel;
+use Dan\Irc\User;
 use Dan\Plugins\Plugin;
 
-class Textreplace extends Plugin implements PluginContract {
+class TextReplace extends Plugin implements PluginContract {
 
     /** @var array */
     protected $messages = [];
@@ -13,15 +15,21 @@ class Textreplace extends Plugin implements PluginContract {
 
     public function register()
     {
-        $this->addEvent('irc.packet.privmsg', [$this, 'doReplace'], 7);
+        $this->listenForEvent('irc.packet.privmsg', [$this, 'doReplace'], 7);
     }
 
 
     public function doReplace(EventArgs $e)
     {
+        //Ignore private messages from users
+        if($e->channel == null)
+            return null;
+
         $message    = $e->message;
+        /** @var User $user */
         $user       = $e->user;
-        $channel    = $e->channel->getName();
+        /** @var Channel $channel */
+        $channel    = $e->channel;
 
         if(strpos($message, 's/') === 0)
         {
@@ -30,10 +38,10 @@ class Textreplace extends Plugin implements PluginContract {
             if(count($replace) !== 3)
                 return false;
 
-            if(!array_key_exists($channel, $this->messages))
+            if(!array_key_exists($channel->getName(), $this->messages))
                 return false;
 
-            $arr = $this->messages[$channel];
+            $arr = $this->messages[$channel->getName()];
 
             krsort($arr);
 
@@ -43,14 +51,14 @@ class Textreplace extends Plugin implements PluginContract {
                 {
                     $safe = preg_quote($replace[1]);
                     $newMessage = preg_replace("/{$safe}/", $replace[2], $data['message'], 1);
-                    $this->messages[$time]['message'] = $newMessage;
+                    $this->messages[$channel->getName()][$time]['message'] = $newMessage;
                     $e->channel->sendMessage("[{$data['user']->getNick()}] {$newMessage}");
 
                     return false;
                 }
             }
 
-            $e->channel->sendMessage("Nothing found to replace!");
+            $channel->sendMessage("Nothing found to replace!");
             return false;
         }
 
@@ -62,7 +70,7 @@ class Textreplace extends Plugin implements PluginContract {
             }
         }
 
-        $this->messages[$channel][time()] = [
+        $this->messages[$channel->getName()][time()] = [
             'message'   => $message,
             'user'      => $user
         ];

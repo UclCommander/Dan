@@ -2,3 +2,4 @@ old
 vendor/
 .env
 logs
+storage

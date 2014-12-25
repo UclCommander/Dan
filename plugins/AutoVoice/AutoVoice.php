@@ -9,7 +9,7 @@ class AutoVoice extends Plugin implements PluginContract {
 
     public function register()
     {
-        $this->addEvent('irc.packet.join', [$this, 'voiceUser']);
+        $this->listenForEvent('irc.packet.join', [$this, 'voiceUser']);
     }
 
     public function unregister()

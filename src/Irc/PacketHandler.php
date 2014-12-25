@@ -241,11 +241,21 @@ abstract class PacketHandler implements ConnectionContract {
      */
     public function packetPrivmsg(array $data, User $user)
     {
-        Event::fire('irc.packet.privmsg', [
-            'channel'   => $this->getChannel($data[0]),
+        $event = [
             'message'   => $data[1],
             'user'      => $user
-        ]);
+        ];
+
+        if(in_array(substr($data[0], 0, 1), Support::get('CHANTYPES')))
+        {
+            $event['channel'] = $this->getChannel($data[0]);
+        }
+        else
+        {
+            $event['from'] = $data[0]; // TODO: return user object
+        }
+
+        Event::fire('irc.packet.privmsg', $event);
 
         if($data[1] == "\001VERSION\001")
         {
