@@ -62,8 +62,8 @@ class YoutubeHandler extends Handler implements HandlerInterface {
         $duration   = implode(':', [$hours, $minutes, $seconds]);
         $ratingData = $xml->children('gd', true)->rating->attributes();
         $average    = (((floor(floatval($ratingData->average) * 2) / 2) / 5) * 10);
-        $likebar    = str_repeat("\x033+", $average) . str_repeat("\x034-", (10 - $average));
+        $likebar    = str_repeat("{green}+", $average) . str_repeat("{red}-", (10 - $average));
 
-        $channel->sendMessage("\x03[\x0310 {$title}\x03 |\x038 {$user}\x03 | {$likebar}\x03 |\x0310 {$views} views\x03 |\x0311 {$duration}\x03 ]");
+        $channel->sendMessage("{reset}[{cyan} {$title}{reset} |{yellow} {$user}{reset} | {$likebar} {reset}|{cyan} {$views} views{reset} |{light_cyan} {$duration}{reset} ]");
     }
 }

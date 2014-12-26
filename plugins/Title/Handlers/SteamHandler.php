@@ -49,13 +49,13 @@ class SteamHandler extends Handler implements HandlerInterface {
 
         if($sale)
         {
-            $priceData = "{$gameData['sale_price']} (\x033{$gameData['discount']}\x0310)";
+            $priceData = "{$gameData['sale_price']} ({green}{$gameData['discount']}{cyan})";
         }
         else
         {
             $priceData = $gameData['original_price'];
         }
 
-        $channel->sendMessage("\x03[\x0310 {$gameData['title']} | {$priceData} \x03]");
+        $channel->sendMessage("{reset}[{cyan} {$gameData['title']}{reset} |{cyan} {$priceData}{reset}]");
     }
 }

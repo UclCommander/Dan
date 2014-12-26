@@ -2,6 +2,7 @@
 
 
 use Dan\Events\Event;
+use Dan\Events\EventArgs;
 
 class Channel {
 
@@ -44,8 +45,10 @@ class Channel {
         $this->setName($name);
         $this->connection = $connection;
 
-        Event::listen('irc.packet.mode', function($data)
+        Event::listen('irc.packet.mode', function(EventArgs $data)
         {
+            var_dump($data);
+
             $this->connection->sendRaw("NAMES {$this->name}");
         });
     }

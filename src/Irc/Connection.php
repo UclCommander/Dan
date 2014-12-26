@@ -174,7 +174,10 @@ class Connection extends PacketHandler implements ConnectionContract {
     public function sendMessage($location, ...$message)
     {
         foreach($message as $msg)
+        {
+            $msg = Color::parse($msg);
             $this->sendRaw("PRIVMSG {$location} :{$msg}");
+        }
     }
 
 

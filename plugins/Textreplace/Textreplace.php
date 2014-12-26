@@ -50,9 +50,11 @@ class TextReplace extends Plugin implements PluginContract {
                 if(strpos($data['message'], $replace[1]) !== false)
                 {
                     $safe = preg_quote($replace[1]);
-                    $newMessage = preg_replace("/{$safe}/", $replace[2], $data['message'], 1);
-                    $this->messages[$channel->getName()][$time]['message'] = $newMessage;
-                    $e->channel->sendMessage("[{$data['user']->getNick()}] {$newMessage}");
+
+                    $this->messages[$channel->getName()][$time]['message'] = preg_replace("/{$safe}/", $replace[2], $data['message'], 1);
+
+                    $newMessage = preg_replace("/{$safe}/", "{bold}{$replace[2]}{normal}", $data['message'], 1);
+                    $e->channel->sendMessage("{reset}[ {cyan}{bold}{$data['user']->getNick()}{normal} ] {$newMessage}");
 
                     return false;
                 }

@@ -30,6 +30,6 @@ class WebpageHandler extends Handler implements HandlerInterface {
 
         $cleantitle = str_replace(["\r", "\n", "\t"], '', trim($title->item(0)->textContent));
 
-        $channel->sendMessage("\x03[\x0310 {$cleantitle} \x03]");
+        $channel->sendMessage("{reset}[{cyan} {$cleantitle} {reset}]");
     }
 }

@@ -23,13 +23,20 @@ class SpeedtestHandler extends Handler implements HandlerInterface {
         @$dom->loadHTML($data);
         $xpath = new \DOMXPath($dom);
 
+        $ping       = trim($xpath->query("//div[contains(@class, 'share-ping')]/p")->item(0)->textContent);
         $download   = trim($xpath->query("//div[contains(@class, 'share-download')]/p")->item(0)->textContent);
         $upload     = trim($xpath->query("//div[contains(@class, 'share-upload')]/p")->item(0)->textContent);
-        $ping       = trim($xpath->query("//div[contains(@class, 'share-ping')]/p")->item(0)->textContent);
-        $stars      = trim($xpath->query("//div[contains(@class, 'share-isp')]//div[contains(@class, 'share-stars')]")->item(0)->textContent);
         $isp        = trim($xpath->query("//div[contains(@class, 'share-isp')]/p")->item(0)->textContent);
         $server     = trim($xpath->query("//div[contains(@class, 'share-server')]/p")->item(0)->textContent);
+        $stars      = trim($xpath->query("//div[contains(@class, 'share-isp')]//div[contains(@class, 'share-stars')]")->item(0)->textContent);
 
-        $channel->sendMessage("\x03[\x0310 Ping:\x0311 {$ping} \x03|\x0310 Down:\x0311 {$download} \x03|\x0310 Up:\x0311 {$upload} \x03|\x037 Carrier: {$isp} \x03|\x038 Server: {$server} \x03|\x033 {$stars} \x03]");
+        $parsedPing     = "{cyan}Ping: {light_cyan}{$ping}";
+        $parsedDownload = "{cyan}Down: {light_cyan}{$download}";
+        $parsedUpload   = "{cyan}Up: {light_cyan}{$upload}";
+        $parsedIsp      = "{orange}ISP: {$isp}";
+        $parsedServer   = "{yellow}Server: {$server}";
+        $parsedStars    = "{green}{$stars}";
+
+        $channel->sendMessage("{reset}[ {$parsedPing} {reset}| {$parsedDownload} {reset}| {$parsedUpload} {reset}| {$parsedIsp} {reset}| {$parsedServer} {reset}| {$parsedStars}{reset} ]");
     }
 }

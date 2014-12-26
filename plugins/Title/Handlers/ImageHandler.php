@@ -19,9 +19,9 @@ class ImageHandler extends Handler implements HandlerInterface {
     public function handleLink(Channel $channel, array $headers, $link)
     {
         $type   = $headers['content-type']['value'];
-        $size   = isset($headers['content-length']['value']) ? " - " . $this->formatBytes($headers['content-length']['value']) : '';
+        $size   = isset($headers['content-length']['value']) ? " | " . $this->formatBytes($headers['content-length']['value']) : '';
         $img    = getimagesize($link);
-        $rez    = (count($img) > 1 ? " - {$img[0]}x{$img[1]}" : '');
+        $rez    = (count($img) > 1 ? " | {$img[0]}x{$img[1]}" : '');
 
         $channel->sendMessage("\x03[\x0310 {$type}{$size}{$rez} \x03]");
     }
