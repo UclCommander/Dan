@@ -30,7 +30,7 @@ class SteamHandler extends Handler implements HandlerInterface {
         $gameData['title']  = trim($xpath->query("//div[contains(@class, 'apphub_AppName')]")->item(0)->textContent);
         $gameData['tags']   = $xpath->query("//a[contains(@class, 'app_tag')]");
 
-        var_dump($xpath->query("//div[contains(@class, 'discount_block')]")->length);
+        //var_dump($xpath->query("//div[contains(@class, 'discount_block')]")->length);
 
         if($xpath->query("//div[contains(@class, 'discount_block')]")->length)
         {
@@ -45,7 +45,7 @@ class SteamHandler extends Handler implements HandlerInterface {
             $gameData['original_price'] = trim($xpath->query("//div[contains(@class, 'game_purchase_price')]")->item(0)->textContent);
         }
 
-        var_dump($sale, $gameData);
+        //var_dump($sale, $gameData);
 
         if($sale)
         {

@@ -47,8 +47,6 @@ class Channel {
 
         Event::listen('irc.packet.mode', function(EventArgs $data)
         {
-            var_dump($data);
-
             $this->connection->sendRaw("NAMES {$this->name}");
         });
     }
