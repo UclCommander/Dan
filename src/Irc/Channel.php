@@ -3,104 +3,55 @@
 
 use Dan\Events\Event;
 use Dan\Events\EventArgs;
+use Dan\Events\EventPriority;
+use Illuminate\Support\Collection;
 
-class Channel {
+class Channel extends Sendable {
 
-    /**
-     * @var string
-     */
-    protected $name;
+    /** @var Collection $users */
+    protected $users;
 
-    /**
-     * @var Connection
-     */
-    private $connection;
+    /** @var Event[] $events */
+    protected $events = [];
 
-    /**
-     * @var string
-     */
-    protected $title;
+    /** @var string $title */
+    protected $title = '';
 
-    /**
-     * @var int
-     */
-    protected $titleDate;
+    /** @var string $titleSetter */
+    protected $titleSetter = '';
+
+    /** @var string $titleSetTime */
+    protected $titleSetTime = '';
+
 
     /**
-     * @var string
-     */
-    protected $titleSetter;
-
-    /**
-     * @var array
-     */
-    protected $users = [];
-
-    /**
-     * @param $connection
      * @param $name
      */
-    public function __construct(Connection &$connection, $name)
+    public function __construct($name)
     {
-        $this->setName($name);
-        $this->connection = $connection;
+        $this->users    = new Collection();
+        $this->location = $name;
 
-        Event::listen('irc.packet.mode', function(EventArgs $data)
-        {
-            $this->connection->sendRaw("NAMES {$this->name}");
-        });
+        Event::subscribe('irc.packet.mode', [$this, 'handleModeChange'], EventPriority::Critical);
     }
 
     /**
-     * Clears the user list.
-     */
-    public function clearUsers()
-    {
-        $this->users = [];
-    }
-
-    /**
-     * Gets the channel users.
+     * Adds a user to the channel.
      *
-     * @return array
+     * @param \Dan\Irc\User $user
      */
-    public function getUsers()
+    public function addUser(User $user)
     {
-        return $this->users;
+        $this->users->put($user->getNick(), $user);
     }
 
     /**
-     * @param User|string $obj
-     * @return null
-     */
-    public function getUser($obj)
-    {
-        $nick = ($obj instanceof User) ? $obj->getNick() : $obj;
-
-        if(!array_key_exists($nick, $this->users))
-            return null;
-
-        return $this->users[$nick];
-    }
-
-    /**
-     * Gets the channel name.
-     *
-     * @return string
+     * Gets the channels name.
+     * @return mixed
      */
     public function getName()
     {
-        return $this->name;
-    }
-
-    /**
-     * Sets the channel name.
-     *
-     * @param $name
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+        return $this->location;
     }
 
     /**
@@ -114,34 +65,22 @@ class Channel {
     }
 
     /**
-     * @param User[] $names
-     */
-    public function setNames($names)
-    {
-        foreach($names as $user)
-            $this->users[$user->getNick()] = $user->getRank();
-    }
-
-    /**
-     * Sets the title information
-     *
      * @param $user
-     * @param $date
+     * @param $time
      */
-    public function setTitleInfo($user, $date)
+    public function setTitleInfo($user, $time)
     {
         $this->titleSetter  = $user;
-        $this->titleDate    = $date;
+        $this->titleSetTime = $time;
     }
 
     /**
-     * Sends a message to the channel.
+     * Handles mode changes for the channel.
      *
-     * @param $message
+     * @param \Dan\Events\EventArgs $eventArgs
      */
-    public function sendMessage($message)
+    public function handleModeChange(EventArgs $eventArgs)
     {
-        $this->connection->sendMessage($this->name, $message);
+        var_dump($eventArgs);
     }
 }
- 

@@ -1,40 +1,46 @@
 <?php namespace Dan\Irc;
 
+class User extends Sendable {
 
-use Dan\Core\Dan;
+    protected $name;
+    protected $host;
 
-class User
-{
-    private $data = [];
 
-    public function getName() { return $this->data[1]; }
-    public function getNick() { return $this->data[0]; }
-    public function getHost() { return $this->data[2]; }
-    public function getRank() { return @$this->data[3]; }
-
-    public function __construct(array $data)
+    public function __construct($nick = '', $name = '', $host = '')
     {
-        $this->data = $data;
+        $this->location = $nick;
+        $this->name     = $name;
+        $this->host     = $host;
     }
 
     /**
-     * Sends a message to the user.
+     * Gets the users nick
      *
-     * @param $message
+     * @return string
      */
-    public function sendMessage($message)
+    public function getNick()
     {
-        Dan::app('irc')->sendMessage($this->getNick(), $message);
+        return $this->location;
     }
 
     /**
-     * Sends a notice to the user.
+     * Gets the users username.
      *
-     * @param $message
+     * @return string
      */
-    public function sendNotice($message)
+    public function getName()
     {
-        Dan::app('irc')->sendNotice($this->getNick(), $message);
+        return $this->name;
+    }
+
+    /**
+     * Gets the users host.
+     *
+     * @return string
+     */
+    public function getHost()
+    {
+        return $this->host;
     }
 }
 

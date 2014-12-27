@@ -11,7 +11,7 @@ class Parser {
      */
     public static function parseLine($line)
     {
-        $data      = str_split($line);
+        $data       = str_split($line);
         $parsed     = [];
         $userInfo   = [];
 
@@ -65,7 +65,7 @@ class Parser {
 
         $parsed = array_filter($parsed);
 
-        return ['cmd' => $parsed, 'user' => $userInfo];
+        return ['cmd' => $parsed, 'user' => new User(...$userInfo)];
     }
 
     /**
@@ -115,7 +115,9 @@ class Parser {
                 $host .= $data[$i];
         }
 
-        return new User([$nick, $user, $host, $rank]);
+        $user = new User($nick, $user, $host);
+        $user->setMode($rank);
+        return $user;
     }
 
     /**

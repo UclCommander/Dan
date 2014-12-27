@@ -2,119 +2,200 @@
 
 
 use Dan\Core\Console;
+use Dan\Core\ConsoleColor;
+use Illuminate\Support\Arr;
 
 class Event {
 
+    /** @var array $listeners */
+    protected static $listeners = [];
+
+    /** @var string $name */
+    protected $name;
+
+    /** @var callable|array */
+    protected $function;
+
+    /** @var int $priority */
+    protected $priority;
+
+    /** @var bool $once */
+    protected $once;
+
+    /** @var string $id */
+    protected $id;
+
     /**
-     * @var array
+     * @param string  $name
+     * @param callable|array  $function
+     * @param int  $priority
+     * @param string  $id
+     * @param bool  $once
      */
-    protected static $events = [];
-
-    protected $id       = "";
-    protected $name     = "";
-    protected $function = "";
-    protected $priority = 0;
-
-    public function __construct($name, $function, $priority)
+    public function __construct($name, $function, $priority = EventPriority::Normal, $id, $once = false)
     {
-        $this->id       = md5(microtime() . $name . $priority);
         $this->name     = $name;
-        $this->function = $function;
         $this->priority = $priority;
+        $this->function = $function;
+        $this->id       = $id;
+        $this->once     = $once;
+
     }
 
     /**
-     * Adds an event.
+     * Calls the function.
+     *
+     * @param EventArgs $eventArgs
+     * @return mixed
      */
-    public function add()
+    public function call(EventArgs $eventArgs)
     {
-        Console::text("Adding event: {$this->name} - PRIORITY LEVEL {$this->priority}")->alert()->debug()->push();
-
-        if(!array_key_exists($this->name, static::$events))
-            static::$events[$this->name] = [];
-
-        $list = static::$events[$this->name];
-        $list[$this->priority][$this->id] = $this->function;
-        krsort($list);
-        static::$events[$this->name] = $list;
+        return call_user_func($this->function, $eventArgs);
     }
 
     /**
-     * Destroys the event.
+     * Checks to see if this was a one time call.
+     *
+     * @return bool
+     */
+    public function isOnce()
+    {
+        return $this->once;
+    }
+
+    /**
+     * Get the event priority.
+     *
+     * @return int
+     */
+    public function getPriority()
+    {
+        return $this->priority;
+    }
+
+    /**
+     * Get the event ID.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Destroys an event.
      */
     public function destroy()
     {
-        Console::text("Destroying event: {$this->name}")->alert()->debug()->push();
+        unset(static::$listeners[$this->name][$this->priority][$this->id]);
+    }
 
-        unset(static::$events[$this->name][$this->priority][$this->id]);
+    // -----------------------------------------------------------------------------------------------------------------
+    // Static methods.
+    // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Listens for an event.
+     *
+     * @param string $name
+     * @param callable|array $function
+     * @param int $priority
+     */
+    public static function subscribe($name, $function, $priority = EventPriority::Normal)
+    {
+        $id = static::makeId($name, $priority);
+        static::$listeners[$name][$priority][$id] = new static($name, $function, $priority, $id);
+
+        Console::text("Subscribing for event {$name} - Priority {$priority} - Event ID: {$id}")->debug()->alert()->push();
+    }
+
+    /**
+     * Listens for an event once.
+     *
+     * @param string $name
+     * @param callable|array $function
+     * @param int $priority
+     */
+    public static function subscribeOnce($name, $function, $priority = EventPriority::Normal)
+    {
+        $id = static::makeId($name, $priority);
+        static::$listeners[$name][$priority][$id] = new static($name, $function, $priority, $id, true);
+
+        Console::text("Subscribing ONCE for event {$name} - Priority {$priority} - Event ID: {$id}")->debug()->alert()->push();
     }
 
     /**
      * Fires an event.
      *
      * @param string $name
-     * @param array $data
+     * @param \Dan\Events\EventArgs $args
+     * @param bool $halt
+     * @return array|null
      */
-    public static function fire($name, array $data)
+    public static function fire($name, EventArgs $args, $halt = false)
     {
-        Console::text("FIRING EVENT {$name}")->alert()->debug()->push();
+        Console::text("Firing event {$name}")->debug()->alert()->push();
 
-        if(array_key_exists($name, static::$events))
+        $responses  = [];
+        $events     = static::getListeners($name);
+
+        foreach($events as $event)
         {
-            foreach(static::$events[$name] as $priority => $list)
+            $response = $event->call($args);
+
+            // If its a one-time event, remove it from the listeners.
+            if($event->isOnce())
             {
-                foreach($list as $event)
-                {
-                    if(is_array($event))
-                    {
-                        //we need both a class and a method.
-                        if(count($event) < 2)
-                            continue;
-
-                        //not an object? bail.
-                        if(!is_object($event[0]))
-                            continue;
-
-                        $object = $event[0];
-                        $method = $event[1];
-
-                        Console::text("Calling $method from " . get_class($object) . ", priority {$priority}")->info()->debug()->push();
-
-                        $response = $object->$method(new EventArgs($data));
-                    }
-                    else
-                    {
-                        Console::text("Calling closure event, priority {$priority}")->info()->debug()->push();
-                        $response = $event(new EventArgs($data));
-                    }
-
-                    Console::text("Event returned {$response}")->info()->debug()->push();
-
-                    if($response === false)
-                    {
-                        Console::text("Event stopped execution of further events.")->info()->debug()->push();
-                        return;
-                    }
-                }
+                Console::text("Destroying one-time event for {$name} - ID: {$event->getId()}")->debug()->alert()->push();
+                unset(static::$listeners[$name][$event->getPriority()][$event->getId()]);
             }
+
+            if(!is_null($response) && $halt)
+            {
+                Console::text("Halting execution of further events for {$name} - Halted firing function.")->debug()->alert()->push();
+                return $response;
+            }
+
+            if($response == false && $event->getPriority() !== EventPriority::Critical)
+            {
+                Console::text("Halting execution of further events for {$name} - Halted by event ID {$event->getId()}")->debug()->alert()->push();
+                break;
+            }
+
+            $responses[] = $response;
         }
+
+        return $halt ? null : $responses;
+    }
+
+
+    /**
+     * Gets all the listeners for the given event.
+     *
+     * @param $name
+     * @return static[]
+     */
+    private static function getListeners($name)
+    {
+        if(!array_key_exists($name, static::$listeners))
+            return [];
+
+        $events = static::$listeners[$name];
+
+        krsort($events);
+
+        return Arr::flatten($events);
     }
 
     /**
-     * Adds an event to the listen list.
-     *
-     * @param     $name
-     * @param     $function
-     * @param int $priority
-     * @return \Dan\Events\Event
+     * @param $name
+     * @param $priority
+     * @return string
      */
-    public static function listen($name, $function, $priority = 5)
+    private static function makeId($name, $priority)
     {
-        $event = new static($name, $function, $priority);
-
-        $event->add();
-
-        return $event;
+        return md5(time().$name.$priority.microtime());
     }
 }
  

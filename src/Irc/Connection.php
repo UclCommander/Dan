@@ -4,39 +4,32 @@ use Dan\Core\Config;
 use Dan\Core\Console;
 use Dan\Core\ConsoleColor;
 use Dan\Contracts\ConnectionContract;
+use Dan\Events\Event;
 use Dan\Sockets\Socket;
+use Illuminate\Support\Collection;
 
 class Connection extends PacketHandler implements ConnectionContract {
 
-    /**
-     * @var array
-     */
-    protected $config   = [];
+    /** @var Collection $numeric */
+    public $numeric;
 
-    /**
-     * @var Socket
-     */
+    /** @var array|mixed $config */
+    public $config   = [];
+
+    /** @var Socket $socket  */
     protected $socket;
 
-    /**
-     * @var bool
-     */
-    protected $running;
+    /** @var bool $running */
+    protected $running = false;
 
-    /**
-     * @var int
-     */
+    /** @var int $sentLines */
     protected $sentLines = 0;
 
-    /**
-     * @var int
-     */
-    protected $recivedLines = 0;
+    /** @var int $receivedLines */
+    protected $receivedLines = 0;
 
-    /**
-     * @var Channel[]
-     */
-    protected $channels = [];
+    /** @var \Illuminate\Support\Collection  */
+    protected $channels;
 
 
     /**
@@ -44,7 +37,9 @@ class Connection extends PacketHandler implements ConnectionContract {
      */
     public function __construct()
     {
-        $this->config = Config::get('irc');
+        $this->config   = new Collection(Config::get('irc'));
+        $this->numeric  = new Collection();
+        $this->channels = new Collection();
     }
 
     /**
@@ -92,35 +87,37 @@ class Connection extends PacketHandler implements ConnectionContract {
 
             Console::text($line)->debug()->color(ConsoleColor::Cyan)->push();
 
-            $this->recivedLines++;
+            $this->receivedLines++;
 
             $data   = Parser::parseLine($line);
             $cmd    = $data['cmd'];
-            $user   = new User($data['user']);
+            $user   = $data['user'];
 
             //Just incase we get errors from the parser.
             if(count($cmd) == 0)
                 continue;
 
-            if($cmd[0] == 'ERROR')
-            {
-                Console::text("BREAKING OUT OF READER ({$line})")->warning()->push();
-                break;
-            }
+            $packet = ucfirst(strtolower($cmd[0]));
 
-            $name = ucfirst(strtolower($cmd[0]));
+            $classStr = "Dan\\Irc\\Packets\\Packet{$packet}";
 
-            if(!method_exists($this, "packet{$name}"))
+            if(!class_exists($classStr))
             {
-                Console::text("Cannot find packet method for {$cmd[0]}")->debug()->warning()->push();
+                Console::text("Cannot find packet handler for {$cmd[0]}")->debug()->warning()->push();
                 continue;
             }
 
-            $data = $cmd;
-            array_shift($data);
+            array_shift($cmd);
 
-            $packet = "packet{$name}";
-            $this->$packet($data, $user); //See PacketHandler.php
+            /** @var Packet $class */
+            $class              = new $classStr;
+            $packetData         = [];
+            $packetData['data'] = $cmd;
+
+            if(!empty($user))
+                $packetData['user'] = $user;
+
+            $class->handlePacket($this, new PacketInfo($packetData));
         }
     }
 
@@ -250,7 +247,7 @@ class Connection extends PacketHandler implements ConnectionContract {
         if(array_key_exists(strtolower($name), $this->channels))
             return $this->channels[strtolower($name)];
 
-        $channel = new Channel($this, $name);
+        $channel = new Channel($name);
 
         $this->channels[strtolower($name)] = $channel;
 

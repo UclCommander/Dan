@@ -127,7 +127,7 @@ abstract class PacketHandler implements ConnectionContract {
      */
     public function packet353(array $data, User $user)
     {
-        $channel = $this->getChannel($data[2]);
+       /* $channel = $this->getChannel($data[2]);
 
         if($channel == null)
             return;
@@ -138,7 +138,7 @@ abstract class PacketHandler implements ConnectionContract {
             $channel->clearUsers();
         }
 
-        $channel->setNames(Parser::parseNames($data[3]));
+        $channel->setNames(Parser::parseNames($data[3]));*/
     }
 
     /**
@@ -190,7 +190,7 @@ abstract class PacketHandler implements ConnectionContract {
      */
     public function packetJoin(array $data, User $user)
     {
-        if($user->getNick() == Config::get('irc.nickname'))
+        if($user->getNick() === Config::get('irc.nickname'))
         {
             $this->addChannel($data[0]);
         }
@@ -271,14 +271,6 @@ abstract class PacketHandler implements ConnectionContract {
         {
             $this->sendNotice($user->getNick(), "\001TIME " . date("r") . "\001");
             return;
-        }
-
-        $message = $data[1];
-
-        if($message == '.users')
-        {
-            $channel = $this->getChannel($data[0]);
-            $channel->sendMessage(json_encode($channel->getUsers()));
         }
     }
 
