@@ -4,6 +4,7 @@ use Dan\Contracts\PluginContract;
 use Dan\Events\EventArgs;
 use Dan\Plugins\Plugin;
 use Plugins\Title\Handlers\ImageHandler;
+use Plugins\Title\Handlers\NeweggHandler;
 use Plugins\Title\Handlers\SpeedtestHandler;
 use Plugins\Title\Handlers\SteamHandler;
 use Plugins\Title\Handlers\WebpageHandler;
@@ -28,6 +29,7 @@ class Title extends Plugin implements PluginContract {
         $this->listenForEvent('irc.packet.privmsg', [$this, 'getTitle'], 4);
 
         $this->addHandler(new ImageHandler());
+        $this->addHandler(new NeweggHandler());
         $this->addHandler(new SpeedtestHandler());
         $this->addHandler(new SteamHandler());
         $this->addHandler(new WebpageHandler());
