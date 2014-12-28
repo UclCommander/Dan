@@ -27,7 +27,7 @@ class NeweggHandler extends Handler implements HandlerInterface  {
         $linkCheck = parse_url($link);
 
 
-        if($linkCheck !== '/Product/Product.aspx')
+        if($linkCheck['path'] !== '/Product/Product.aspx')
         {
             $handler = new WebpageHandler();
             $handler->handleLink($channel, $headers, $link);
