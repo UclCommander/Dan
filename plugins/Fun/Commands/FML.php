@@ -42,15 +42,11 @@ class FML implements CommandInterface {
         $plus   = $item->childNodes->item(1)->childNodes->item(1)->childNodes->item(0)->childNodes->item(0)->textContent;
         $minus  = $item->childNodes->item(1)->childNodes->item(1)->childNodes->item(0)->childNodes->item(2)->textContent;
 
-        var_dump($plus, $minus);
-
         $plus = explode('(', $plus)[1];
         $plus = substr($plus, 0, strlen($plus) - 1);
 
         $minus = explode('(', $minus)[1];
         $minus = substr($minus, 0, strlen($minus) - 1);
-
-        var_dump($plus, $minus);
 
         $channel->sendMessage("{reset}[ {cyan}{$fml} {reset}| {green}+{$plus}{reset}/{red}-{$minus} {reset}]");
 

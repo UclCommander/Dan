@@ -28,6 +28,13 @@ class Urban implements CommandInterface  {
         }
 
         $json       = json_decode($data, true);
+
+        if($json['result_type'] == 'no_results')
+        {
+            $channel->sendMessage("{reset}[ {cyan}No definition found {reset}]");
+            return;
+        }
+
         $list       = $json['list'];
         $item       = $list[0];
         $cleanDef   = str_replace(["\n", "\r"], '', $item['definition']);
