@@ -13,6 +13,7 @@ return [
      */
     'sudo_users'    => [
         'UclCommander!~UclComman@uclcommander.net',
+        'UclCommander!UclCommand@uclcommander.net',
     ],
 
     /*

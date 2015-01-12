@@ -42,8 +42,10 @@ return [
         'say'       => 'S',
 
         //Fun plugin
+        'fml'       => 'x+%@&~',
         'lenny'     => 'x+%@&~',
         'nbc'       => 'x+%@&~',
         'trp'       => 'x+%@&~',
+        'urban'     => '+%@&~',
     ]
 ];

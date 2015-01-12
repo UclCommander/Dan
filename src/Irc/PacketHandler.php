@@ -252,7 +252,7 @@ abstract class PacketHandler implements ConnectionContract {
         }
         else
         {
-            $event['from'] = $data[0]; // TODO: return user object
+            return; //FIX BUG, THIS IS ON TODO
         }
 
         Event::fire('irc.packet.privmsg', $event);
@@ -275,11 +275,6 @@ abstract class PacketHandler implements ConnectionContract {
 
         $message = $data[1];
 
-        if($message == '.users')
-        {
-            $channel = $this->getChannel($data[0]);
-            $channel->sendMessage(json_encode($channel->getUsers()));
-        }
     }
 
     /**
