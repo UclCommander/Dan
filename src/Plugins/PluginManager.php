@@ -39,6 +39,9 @@ class PluginManager {
         $this->storageDir   = STORAGE_DIR . '/plugins/';
         $this->loadingDir   = '';
 
+        if(!$this->filesystem->isDirectory($this->storageDir))
+            $this->filesystem->makeDirectory($this->storageDir);
+
         // Clear out the plugins directory
         $this->filesystem->cleanDirectory($this->storageDir);
     }
