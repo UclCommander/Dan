@@ -150,10 +150,10 @@ class Console {
      */
     public function push()
     {
+        $this->logToFile('[' . date('r') . '] ' . ($this->debug ? '[DEBUG] ' : '') . $this->text);
+
         if($this->debug && !Config::get('dan.debug'))
             return null;
-
-        $this->logToFile('[' . date('r') . '] ' . ($this->debug ? '[DEBUG] ' : '') . $this->text);
 
         $text = ($this->debug ? ConsoleColor::Purple . "[DEBUG] " : '') . $this->color . $this->text;
         echo $text . ConsoleColor::Reset . "\n";

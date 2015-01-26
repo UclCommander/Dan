@@ -2,6 +2,7 @@
 
 
 use Dan\Contracts\PacketContract;
+use Dan\Core\Console;
 use Dan\Events\Event;
 use Dan\Events\EventArgs;
 use Dan\Irc\Connection;
@@ -28,5 +29,7 @@ class PacketMode implements PacketContract {
         $channel = $connection->getChannel($command[0]);
 
         $channel->getUser($command[2])->setMode($command[1]);
+
+        //Console::text("[{$channel->getName()}] {$user->getNick()} left the channel")->info()->push();
     }
 }

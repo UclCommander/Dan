@@ -13,14 +13,14 @@ class PacketPrivmsg implements PacketContract {
 
     public function handle(Connection &$connection, PacketInfo $packetInfo)
     {
-        /** @var \Dan\Irc\Location\User */
+        /** @var \Dan\Irc\Location\User $user */
         $user       = $packetInfo->get('user');
         $command    = $packetInfo->get('command');
 
         if(strpos($command[1], "\001") !== false)
         {
             $ctcp = explode(' ', trim($command[1], " \t\n\r\0\x0B\001"), 2);
-            $send = Event::fire('irc.packets.ctcp', new EventArgs(['type' => $ctcp[0], 'args' => $ctcp[1]]), true);
+            $send = Event::fire('irc.packets.ctcp', new EventArgs(['type' => $ctcp[0], 'args' => @$ctcp[1]]), true);
 
             if($send !== null)
             {
@@ -46,7 +46,7 @@ class PacketPrivmsg implements PacketContract {
             return;
         }
 
-        Console::text("[$command[0]] {$user->getNick()}: $command[1]")->info()->push();
+        Console::text("[{$command[0]}] {$user->getNick()}: $command[1]")->info()->push();
 
         if($command[0] == $connection->user->getNick())
         {
@@ -57,7 +57,7 @@ class PacketPrivmsg implements PacketContract {
         Event::fire('irc.packets.message.public', new EventArgs([
             'channel'   => $connection->getChannel($command[0]),
             'message'   => $command[1],
-            'user'      => $user,
+            'user'      => $connection->getChannel($command[0])->getUser($user->getNick()),
         ]));
     }
 }

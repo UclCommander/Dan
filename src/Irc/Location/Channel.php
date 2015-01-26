@@ -4,7 +4,7 @@ use Illuminate\Support\Collection;
 
 class Channel extends Location {
 
-    /** @var \Illuminate\Support\Collection  */
+    /** @var Collection  */
     protected $users;
 
     public function __construct($name)
@@ -16,11 +16,27 @@ class Channel extends Location {
     }
 
     /**
-     * @param \Dan\Irc\Location\User $user
+     * Adds a user.
+     *
+     * @param User $user
      */
     public function addUser(User $user)
     {
         $this->users->put($user->getNick(), $user);
+    }
+
+    /**
+     * Removes a user.
+     *
+     * @param User|string $user
+     */
+    public function removeUser($user)
+    {
+        if($user instanceof User)
+            $user = $user->getName();
+
+        $this->users->forget($user);
+        unset($user);
     }
 
     /**
@@ -37,7 +53,7 @@ class Channel extends Location {
     /**
      * Gets all users in channel.
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function getUsers()
     {

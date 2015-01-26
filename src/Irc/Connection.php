@@ -173,6 +173,8 @@ class Connection implements ServiceContract {
      */
     public function sendNotice(Location $location, $message)
     {
+        Console::text("[{$location->getName()}] {$this->user->getNick()}: $message")->info()->push();
+
         $this->send("NOTICE", $location, $message);
     }
 
@@ -281,6 +283,23 @@ class Connection implements ServiceContract {
     }
 
     /**
+     * Removes a channel from the list.
+     *
+     * @param Channel|string $channel
+     */
+    public function removeChannel($channel)
+    {
+        if($channel instanceof Channel)
+           $channel = $channel->getName();
+
+        $safe = strtolower($channel);
+
+        $this->channels->forget($safe);
+
+        unset($channel);
+    }
+
+    /**
      * Gets a channel.
      *
      * @param $name
@@ -294,6 +313,16 @@ class Connection implements ServiceContract {
             return null;
 
         return $this->channels->get($name);
+    }
+
+    /**
+     * Gets all channels.
+     *
+     * @return Channel[]
+     */
+    public function getChannels()
+    {
+        return $this->channels->all();
     }
 
     /**

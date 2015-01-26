@@ -97,7 +97,9 @@ class CommandManager implements ServiceContract {
 
         if($command == 'help')
         {
-            $this->handleHelp($config, $channel, $user, $data);
+            array_shift($data);
+
+            $this->handleHelp($user, $data);
 
             return;
         }
@@ -122,20 +124,26 @@ class CommandManager implements ServiceContract {
     /**
      * Help command.
      *
-     * @param \Illuminate\Support\Collection $config
-     * @param \Dan\Irc\Location\Channel $channel
      * @param \Dan\Irc\Location\User $user
      * @param array $data
      */
-    private function handleHelp(Collection $config, Channel $channel, User $user, array $data)
+    private function handleHelp(User $user, array $data)
     {
-        if(count($data) == 1)
+        if(count($data) == 0)
         {
             $user->sendNotice(implode(', ', $this->commands->keys()));
             return;
         }
 
+        $command = explode(' ', $data[0], 2);
 
+        if(!$this->commands->has($command[0]))
+        {
+            $user->sendNotice("Command '{$command[0]}' does not exist");
+            return;
+        }
+
+        $this->commands->get($command[0])->help($user, @$command[1]);
     }
 
     /**
@@ -156,7 +164,7 @@ class CommandManager implements ServiceContract {
                 return true;
 
         foreach($ranks as $rank)
-            if($user->hasPrifix($rank))
+            if ($user->hasPrefix($rank))
                 return true;
 
         return false;

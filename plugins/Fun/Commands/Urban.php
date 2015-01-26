@@ -34,7 +34,7 @@ class Urban implements CommandContract  {
         $item       = $list[0];
         $cleanDef   = str_replace(["\n", "\r"], '', $item['definition']);
 
-        $channel->sendMessage("{reset}[ {cyan}{$item['word']} {reset}| {yellow}{$cleanDef} {reset}| {green}+{$item['thumbs_up']}{reset}/{red}-{$item['thumbs_down']} {reset}]");
+        $channel->sendMessage("{reset}[ {yellow}{$item['word']} {reset}| {cyan}{$cleanDef} {reset}| {green}+{$item['thumbs_up']}{reset}/{red}-{$item['thumbs_down']} {reset}]");
     }
 
     /**
@@ -42,6 +42,6 @@ class Urban implements CommandContract  {
      */
     public function help(User $user, $message)
     {
-        // TODO: Implement help() method.
+        $user->sendNotice('urban <text> - Searches the only dictionary known to man.');
     }
 }

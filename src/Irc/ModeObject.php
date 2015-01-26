@@ -104,7 +104,7 @@ abstract class ModeObject {
      * @param $prefix
      * @return bool
      */
-    public function hasPrifix($prefix)
+    public function hasPrefix($prefix)
     {
         $mode = array_key_exists($prefix, $this->prefixMap) ? $this->prefixMap[$prefix] : '';
 

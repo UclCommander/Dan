@@ -17,7 +17,7 @@ class Plugin implements CommandContract {
     public function run(Channel $channel, User $user, $message)
     {
         $data = explode(' ', $message);
-
+        
         try
         {
             switch ($data[0])

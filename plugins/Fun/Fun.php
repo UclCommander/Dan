@@ -13,10 +13,6 @@ use Plugins\Fun\Commands\Urban;
 
 class Fun extends Plugin implements PluginContract {
 
-    protected $requires = [
-        'Commands'
-    ];
-
     public function register()
     {
         /** @var CommandManager $command */
