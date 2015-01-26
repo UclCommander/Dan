@@ -26,7 +26,7 @@ class Title extends Plugin implements PluginContract {
      */
     public function register()
     {
-        $this->listenForEvent('irc.packet.privmsg', [$this, 'getTitle'], 4);
+        $this->listenForEvent('irc.packets.message.public', [$this, 'getTitle'], 4);
 
         $this->addHandler(new ImageHandler());
         $this->addHandler(new NeweggHandler());
