@@ -1,19 +1,18 @@
-<?php namespace Plugins\Commands\Command;
+<?php namespace Dan\Commands\Command;
 
+use Dan\Contracts\CommandContract;
 use Dan\Core\Dan;
-use Dan\Irc\Channel;
-use Dan\Irc\User;
-use Plugins\Commands\CommandInterface;
+use Dan\Irc\Location\Channel;
+use Dan\Irc\Location\User;
 
-class Plugin implements CommandInterface {
+class Plugin implements CommandContract {
 
     /**
      * Runs the command.
      *
-     * @param \Dan\Irc\Channel $channel
-     * @param \Dan\Irc\User    $user
-     * @param                  $message
-     * @return void
+     * @param \Dan\Irc\Location\Channel $channel
+     * @param \Dan\Irc\Location\User $user
+     * @param string $message
      */
     public function run(Channel $channel, User $user, $message)
     {
@@ -24,21 +23,21 @@ class Plugin implements CommandInterface {
             switch ($data[0])
             {
                 case 'loaded':
-                    $user->sendNotice("Loaded Plugins: " . implode(', ', Dan::app('pluginManager')->loaded()));
+                    $user->sendNotice("Loaded Plugins: " . implode(', ', Dan::service('pluginManager')->loaded()));
                     break;
                 case 'load':
-                    Dan::app('pluginManager')->loadPlugin($data[1]);
+                    Dan::service('pluginManager')->loadPlugin($data[1]);
                     $user->sendNotice("Plugin {$data[1]} loaded.");
                     break;
 
                 case 'reload':
-                    Dan::app('pluginManager')->unloadPlugin($data[1]);
-                    Dan::app('pluginManager')->loadPlugin($data[1]);
+                    Dan::service('pluginManager')->unloadPlugin($data[1]);
+                    Dan::service('pluginManager')->loadPlugin($data[1]);
                     $user->sendNotice("Plugin {$data[1]} reloaded.");
                     break;
 
                 case 'unload':
-                    Dan::app('pluginManager')->unloadPlugin($data[1]);
+                    Dan::service('pluginManager')->unloadPlugin($data[1]);
                     $user->sendNotice("Plugin {$data[1]} unloaded.");
                     break;
             }
@@ -53,8 +52,8 @@ class Plugin implements CommandInterface {
     /**
      * Command help.
      *
-     * @param \Dan\Irc\User $user
-     * @param               $message
+     * @param \Dan\Irc\Location\User $user
+     * @param string $message
      * @return mixed
      */
     public function help(User $user, $message)

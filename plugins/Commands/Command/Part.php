@@ -1,20 +1,15 @@
 <?php namespace Plugins\Commands\Command;
 
+use Dan\Contracts\CommandContract;
 use Dan\Core\Dan;
-use Dan\Irc\Channel;
-use Dan\Irc\Support;
-use Dan\Irc\User;
-use Plugins\Commands\CommandInterface;
+use Dan\Irc\Location\Channel;
+use Dan\Irc\Location\User;
 
-class Part implements CommandInterface {
+
+class Part implements CommandContract {
 
     /**
-     * Runs the command.
-     *
-     * @param \Dan\Irc\Channel $channel
-     * @param \Dan\Irc\User    $user
-     * @param                  $message
-     * @return void
+     * @inheritdoc
      */
     public function run(Channel $channel, User $user, $message)
     {
@@ -28,16 +23,12 @@ class Part implements CommandInterface {
             $msg = $cmd[0];
         }
 
-        Dan::app('irc')->partChannel($partFrom, $msg);
+        Dan::service('irc')->partChannel($partFrom, $msg);
     }
 
 
     /**
-     * Command help.
-     *
-     * @param \Dan\Irc\User $user
-     * @param               $message
-     * @return mixed
+     * @inheritdoc
      */
     public function help(User $user, $message)
     {

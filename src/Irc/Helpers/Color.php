@@ -1,9 +1,5 @@
-<?php namespace Dan\Irc; 
+<?php namespace Dan\Irc\Helpers;
 
-
-use DOMDocument;
-use DOMElement;
-use DOMXPath;
 
 class Color {
 
@@ -30,9 +26,13 @@ class Color {
 
     protected static $fontType = [
         'bold'      => "\x02",
+        'b'         => "\x02",
         'underline' => "\x1F",
+        'u'         => "\x1F",
         'italic'    => "\x16",
+        'i'         => "\x16",
         'normal'    => "\x0F",
+        'r'         => "\x0F",
     ];
 
     /**

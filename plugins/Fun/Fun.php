@@ -17,7 +17,7 @@ class Fun extends Plugin implements PluginContract {
     public function register()
     {
         /** @var \Plugins\Commands\CommandManager $command */
-        $command = Dan::app('commandManager');
+        $command = Dan::service('commandManager');
 
         $command->register('lenny', new Lenny());
         $command->register('nbc',   new Nbc());
@@ -27,7 +27,7 @@ class Fun extends Plugin implements PluginContract {
     public function unregister()
     {
         /** @var \Plugins\Commands\CommandManager $command */
-        $command = Dan::app('commandManager');
+        $command = Dan::service('commandManager');
         $command->unregister('lenny');
         $command->unregister('nbc');
         $command->unregister('trp');

@@ -2,10 +2,11 @@
 
 
 use Dan\Core\Console;
-use Dan\Core\ConsoleColor;
 use Illuminate\Support\Arr;
 
 class Event {
+
+    const Destroy = "\x69";
 
     /** @var array $listeners */
     protected static $listeners = [];
@@ -45,7 +46,7 @@ class Event {
     /**
      * Calls the function.
      *
-     * @param EventArgs $eventArgs
+     * @param EventArgs  $eventArgs
      * @return mixed
      */
     public function call(EventArgs $eventArgs)
@@ -88,6 +89,7 @@ class Event {
      */
     public function destroy()
     {
+        Console::text("Destroying event for {$this->name} - ID: {$this->id}")->debug()->alert()->push();
         unset(static::$listeners[$this->name][$this->priority][$this->id]);
     }
 
@@ -98,24 +100,28 @@ class Event {
     /**
      * Listens for an event.
      *
-     * @param string $name
-     * @param callable|array $function
-     * @param int $priority
+     * @param string  $name
+     * @param callable|array  $function
+     * @param int  $priority
+     * @return static
      */
     public static function subscribe($name, $function, $priority = EventPriority::Normal)
     {
         $id = static::makeId($name, $priority);
-        static::$listeners[$name][$priority][$id] = new static($name, $function, $priority, $id);
 
         Console::text("Subscribing for event {$name} - Priority {$priority} - Event ID: {$id}")->debug()->alert()->push();
+
+        $event = new static($name, $function, $priority, $id);
+
+        return static::$listeners[$name][$priority][$id] = $event;
     }
 
     /**
      * Listens for an event once.
      *
-     * @param string $name
-     * @param callable|array $function
-     * @param int $priority
+     * @param string  $name
+     * @param callable|array  $function
+     * @param int  $priority
      */
     public static function subscribeOnce($name, $function, $priority = EventPriority::Normal)
     {
@@ -128,9 +134,9 @@ class Event {
     /**
      * Fires an event.
      *
-     * @param string $name
-     * @param \Dan\Events\EventArgs $args
-     * @param bool $halt
+     * @param string  $name
+     * @param \Dan\Events\EventArgs  $args
+     * @param bool  $halt
      * @return array|null
      */
     public static function fire($name, EventArgs $args, $halt = false)
@@ -145,10 +151,14 @@ class Event {
             $response = $event->call($args);
 
             // If its a one-time event, remove it from the listeners.
-            if($event->isOnce())
+            if ($event->isOnce())
+               $event->destroy();
+
+            // Destroy the event if it returned the secret number ( ͡° ͜ʖ ͡°)
+            if ($response == Event::Destroy)
             {
-                Console::text("Destroying one-time event for {$name} - ID: {$event->getId()}")->debug()->alert()->push();
-                unset(static::$listeners[$name][$event->getPriority()][$event->getId()]);
+                $event->destroy();
+                continue;
             }
 
             if(!is_null($response) && $halt)
@@ -157,7 +167,7 @@ class Event {
                 return $response;
             }
 
-            if($response == false && $event->getPriority() !== EventPriority::Critical)
+            if($response === false && $event->getPriority() !== EventPriority::Critical)
             {
                 Console::text("Halting execution of further events for {$name} - Halted by event ID {$event->getId()}")->debug()->alert()->push();
                 break;
@@ -173,7 +183,7 @@ class Event {
     /**
      * Gets all the listeners for the given event.
      *
-     * @param $name
+     * @param string  $name
      * @return static[]
      */
     private static function getListeners($name)
@@ -189,8 +199,10 @@ class Event {
     }
 
     /**
-     * @param $name
-     * @param $priority
+     * Makes a random event id
+     *
+     * @param string  $name
+     * @param int  $priority
      * @return string
      */
     private static function makeId($name, $priority)

@@ -3,7 +3,4 @@
 
 use Illuminate\Support\Collection;
 
-class PacketInfo extends Collection {
-
-
-}
+class PacketInfo extends Collection { }

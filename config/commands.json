@@ -1,0 +1,20 @@
+{
+    "command_starter": ".",
+    "no_command_error": true,
+    "ranks": {
+        "blacklist": "S",
+        "config": "S",
+        "fml": "x+%@&~",
+        "hash": "+%@&~",
+        "join": "S",
+        "lenny": "x+%@&~",
+        "memory": "S",
+        "nbc": "x+%@&~",
+        "ping": "x+%@&~",
+        "plugin": "S",
+        "part": "S",
+        "say": "S",
+        "trp": "x+%@&~",
+        "urban": "x+%@&~"
+    }
+}

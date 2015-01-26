@@ -1,0 +1,12 @@
+{
+    "debug": true,
+    "sudo_users": [
+        "UclCommander!UclCommander@uclcommander.net"
+    ],
+    "plugins": [
+        "commands",
+        "autovoice",
+        "title"
+    ],
+    "blacklist_level": 1
+}

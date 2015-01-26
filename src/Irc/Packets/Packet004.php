@@ -1,14 +1,14 @@
 <?php namespace Dan\Irc\Packets; 
 
 
+use Dan\Contracts\PacketContract;
 use Dan\Irc\Connection;
-use Dan\Irc\Packet;
 use Dan\Irc\PacketInfo;
 
-class Packet004 extends Packet {
+class Packet004 implements PacketContract {
 
-    public function handlePacket(Connection &$connection, PacketInfo $packetInfo)
+    public function handle(Connection &$connection, PacketInfo $packetInfo)
     {
-        $connection->numeric->put('004', $packetInfo->get('data'));
+        $connection->numeric->put('004', $packetInfo->get('command'));
     }
 }

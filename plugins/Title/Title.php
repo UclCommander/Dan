@@ -55,14 +55,16 @@ class Title extends Plugin implements PluginContract {
     }
 
     /**
-     * @param \Dan\Events\EventArgs $event
+     * Gets the title.
+     *
+     * @param \Dan\Events\EventArgs $eventArgs
      * @return bool|null
      */
-    public function getTitle(EventArgs $event)
+    public function getTitle(EventArgs $eventArgs)
     {
-        /** @var \Dan\Irc\Channel $channel */
-        $channel = $event->channel;
-        $message = $event->message;
+        /** @var \Dan\Irc\Location\Channel $channel */
+        $channel = $eventArgs->get('channel');
+        $message = $eventArgs->get('message');
 
         $match = [];
 

@@ -7,10 +7,12 @@ class Console {
     private $color;
     private $backColor;
 
-    /**
-     * @var bool
-     */
+    /** @var bool $critical */
+    protected $critical = false;
+
+    /** @var bool $debug */
     private $debug = false;
+
 
     public function __construct($t)
     {
@@ -79,6 +81,19 @@ class Console {
     }
 
     /**
+     * Sets the message as a CRITICAL message.
+     *
+     * @return $this
+     */
+    public function critical()
+    {
+        $this->color = ConsoleColor::Red;
+        $this->text = "[CRITICAL] {$this->text}";
+        $this->critical = true;
+        return $this;
+    }
+
+    /**
      * Sends a debug message ONLY if dan.debug is true.
      *
      * @return $this
@@ -88,7 +103,6 @@ class Console {
         $this->debug = true;
         return $this;
     }
-
 
     /**
      * Sets the text color.
@@ -122,16 +136,18 @@ class Console {
         if($this->debug && !Config::get('dan.debug'))
             return null;
 
-        if (!file_exists(ROOT_DIR . '/logs')) {
+        if (!file_exists(ROOT_DIR . '/logs'))
             mkdir(ROOT_DIR . '/logs', 0777, true);
-        }
 
-        $log = fopen('logs/' . date('Ymd') . '_' . session_id() . '.log', 'a');
+        $log = fopen('logs/' . date('Ymd') . '.log', 'a');
         fwrite($log, '[' . date('r') . '] ' . ($this->debug ? '[DEBUG] ' : '') . $this->text . "\n");
         fclose($log);
 
         $text = ($this->debug ? ConsoleColor::Purple . "[DEBUG] " : '') . $this->color . $this->text;
         echo $text . ConsoleColor::Reset . "\n";
+
+        if($this->critical)
+            die;
 
         return $this->text;
     }

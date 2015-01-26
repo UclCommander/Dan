@@ -1,36 +1,32 @@
 <?php namespace Plugins\Commands\Command;
 
+use Dan\Contracts\CommandContract;
 use Dan\Core\Dan;
-use Dan\Irc\Channel;
-use Dan\Irc\User;
-use Plugins\Commands\CommandInterface;
+use Dan\Irc\Location\Channel;
+use Dan\Irc\Location\User;
 
-class Say implements CommandInterface {
+class Say implements CommandContract {
 
     /**
-     * Runs the command.
-     *
-     * @param \Dan\Irc\Channel $channel
-     * @param \Dan\Irc\User    $user
-     * @param                  $message
-     * @return void
+     * @inheritdoc
      */
     public function run(Channel $channel, User $user, $message)
     {
         $data = explode(' ', $message, 2);
 
-        if(count($data) != 2)
-            return;
+        $irc = Dan::service('irc');
 
-        Dan::app('irc')->sendMessage($data[0], $data[1]);
+        if($irc->hasChannel($data[0]))
+        {
+            $irc->getChannel($data[0])->sendMessage($data[1]);
+            return;
+        }
+
+        $channel->sendMessage($message);
     }
 
     /**
-     * Command help.
-     *
-     * @param \Dan\Irc\User $user
-     * @param               $message
-     * @return mixed
+     * @inheritdoc
      */
     public function help(User $user, $message)
     {

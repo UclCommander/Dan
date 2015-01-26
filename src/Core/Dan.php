@@ -1,34 +1,42 @@
 <?php namespace Dan\Core;
 
+use Dan\Commands\CommandManager;
+use Dan\Contracts\ServiceContract;
 use Dan\Irc\Connection;
 use Dan\Plugins\PluginManager;
+use Dan\Storage\Storage;
 use Illuminate\Support\Collection;
 
 class Dan {
 
-    const VERSION = '3.1.0';
+    const VERSION = '3.2.0';
 
     /** @var object[] */
-    protected $apps = [];
+    protected $services = [];
 
     /** @var static */
     protected static $dan;
+
+    /** @var Blacklist */
+    protected static $blacklist;
 
     /**
      * Load 'er up.
      */
     public function __construct()
     {
-        session_start(); // Start sessions for flash data
-
         static::$dan    = $this;
-        $this->apps     = new Collection();
+        $this->services = new Collection();
 
         Config::load();
+
+        static::$blacklist = new Blacklist();
     }
 
     /**
      * Boots Dan.
+     *
+     * @param $args
      */
     public function boot($args)
     {
@@ -41,45 +49,83 @@ class Dan {
             Console::text("Debug mode is active!")->debug()->alert()->push();
         }
 
-
-        $this->apps->put('pluginManager', new PluginManager());
+        CommandManager::init();
+        $this->services->put('pluginManager', new PluginManager());
 
         if(!in_array('--safemode', $args))
-        {
-            foreach (Config::get('dan.plugins') as $plugin)
-            {
-                try
-                {
-                    $this->apps->get('pluginManager')->loadPlugin($plugin);
-                }
-                catch (\Exception $e)
-                {
-                    Console::exception($e)->push();
-                }
-            }
-        }
+           $this->loadPlugins();
 
         Console::text('System Booted. Starting IRC connection. ')->alert()->push();
 
         if(in_array('--dry', $args))
             die;
 
-        $this->apps->put('irc', new Connection());
-        $this->apps->get('irc')->init();
+        $this->services->put('irc', new Connection());
+        $this->services->get('irc')->run();
     }
 
     /**
-     * Gets an app or the application collection.
+     * Loads the plugins
+     */
+    public function loadPlugins()
+    {
+        $plugins = Config::get('dan.plugins');
+
+        if(count($plugins) == 0)
+            return;
+
+        foreach ($plugins as $plugin)
+        {
+            try
+            {
+                $this->services->get('pluginManager')->loadPlugin($plugin);
+            }
+            catch (\Exception $e)
+            {
+                Console::exception($e)->push();
+            }
+        }
+    }
+
+    /**
+     * Gets a service.
+     *
+     * @param string $key
+     * @return ServiceContract|CommandManager|PluginManager|Connection
+     */
+    public static function service($key)
+    {
+        return static::$dan->services->get($key, null);
+    }
+
+    /**
+     * Registers a service.
+     *
+     * @param string $key
+     * @param \Dan\Contracts\ServiceContract $service
+     * @return \Illuminate\Support\Collection|object
+     */
+    public static function registerService($key, ServiceContract $service)
+    {
+        static::$dan->services->put($key, $service);
+    }
+
+    /**
+     * Unregisters a service.
      *
      * @param $key
-     * @return object|Collection
      */
-    public static function app($key = null)
+    public static function unregisterService($key)
     {
-        if($key == null)
-            return static::$dan->apps;
+        static::$dan->services->forget($key);
+    }
 
-        return static::$dan->apps->get($key);
+    /**
+     * @return Blacklist
+     */
+    public static function blacklist()
+    {
+        return static::$blacklist;
     }
 }
  

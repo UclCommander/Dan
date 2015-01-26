@@ -44,7 +44,7 @@ abstract class Plugin implements PluginContract {
      */
     public function listenForEvent($name, $function, $priority = 5)
     {
-        $this->events[] = Event::listen($name, $function, $priority);
+        $this->events[] = Event::subscribe($name, $function, $priority);
     }
 
     /**

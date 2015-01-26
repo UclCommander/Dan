@@ -1,18 +1,14 @@
 <?php namespace Plugins\Commands\Command;
 
-use Dan\Irc\Channel;
-use Dan\Irc\User;
-use Plugins\Commands\CommandInterface;
 
-class Memory implements CommandInterface {
+use Dan\Contracts\CommandContract;
+use Dan\Irc\Location\Channel;
+use Dan\Irc\Location\User;
+
+class Memory implements CommandContract {
 
     /**
-     * Runs the command.
-     *
-     * @param \Dan\Irc\Channel $channel
-     * @param \Dan\Irc\User    $user
-     * @param                  $message
-     * @return void
+     * @inheritdoc
      */
     public function run(Channel $channel, User $user, $message)
     {
@@ -25,13 +21,8 @@ class Memory implements CommandInterface {
         $user->sendNotice(($real ? 'Real ' : '') . "Peak Memory Usage: " . $this->convert(memory_get_peak_usage($real)));
     }
 
-
     /**
-     * Command help.
-     *
-     * @param \Dan\Irc\User $user
-     * @param               $message
-     * @return mixed
+     * @inheritdoc
      */
     public function help(User $user, $message)
     {

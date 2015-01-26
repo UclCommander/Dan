@@ -1,15 +1,14 @@
 <?php namespace Dan\Irc\Packets; 
 
 
+use Dan\Contracts\PacketContract;
 use Dan\Irc\Connection;
-use Dan\Irc\Packet;
 use Dan\Irc\PacketInfo;
 
-class PacketPing extends Packet {
+class PacketPing implements PacketContract {
 
-
-    public function handlePacket(Connection &$connection, PacketInfo $packetInfo)
+    public function handle(Connection &$connection, PacketInfo $packetInfo)
     {
-        $connection->sendRaw("PONG :{$packetInfo->get('data')[0]}");
+        $connection->sendRaw("PONG {$packetInfo->get('command')[0]}");
     }
 }

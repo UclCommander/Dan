@@ -1,50 +1,66 @@
 <?php namespace Dan\Irc\Packets; 
 
 
-use Dan\Core\Config;
+use Dan\Contracts\PacketContract;
 use Dan\Core\Console;
 use Dan\Events\Event;
 use Dan\Events\EventArgs;
 use Dan\Events\EventPriority;
 use Dan\Irc\Connection;
-use Dan\Irc\Packet;
 use Dan\Irc\PacketInfo;
 
-class Packet376 extends Packet {
+class Packet376 implements PacketContract {
 
 
-    public function handlePacket(Connection &$connection, PacketInfo $packetInfo)
+    public function handle(Connection &$connection, PacketInfo $packetInfo)
     {
-        //If it's an unreal server, send +B for bots
+        if($connection->config->get('show_motd') === true)
+            Console::text($packetInfo->get('command')[1])->info()->push();
+
+        // If it's an unreal server, send +B for bots
         foreach($connection->numeric->get('004') as $d)
-            if(strpos($d, 'Unreal3') === 0)
+            if (strpos($d, 'Unreal3') === 0)
                 $connection->sendRaw("MODE {$connection->config->get('nickname')} +B");
 
-        if(!empty(Config::get('irc.password')))
+        if(!empty($connection->config->get('password')))
         {
             Console::text('Sending NickServ password..')->info()->debug()->push();
-            $connection->sendRaw(sprintf(Config::get('irc.nickserv_auth_command'), Config::get('irc.password')));
+            $connection->sendRaw(sprintf($connection->config->get('nickserv_auth_command'), $connection->config->get('password')));
 
-            Event::subscribeOnce('irc.packet.mode', function(EventArgs $eventArgs) use($connection)
+            Event::subscribe('irc.packet.mode', function(EventArgs $eventArgs) use($connection)
             {
-                if($eventArgs['data'][0] == $connection->config->get('nickname'))
-                    if($eventArgs['data'][1] == '+r')
-                        $this->joinChannels($connection);
+                $data = $eventArgs->get('data');
+
+                if($data[0] == $connection->config->get('nickname'))
+                    if ($data[1] == '+r')
+                        return $this->joinChannels($connection);
+
+                return null;
 
             }, EventPriority::Critical);
-
-            return;
         }
 
         $this->joinChannels($connection);
     }
 
+    /**
+     * Joins channels.
+     *
+     * @param \Dan\Irc\Connection $connection
+     * @return string
+     */
     public function joinChannels(Connection $connection)
     {
-        foreach($connection->config['channels'] as $autoJoinChannel)
+        $connection->sendRaw("WHO {$connection->config->get('nickname')}");
+
+        foreach($connection->config->get('channels') as $autoJoinChannel)
         {
             $password = explode(':', $autoJoinChannel);
+
             $connection->joinChannel($password[0], (isset($password[1]) ? $password[1] : null));
         }
+
+
+        return Event::Destroy;
     }
 }

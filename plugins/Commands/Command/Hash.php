@@ -1,18 +1,13 @@
 <?php namespace Plugins\Commands\Command;
 
-use Dan\Irc\Channel;
-use Dan\Irc\User;
-use Plugins\Commands\CommandInterface;
+use Dan\Contracts\CommandContract;
+use Dan\Irc\Location\Channel;
+use Dan\Irc\Location\User;
 
-class Hash implements CommandInterface {
+class Hash implements CommandContract {
 
     /**
-     * Runs the command.
-     *
-     * @param \Dan\Irc\Channel $channel
-     * @param \Dan\Irc\User    $user
-     * @param                  $message
-     * @return void
+     * @inheritdoc
      */
     public function run(Channel $channel, User $user, $message)
     {
@@ -26,14 +21,11 @@ class Hash implements CommandInterface {
     }
 
     /**
-     * Command help.
-     *
-     * @param \Dan\Irc\User $user
-     * @param               $message
-     * @return mixed
+     * @inheritdoc
      */
     public function help(User $user, $message)
     {
         $user->sendNotice("hash <algo> <text> - Hashes <text> with <algo>");
         $user->sendNotice("See http://php.net/manual/en/function.hash.php and http://php.net/manual/en/function.hash-algos.php for more information");
-    }}
+    }
+}

@@ -1,11 +1,12 @@
 <?php namespace Plugins\Title; 
 
 
-use Dan\Irc\Channel;
+use Dan\Irc\Location\Channel;
 
 interface HandlerInterface {
 
     /**
+     * @param \Dan\Irc\Location\Channel $channel
      * @param array $headers
      * @param string $link
      * @return string
