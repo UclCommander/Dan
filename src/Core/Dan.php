@@ -4,7 +4,6 @@ use Dan\Commands\CommandManager;
 use Dan\Contracts\ServiceContract;
 use Dan\Irc\Connection;
 use Dan\Plugins\PluginManager;
-use Dan\Storage\Storage;
 use Illuminate\Support\Collection;
 
 class Dan {
