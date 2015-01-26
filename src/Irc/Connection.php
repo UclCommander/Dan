@@ -269,16 +269,12 @@ class Connection implements ServiceContract {
      */
     public function addChannel($name)
     {
-        var_dump($name);
-
         $safe = strtolower($name);
 
         if($this->channels->has($safe))
             return;
 
         $this->channels->put($safe, new Channel($name));
-
-        var_dump($this->channels->keys());
     }
 
     /**

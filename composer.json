@@ -7,7 +7,6 @@
         }
     },
     "require": {
-        "vlucas/phpdotenv": "1.0.9",
         "illuminate/support": "4.2.x",
         "illuminate/filesystem": "4.2.x"
     }

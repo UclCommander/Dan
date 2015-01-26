@@ -15,6 +15,4 @@ require(__DIR__ . '/src/exceptions.php');
 
 use Dan\Core\Dan;
 
-Dotenv::load(__DIR__);
-
 return new Dan();

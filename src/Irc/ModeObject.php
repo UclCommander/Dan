@@ -36,8 +36,6 @@ abstract class ModeObject {
      */
     public function setMode($m)
     {
-        var_dump($m);
-
         $data   = str_split($m);
         $add    = true;
 

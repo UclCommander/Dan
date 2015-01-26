@@ -22,8 +22,6 @@ class PacketMode implements PacketContract {
             return;
         }
 
-        var_dump($connection->hasChannel($command[0]), $command[0]);
-
         if(!$connection->hasChannel($command[0]))
             return;
 
