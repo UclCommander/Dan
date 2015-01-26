@@ -2,6 +2,7 @@
 
 
 use Dan\Contracts\PacketContract;
+use Dan\Core\Console;
 use Dan\Core\Dan;
 use Dan\Events\Event;
 use Dan\Events\EventArgs;
@@ -44,6 +45,8 @@ class PacketPrivmsg implements PacketContract {
 
             return;
         }
+
+        Console::text("[$command[0]] {$user->getNick()}: $command[1]")->info()->push();
 
         if($command[0] == $connection->user->getNick())
         {

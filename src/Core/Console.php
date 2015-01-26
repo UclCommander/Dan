@@ -1,6 +1,8 @@
 <?php namespace Dan\Core;
 
 
+use Illuminate\Filesystem\Filesystem;
+
 class Console {
 
     private $text;
@@ -13,10 +15,25 @@ class Console {
     /** @var bool $debug */
     private $debug = false;
 
+    protected $filesystem;
 
-    public function __construct($t)
+
+    /**
+     * Sets the text.
+     *
+     * @param $text
+     * @return Console
+     */
+    public static function text($text)
     {
-        $this->text = $t;
+        return new static($text);
+    }
+
+
+    public function __construct($text)
+    {
+        $this->text = $text;
+        $this->filesystem = new Filesystem();
     }
 
     /**
@@ -136,12 +153,7 @@ class Console {
         if($this->debug && !Config::get('dan.debug'))
             return null;
 
-        if (!file_exists(ROOT_DIR . '/logs'))
-            mkdir(ROOT_DIR . '/logs', 0777, true);
-
-        $log = fopen('logs/' . date('Ymd') . '.log', 'a');
-        fwrite($log, '[' . date('r') . '] ' . ($this->debug ? '[DEBUG] ' : '') . $this->text . "\n");
-        fclose($log);
+        $this->logToFile('[' . date('r') . '] ' . ($this->debug ? '[DEBUG] ' : '') . $this->text);
 
         $text = ($this->debug ? ConsoleColor::Purple . "[DEBUG] " : '') . $this->color . $this->text;
         echo $text . ConsoleColor::Reset . "\n";
@@ -152,15 +164,12 @@ class Console {
         return $this->text;
     }
 
-    /**
-     * Sets the text.
-     *
-     * @param $text
-     * @return Console
-     */
-    public static function text($text)
+    public function logToFile($text)
     {
-        return new Console($text);
+        if(!$this->filesystem->exists(ROOT_DIR . '/logs'))
+            $this->filesystem->makeDirectory(ROOT_DIR . '/logs');
+
+        $this->filesystem->append('logs/' . date('Ymd') . ($this->debug ? '_debug' : null) . '.log', "{$text}\n");
     }
 
     /**
@@ -173,6 +182,18 @@ class Console {
     {
         $console = new Console($exception->getMessage());
         return $console->warning();
+    }
+
+    /**
+     * Opens session in log
+     */
+    public static function open()
+    {
+        $console = new static('');
+        $console->logToFile("----\n---- SESSION START\n-----");
+        $console->debug()->logToFile("----\n---- SESSION START\n-----");
+
+        unset($console);
     }
 }
  

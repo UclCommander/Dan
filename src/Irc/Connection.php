@@ -186,10 +186,13 @@ class Connection implements ServiceContract {
      */
     public function sendMessage(Location $location, $message, $colors = true)
     {
+        Console::text("[{$location->getName()}] {$this->user->getNick()}: $message")->info()->push();
+
         if($colors)
             $message = Color::parse($message);
 
         $this->send("PRIVMSG", $location, $message);
+
     }
 
     /**

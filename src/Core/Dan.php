@@ -39,6 +39,8 @@ class Dan {
      */
     public function boot($args)
     {
+        Console::open();
+
         Console::text('Booting Dan...')->info()->push();
 
         if(Config::get('dan.debug'))
