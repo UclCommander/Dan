@@ -7,7 +7,8 @@
         "commands",
         "autovoice",
         "title",
-        "fun"
+        "fun",
+        "textreplace"
     ],
     "blacklist_level": 1
 }

@@ -3,8 +3,8 @@
 
 use Dan\Contracts\PluginContract;
 use Dan\Events\EventArgs;
-use Dan\Irc\Channel;
-use Dan\Irc\User;
+use Dan\Irc\Location\Channel;
+use Dan\Irc\Location\User;
 use Dan\Plugins\Plugin;
 
 class TextReplace extends Plugin implements PluginContract {
@@ -15,21 +15,17 @@ class TextReplace extends Plugin implements PluginContract {
 
     public function register()
     {
-        $this->listenForEvent('irc.packet.privmsg', [$this, 'doReplace'], 7);
+        $this->listenForEvent('irc.packets.message.public', [$this, 'doReplace'], 7);
     }
 
 
-    public function doReplace(EventArgs $e)
+    public function doReplace(EventArgs $eventArgs)
     {
-        //Ignore private messages from users
-        if($e->channel == null)
-            return null;
-
-        $message    = $e->message;
-        /** @var User $user */
-        $user       = $e->user;
         /** @var Channel $channel */
-        $channel    = $e->channel;
+        $channel    = $eventArgs->get('channel');
+        /** @var User $user */
+        $user       = $eventArgs->get('user');
+        $message    = $eventArgs->get('message');
 
         if(strpos($message, 's/') === 0)
         {
@@ -54,7 +50,7 @@ class TextReplace extends Plugin implements PluginContract {
                     $this->messages[$channel->getName()][$time]['message'] = preg_replace("/{$safe}/", $replace[2], $data['message'], 1);
 
                     $newMessage = preg_replace("/{$safe}/", "{bold}{$replace[2]}{normal}", $data['message'], 1);
-                    $e->channel->sendMessage("{reset}[ {cyan}{bold}{$data['user']->getNick()}{normal} ] {$newMessage}");
+                    $channel->sendMessage("{reset}[ {cyan}{bold}{$data['user']->getNick()}{normal} ] {$newMessage}");
 
                     return false;
                 }
