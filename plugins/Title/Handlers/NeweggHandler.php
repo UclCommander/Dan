@@ -9,7 +9,7 @@
  */
 
 
-use Dan\Irc\Channel;
+use Dan\Irc\Location\Channel;
 use Plugins\Title\Handler;
 use Plugins\Title\HandlerInterface;
 
