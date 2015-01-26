@@ -1,12 +1,15 @@
 <?php namespace Plugins\Fun; 
 
 
+use Dan\Commands\CommandManager;
 use Dan\Contracts\PluginContract;
 use Dan\Core\Dan;
 use Dan\Plugins\Plugin;
+use Plugins\Fun\Commands\FML;
 use Plugins\Fun\Commands\Lenny;
 use Plugins\Fun\Commands\Nbc;
 use Plugins\Fun\Commands\Trp;
+use Plugins\Fun\Commands\Urban;
 
 class Fun extends Plugin implements PluginContract {
 
@@ -16,20 +19,26 @@ class Fun extends Plugin implements PluginContract {
 
     public function register()
     {
-        /** @var \Plugins\Commands\CommandManager $command */
-        $command = Dan::service('commandManager');
+        /** @var CommandManager $command */
+        $command = Dan::service('commands');
 
-        $command->register('lenny', new Lenny());
-        $command->register('nbc',   new Nbc());
-        $command->register('trp',   new Trp());
+        $command->addCommand('fml',   new FML());
+        $command->addCommand('lenny', new Lenny());
+        $command->addCommand('nbc',   new Nbc());
+        $command->addCommand('trp',   new Trp());
+        $command->addCommand('urban', new Urban());
     }
 
     public function unregister()
     {
-        /** @var \Plugins\Commands\CommandManager $command */
-        $command = Dan::service('commandManager');
-        $command->unregister('lenny');
-        $command->unregister('nbc');
-        $command->unregister('trp');
+        /** @var CommandManager $command */
+
+        $command = Dan::service('commands');
+
+        $command->removeCommand('fml');
+        $command->removeCommand('lenny');
+        $command->removeCommand('nbc');
+        $command->removeCommand('trp');
+        $command->removeCommand('urban');
     }
 }

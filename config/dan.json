@@ -6,7 +6,8 @@
     "plugins": [
         "commands",
         "autovoice",
-        "title"
+        "title",
+        "fun"
     ],
     "blacklist_level": 1
 }

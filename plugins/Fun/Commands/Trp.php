@@ -1,18 +1,13 @@
 <?php namespace Plugins\Fun\Commands;
 
-use Dan\Irc\Channel;
-use Dan\Irc\User;
-use Plugins\Commands\CommandInterface;
+use Dan\Contracts\CommandContract;
+use Dan\Irc\Location\Channel;
+use Dan\Irc\Location\User;
 
-class Trp implements CommandInterface {
+class Trp implements CommandContract {
 
     /**
-     * Runs the command.
-     *
-     * @param \Dan\Irc\Channel $channel
-     * @param \Dan\Irc\User    $user
-     * @param                  $message
-     * @return void
+     * @inheritdoc
      */
     public function run(Channel $channel, User $user, $message)
     {
@@ -20,12 +15,7 @@ class Trp implements CommandInterface {
     }
 
     /**
-     * Command help.
-     *
-     * @param \Dan\Irc\User $user
-     * @param               $message
-     *
-     * @return mixed
+     * @inheritdoc
      */
     public function help(User $user, $message)
     {
