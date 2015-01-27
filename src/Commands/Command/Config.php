@@ -1,11 +1,13 @@
 <?php namespace Dan\Commands\Command;
 
-use Dan\Contracts\CommandContract;
+use Dan\Commands\Command;
 use Dan\Core\Config as Cfg;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
-class Config implements CommandContract {
+class Config extends Command {
+
+    protected $defaultRank = 'S';
 
     protected $guarded = [
         'irc.password',

@@ -1,10 +1,10 @@
-<?php namespace Plugins\Commands\Command;
+<?php namespace Plugins\Commands\Commands;
 
-use Dan\Contracts\CommandContract;
+use Dan\Commands\Command;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
-class Hash implements CommandContract {
+class Hash extends Command {
 
     /**
      * @inheritdoc

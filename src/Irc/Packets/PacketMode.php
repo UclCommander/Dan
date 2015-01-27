@@ -20,7 +20,8 @@ class PacketMode implements PacketContract {
         array_splice($list, 2);
         $users = implode(' ', $list);
 
-        Console::text("[{$command[0]}] {$user->getNick()} sets mode {$command[1]} on {$users}")->info()->push();
+        if($user != null)
+            Console::text("[{$command[0]}] {$user->getNick()} sets mode {$command[1]} on {$users}")->info()->push();
 
         Event::fire('irc.packets.mode', new EventArgs($packetInfo));
 
@@ -39,7 +40,5 @@ class PacketMode implements PacketContract {
             return;
 
         $channel->getUser($command[2])->setMode($command[1]);
-
-
     }
 }

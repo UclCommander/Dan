@@ -1,11 +1,13 @@
-<?php namespace Plugins\Commands\Command; 
+<?php namespace Dan\Commands\Command;
 
-use Dan\Contracts\CommandContract;
+use Dan\Commands\Command;
 use Dan\Core\Dan;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
-class Join implements CommandContract {
+class Join extends Command {
+
+    protected $defaultRank = 'S';
 
     /**
      * @inheritdoc

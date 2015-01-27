@@ -4,6 +4,7 @@ use Dan\Commands\CommandManager;
 use Dan\Contracts\ServiceContract;
 use Dan\Irc\Connection;
 use Dan\Plugins\PluginManager;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 
 class Dan {
@@ -18,6 +19,7 @@ class Dan {
 
     /** @var Blacklist */
     protected static $blacklist;
+    protected $filesystem;
 
     /**
      * Load 'er up.
@@ -26,6 +28,20 @@ class Dan {
     {
         static::$dan    = $this;
         $this->services = new Collection();
+
+        $this->filesystem = new Filesystem();
+
+        if(!$this->filesystem->exists(STORAGE_DIR))
+            $this->filesystem->makeDirectory(STORAGE_DIR);
+
+        if(!$this->filesystem->exists(STORAGE_DIR . '/database/'))
+            $this->filesystem->makeDirectory(STORAGE_DIR . '/database/');
+
+        if(!$this->filesystem->exists(STORAGE_DIR . '/plugins/'))
+            $this->filesystem->makeDirectory(STORAGE_DIR . '/plugins/');
+
+        if(!$this->filesystem->exists(ROOT_DIR . '/log/'))
+            $this->filesystem->makeDirectory(ROOT_DIR . '/log/');
 
         Config::load();
 

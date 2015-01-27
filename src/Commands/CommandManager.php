@@ -1,6 +1,7 @@
 <?php namespace Dan\Commands;
 
 
+use Commands\Command;
 use Dan\Commands\Command\Blacklist as BlacklistCommand;
 use Dan\Commands\Command\Config as ConfigCommand;
 use Dan\Commands\Command\Plugin as PluginCommand;
@@ -112,13 +113,15 @@ class CommandManager implements ServiceContract {
             return;
         }
 
-        if(!$this->hasPermission($command, $config, $user))
+        $cmd = $this->commands->get($command);
+
+        if(!$this->hasPermission($cmd, $config, $user))
         {
             $user->sendNotice("You do not have the required permissions to use this command.");
             return;
         }
 
-        $this->commands->get($command)->run($channel, $user, @$data[1]);
+        $cmd->run($channel, $user, @$data[1]);
     }
 
     /**
@@ -149,19 +152,27 @@ class CommandManager implements ServiceContract {
     /**
      * Checks to see if a user has permission.
      *
-     * @param string $command
+     * @param CommandContract $command
      * @param Collection $config
      * @param User $user
      * @return bool
      */
-    private function hasPermission($command, Collection $config, User $user)
+    private function hasPermission(CommandContract $command, Collection $config, User $user)
     {
-        $perms = $config->get('ranks')[$command];
-        $ranks = str_split($perms);
-
+        // Sudo user? Check this first.
         foreach(Config::get('dan.sudo_users') as $usr)
             if (fnmatch($usr, "{$user->getNick()}!{$user->getUser()}@{$user->getHost()}"))
                 return true;
+
+        $name = $command->getName();
+        $perms = $config->get('ranks');
+
+        if(!array_key_exists($name, $perms))
+            $perms = $command->getDefaultRank();
+        else
+            $perms = $perms[$name];
+
+        $ranks = str_split($perms);
 
         foreach($ranks as $rank)
             if ($user->hasPrefix($rank))

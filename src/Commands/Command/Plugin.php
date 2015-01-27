@@ -1,11 +1,13 @@
 <?php namespace Dan\Commands\Command;
 
-use Dan\Contracts\CommandContract;
+use Dan\Commands\Command;
 use Dan\Core\Dan;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
-class Plugin implements CommandContract {
+class Plugin extends Command {
+
+    protected $defaultRank = 'S';
 
     /**
      * Runs the command.

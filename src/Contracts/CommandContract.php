@@ -22,4 +22,18 @@ interface CommandContract {
      * @return mixed
      */
     public function help(User $user, $message);
+
+    /**
+     * Gets the commands name.
+     *
+     * @return string
+     */
+    public function getName();
+
+    /**
+     * Returns the default rank.
+     *
+     * @return string
+     */
+    public function getDefaultRank();
 }

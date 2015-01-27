@@ -1,6 +1,6 @@
-<?php namespace Plugins\Fun\Commands; 
+<?php namespace Plugins\Commands\Commands;
 
-use Dan\Contracts\CommandContract;
+use Dan\Commands\Command;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
@@ -8,8 +8,7 @@ use Dan\Irc\Location\User;
 /**
  * Yes, I know there is an API. But it requires a key. I'm too lazy to use something I have to email for.
  */
-class FML implements CommandContract {
-
+class FML extends Command {
 
     /**
      * @inheritdoc

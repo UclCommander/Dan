@@ -1,13 +1,14 @@
-<?php namespace Plugins\Commands\Command;
+<?php namespace Dan\Commands\Command;
 
-use Dan\Contracts\CommandContract;
+use Dan\Commands\Command;
 use Dan\Core\Dan;
 use Dan\Irc\Connection;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
+class Part extends Command {
 
-class Part implements CommandContract {
+    protected $defaultRank = 'S';
 
     /**
      * @inheritdoc
@@ -24,7 +25,6 @@ class Part implements CommandContract {
             $user->sendMessage("Bot is not in the channel");
             return;
         }
-
 
         $irc->removeChannel($partFrom, "Requestion");
     }

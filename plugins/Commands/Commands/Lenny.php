@@ -1,19 +1,17 @@
-<?php namespace Plugins\Commands\Command;
+<?php namespace Plugins\Commands\Commands;
 
-
-
-use Dan\Contracts\CommandContract;
+use Dan\Commands\Command;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
-class Ping implements CommandContract {
+class Lenny extends Command {
 
     /**
      * @inheritdoc
      */
     public function run(Channel $channel, User $user, $message)
     {
-        $channel->sendMessage('Pong!');
+        $channel->sendMessage("( ͡° ͜ʖ ͡°)");
     }
 
     /**
@@ -21,6 +19,6 @@ class Ping implements CommandContract {
      */
     public function help(User $user, $message)
     {
-        $user->sendNotice("ping - Says Pong!");
+        $user->sendNotice("Give me da booty ( ͡° ͜ʖ ͡°)");
     }
 }

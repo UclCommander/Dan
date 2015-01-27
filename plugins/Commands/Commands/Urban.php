@@ -1,11 +1,11 @@
-<?php namespace Plugins\Fun\Commands; 
+<?php namespace Plugins\Commands\Commands;
 
 
-use Dan\Contracts\CommandContract;
+use Dan\Commands\Command;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
-class Urban implements CommandContract  {
+class Urban extends Command {
 
     /**
      * @inheritdoc

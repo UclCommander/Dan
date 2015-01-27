@@ -1,11 +1,13 @@
 <?php namespace Dan\Commands\Command;
 
-use Dan\Contracts\CommandContract;
+use Dan\Commands\Command;
 use Dan\Core\Dan;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
-class Blacklist implements CommandContract {
+class Blacklist extends Command {
+
+    protected $defaultRank = 'S';
 
     /**
      * Runs the command.

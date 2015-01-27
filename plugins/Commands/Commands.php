@@ -3,12 +3,13 @@
 use Dan\Contracts\PluginContract;
 use Dan\Core\Dan;
 use Dan\Plugins\Plugin;
-use Plugins\Commands\Command\Hash;
-use Plugins\Commands\Command\Join;
-use Plugins\Commands\Command\Memory;
-use Plugins\Commands\Command\Part;
-use Plugins\Commands\Command\Ping;
-use Plugins\Commands\Command\Say;
+use Plugins\Commands\Commands\Hash;
+use Plugins\Commands\Commands\Ping;
+use Plugins\Commands\Commands\FML;
+use Plugins\Commands\Commands\Lenny;
+use Plugins\Commands\Commands\Nbc;
+use Plugins\Commands\Commands\Trp;
+use Plugins\Commands\Commands\Urban;
 
 class Commands extends Plugin implements PluginContract {
 
@@ -21,23 +22,27 @@ class Commands extends Plugin implements PluginContract {
      */
     public function register()
     {
-        Dan::service('commands')->addCommand('hash',    new Hash());
-        Dan::service('commands')->addCommand('join',    new Join());
-        Dan::service('commands')->addCommand('memory',  new Memory());
-        Dan::service('commands')->addCommand('part',    new Part());
-        Dan::service('commands')->addCommand('ping',    new Ping());
-        Dan::service('commands')->addCommand('say',     new Say());
+        $command = Dan::service('commands');
+        $command->addCommand('fml',     new FML());
+        $command->addCommand('hash',    new Hash());
+        $command->addCommand('lenny',   new Lenny());
+        $command->addCommand('nbc',     new Nbc());
+        $command->addCommand('ping',    new Ping());
+        $command->addCommand('trp',     new Trp());
+        $command->addCommand('urban',   new Urban());
     }
 
     public function unregister()
     {
         parent::unregister();
 
-        Dan::service('commands')->removeCommand('hash');
-        Dan::service('commands')->removeCommand('join');
-        Dan::service('commands')->removeCommand('memory');
-        Dan::service('commands')->removeCommand('part');
-        Dan::service('commands')->removeCommand('ping');
-        Dan::service('commands')->removeCommand('say');
+        $command = Dan::service('commands');
+        $command->removeCommand('fml');
+        $command->removeCommand('hash');
+        $command->removeCommand('lenny');
+        $command->removeCommand('nbc');
+        $command->removeCommand('trp');
+        $command->removeCommand('ping');
+        $command->removeCommand('urban');
     }
 }

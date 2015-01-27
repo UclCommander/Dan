@@ -1,11 +1,12 @@
-<?php namespace Plugins\Commands\Command;
+<?php namespace Dan\Commands\Command;
 
-
-use Dan\Contracts\CommandContract;
+use Dan\Commands\Command;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
-class Memory implements CommandContract {
+class Memory extends Command {
+
+    protected $defaultRank = 'S';
 
     /**
      * @inheritdoc
