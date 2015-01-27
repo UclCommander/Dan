@@ -14,6 +14,13 @@ class PacketMode implements PacketContract {
     public function handle(Connection &$connection, PacketInfo $packetInfo)
     {
         $command = $packetInfo->get('command');
+        $user = $packetInfo->get('user');
+
+        $list = $command;
+        array_splice($list, 2);
+        $users = implode(' ', $list);
+
+        Console::text("[{$command[0]}] {$user->getNick()} sets mode {$command[1]} on {$users}")->info()->push();
 
         Event::fire('irc.packets.mode', new EventArgs($packetInfo));
 
@@ -28,8 +35,11 @@ class PacketMode implements PacketContract {
 
         $channel = $connection->getChannel($command[0]);
 
+        if(!$channel->hasUser($command[2]))
+            return;
+
         $channel->getUser($command[2])->setMode($command[1]);
 
-        //Console::text("[{$channel->getName()}] {$user->getNick()} left the channel")->info()->push();
+
     }
 }

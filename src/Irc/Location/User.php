@@ -1,9 +1,5 @@
 <?php namespace Dan\Irc\Location; 
 
-
-use Dan\Events\Event;
-use Dan\Events\EventArgs;
-use Dan\Events\EventPriority;
 use Dan\Storage\Storage;
 
 class User extends Location {
@@ -13,7 +9,7 @@ class User extends Location {
     protected $realName = null;
 
     /** @var Storage  */
-    protected $storage;
+    protected static $storage = null;
 
     public function __construct($nick, $user = null, $host = null)
     {
@@ -22,11 +18,12 @@ class User extends Location {
         if(is_array($nick))
             throw new \Exception();
 
-        $this->storage = Storage::load('users');
+        if(static::$storage == null)
+            static::$storage = Storage::load('users');
 
-        if($this->storage->has($nick))
+        if(static::$storage->has($nick))
         {
-            $data = $this->storage->get($nick);
+            $data = static::$storage->get($nick);
 
             $this->name         = $data['nick'];
             $this->username     = $data['user'];
@@ -47,9 +44,12 @@ class User extends Location {
         $this->save();
     }
 
+    /**
+     * Saves user changes.
+     */
     public function save()
     {
-        $this->storage->add($this->name, [
+        static::$storage->add($this->name, [
             'nick'     => $this->name,
             'user'     => $this->username,
             'host'     => $this->userHost,
@@ -100,11 +100,23 @@ class User extends Location {
     /**
      * Sets the user's host.
      *
+     * @param $nick
+     */
+    public function setNick($nick)
+    {
+        $this->name = $nick;
+        $this->save();
+    }
+
+    /**
+     * Sets the user's host.
+     *
      * @param $host
      */
     public function setHost($host)
     {
         $this->userHost = $host;
+        $this->save();
     }
 
     /**
@@ -115,5 +127,6 @@ class User extends Location {
     public function setRealName($name)
     {
         $this->realName = $name;
+        $this->save();
     }
 }

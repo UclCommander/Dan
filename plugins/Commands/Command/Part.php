@@ -2,6 +2,7 @@
 
 use Dan\Contracts\CommandContract;
 use Dan\Core\Dan;
+use Dan\Irc\Connection;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
@@ -13,17 +14,19 @@ class Part implements CommandContract {
      */
     public function run(Channel $channel, User $user, $message)
     {
-        $cmd        = explode(' ', $message, 2);
-        $partFrom   = $cmd[0];
-        $msg        = @$cmd[1];
+        $partFrom   = trim($message);
 
-        if(!in_array(substr($cmd[0], 0, 1), Support::get('CHANTYPES')))
+        /** @var Connection $irc */
+        $irc = Dan::service('irc');
+
+        if(!$irc->hasChannel($partFrom))
         {
-            $partFrom = $channel->getName();
-            $msg = $cmd[0];
+            $user->sendMessage("Bot is not in the channel");
+            return;
         }
 
-        Dan::service('irc')->partChannel($partFrom, $msg);
+
+        $irc->removeChannel($partFrom, "Requestion");
     }
 
 
@@ -33,7 +36,6 @@ class Part implements CommandContract {
     public function help(User $user, $message)
     {
         $user->sendNotice("part - Parts the current channel");
-        $user->sendNotice("part [message] - Parts the current channel with an optional [message]");
-        $user->sendNotice("part [channel] [message] - Parts [channel] with an optional [message]");
+        $user->sendNotice("part [channel] - Parts the given channel");
     }
 }

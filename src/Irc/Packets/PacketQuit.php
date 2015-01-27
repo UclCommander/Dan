@@ -18,8 +18,7 @@ class PacketQuit implements PacketContract {
         foreach($channels as $channel)
             $channel->removeUser($user);
 
-        Console::text("[  ] {$user->getNick()} quit IRC ({$packetInfo->get('command')[0]})")->info()->push();
-
         Event::fire('irc.packets.quit', new EventArgs($packetInfo));
+        Console::text("[   ] {$user->getNick()} quit IRC ({$packetInfo->get('command')[0]})")->info()->push();
     }
 }

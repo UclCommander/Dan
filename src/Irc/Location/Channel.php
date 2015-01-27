@@ -40,13 +40,30 @@ class Channel extends Location {
     }
 
     /**
+     * Checks to see if the channel contains a user.
+     *
+     * @param string|User $user
+     * @return User|null
+     */
+    public function hasUser($user)
+    {
+        if($user instanceof User)
+            $user = $user->getNick();
+
+        return $this->users->has($user);
+    }
+
+    /**
      * Gets a user.
      *
-     * @param $nick
+     * @param string|User $nick
      * @return User|null
      */
     public function getUser($nick)
     {
+        if($nick instanceof User)
+            $nick = $nick->getNick();
+
         return $this->users->get($nick);
     }
 

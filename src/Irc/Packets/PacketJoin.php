@@ -16,6 +16,10 @@ class PacketJoin implements PacketContract {
             $connection->addChannel($packetInfo->get('command')[0]);
 
         $user       = $packetInfo->get('user');
+
+        if(!$connection->hasChannel($packetInfo->get('command')[0]))
+            return;
+
         $channel    = $connection->getChannel($packetInfo->get('command')[0]);
         $channel->addUser($user);
 
