@@ -53,6 +53,6 @@ class FML extends Command {
      */
     public function help(User $user, $message)
     {
-        $user->sendMessage("fml - gets a random fml");
+        $user->sendNotice("fml - gets a random fml");
     }
 }

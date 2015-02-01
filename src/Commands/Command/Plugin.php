@@ -27,6 +27,11 @@ class Plugin extends Command {
                 case 'loaded':
                     $user->sendNotice("Loaded Plugins: " . implode(', ', Dan::service('pluginManager')->loaded()));
                     break;
+
+                case 'list':
+                    $user->sendNotice("Available Plugins: " . implode(', ', Dan::service('pluginManager')->all()));
+                    break;
+
                 case 'load':
                     Dan::service('pluginManager')->loadPlugin($data[1]);
                     $user->sendNotice("Plugin {$data[1]} loaded.");
@@ -60,6 +65,8 @@ class Plugin extends Command {
      */
     public function help(User $user, $message)
     {
+        $user->sendNotice("plugin list - Lists all available plugins");
+        $user->sendNotice("plugin loaded - Shows all loaded plugins");
         $user->sendNotice("plugin load <plugin> - Loads <plugin>");
         $user->sendNotice("plugin reload <plugin> - Reloads <plugin>");
         $user->sendNotice("plugin unload <plugin> - Unloads <plugin>");

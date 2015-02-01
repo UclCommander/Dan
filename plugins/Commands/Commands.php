@@ -3,6 +3,8 @@
 use Dan\Contracts\PluginContract;
 use Dan\Core\Dan;
 use Dan\Plugins\Plugin;
+use Plugins\Commands\Commands\Ding;
+use Plugins\Commands\Commands\Dongers;
 use Plugins\Commands\Commands\Hash;
 use Plugins\Commands\Commands\Ping;
 use Plugins\Commands\Commands\FML;
@@ -23,6 +25,8 @@ class Commands extends Plugin implements PluginContract {
     public function register()
     {
         $command = Dan::service('commands');
+        $command->addCommand('ding',    new Ding());
+        $command->addCommand('dongers', new Dongers());
         $command->addCommand('fml',     new FML());
         $command->addCommand('hash',    new Hash());
         $command->addCommand('lenny',   new Lenny());
@@ -37,6 +41,8 @@ class Commands extends Plugin implements PluginContract {
         parent::unregister();
 
         $command = Dan::service('commands');
+        $command->removeCommand('ding');
+        $command->removeCommand('dongers');
         $command->removeCommand('fml');
         $command->removeCommand('hash');
         $command->removeCommand('lenny');

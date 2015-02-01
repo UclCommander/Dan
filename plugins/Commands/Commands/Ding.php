@@ -1,21 +1,17 @@
-<?php namespace Dan\Commands\Command;
+<?php namespace Plugins\Commands\Commands;
 
 use Dan\Commands\Command;
-use Dan\Core\Dan;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
-class Join extends Command {
-
-    protected $defaultRank = 'S';
+class Ding extends Command {
 
     /**
      * @inheritdoc
      */
     public function run(Channel $channel, User $user, $message)
     {
-        $cmd = explode(' ', $message);
-        Dan::service('irc')->joinChannel($cmd[0]);
+        $channel->sendMessage('Dong!');
     }
 
     /**
@@ -23,6 +19,6 @@ class Join extends Command {
      */
     public function help(User $user, $message)
     {
-        $user->sendNotice("join <channel> - Joins <channel>");
+        $user->sendNotice("ding - Says Dong!");
     }
 }

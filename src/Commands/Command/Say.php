@@ -32,6 +32,7 @@ class Say extends Command {
      */
     public function help(User $user, $message)
     {
-        $user->sendNotice("say <channel> <message>");
+        $user->sendNotice("say <message> - Sends <message> to the current channel");
+        $user->sendNotice("say <channel> <message> - Sends <message> to <channel>");
     }
 }

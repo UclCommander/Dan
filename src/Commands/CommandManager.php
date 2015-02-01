@@ -1,10 +1,14 @@
 <?php namespace Dan\Commands;
 
 
-use Commands\Command;
 use Dan\Commands\Command\Blacklist as BlacklistCommand;
 use Dan\Commands\Command\Config as ConfigCommand;
+use Dan\Commands\Command\Join as JoinCommand;
+use Dan\Commands\Command\Memory as MemoryCommand;
+use Dan\Commands\Command\Part as PartCommand;
 use Dan\Commands\Command\Plugin as PluginCommand;
+use Dan\Commands\Command\Raw as RawCommand;
+use Dan\Commands\Command\Say as SayCommand;
 use Dan\Contracts\CommandContract;
 use Dan\Contracts\ServiceContract;
 use Dan\Core\Config;
@@ -12,7 +16,6 @@ use Dan\Core\Dan;
 use Dan\Events\Event;
 use Dan\Events\EventArgs;
 use Dan\Events\EventPriority;
-use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 use Illuminate\Support\Collection;
 
@@ -57,9 +60,14 @@ class CommandManager implements ServiceContract {
         Dan::registerService('commands', $this);
         Event::subscribe('irc.packets.message.public', [$this, 'checkForCommand'], EventPriority::Critical);
 
-        $this->addCommand('blacklist', new BlacklistCommand);
-        $this->addCommand('config', new ConfigCommand);
-        $this->addCommand('plugin', new PluginCommand);
+        $this->addCommand('blacklist',  new BlacklistCommand);
+        $this->addCommand('config',     new ConfigCommand);
+        $this->addCommand('join',       new JoinCommand);
+        $this->addCommand('memory',     new MemoryCommand);
+        $this->addCommand('part',       new PartCommand);
+        $this->addCommand('plugin',     new PluginCommand);
+        $this->addCommand('raw',        new RawCommand);
+        $this->addCommand('say',        new SayCommand);
     }
 
     /**

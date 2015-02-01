@@ -8,6 +8,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use ReflectionClass;
+use Symfony\Component\Finder\Finder;
 
 class PluginManager {
 
@@ -51,6 +52,22 @@ class PluginManager {
     public function loaded()
     {
         return array_keys($this->loaded->toArray());
+    }
+
+
+    /**
+     * Gets all available plugins.
+     *
+     * @return array
+     */
+    public function all()
+    {
+        $plugins = [];
+
+        foreach(Finder::create()->in(PLUGIN_DIR)->directories()->depth(0) as $dir)
+            $plugins[] = $dir->getFilename();
+
+        return $plugins;
     }
 
     /**
@@ -163,10 +180,6 @@ class PluginManager {
                 $result[] = $this->recursiveScan($scan . $dir.'/', $prepend.$dir.'/');
                 continue;
             }
-
-            // Ignore config.inc because we don't need it right now (possibly future needs).
-            if($dir == 'config.inc')
-                continue;
 
             $result[] = $prepend.$dir;
         }
