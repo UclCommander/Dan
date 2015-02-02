@@ -31,7 +31,7 @@ class TextReplace extends Plugin implements PluginContract {
         {
             $replace = explode('/', $message);
 
-            if(count($replace) !== 3)
+            if(count($replace) < 3)
                 return false;
 
             if(!array_key_exists($channel->getName(), $this->messages))
@@ -47,9 +47,21 @@ class TextReplace extends Plugin implements PluginContract {
                 {
                     $safe = preg_quote($replace[1]);
 
-                    $this->messages[$channel->getName()][$time]['message'] = preg_replace("/{$safe}/", $replace[2], $data['message'], 1);
+                    $replaceClean   = null;
+                    $newMessage     = null;
 
-                    $newMessage = preg_replace("/{$safe}/", "{bold}{$replace[2]}{normal}", $data['message'], 1);
+                    if(count($replace) == 4 && $replace[3] == 'g')
+                    {
+                        $replaceClean = preg_replace("/{$safe}/", $replace[2], $data['message']);
+                        $newMessage = preg_replace("/{$safe}/", "{bold}{$replace[2]}{normal}", $data['message']);
+                    }
+                    else
+                    {
+                        $replaceClean = preg_replace("/{$safe}/", $replace[2], $data['message'], 1);
+                        $newMessage = preg_replace("/{$safe}/", "{bold}{$replace[2]}{normal}", $data['message'], 1);
+                    }
+
+                    $this->messages[$channel->getName()][$time]['message'] = $replaceClean;
                     $channel->sendMessage("{reset}[ {cyan}{bold}{$data['user']->getNick()}{normal} ] {$newMessage}");
 
                     return false;
@@ -61,12 +73,8 @@ class TextReplace extends Plugin implements PluginContract {
         }
 
         foreach($this->messages as $chan => $lines)
-        {
             if (count($lines) > 30)
-            {
                 array_shift($this->messages[$chan]);
-            }
-        }
 
         $this->messages[$channel->getName()][time()] = [
             'message'   => $message,
