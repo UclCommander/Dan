@@ -6,6 +6,7 @@ use Dan\Plugins\Plugin;
 use Plugins\Commands\Commands\Ding;
 use Plugins\Commands\Commands\Dongers;
 use Plugins\Commands\Commands\Hash;
+use Plugins\Commands\Commands\LMGTFY;
 use Plugins\Commands\Commands\Ping;
 use Plugins\Commands\Commands\FML;
 use Plugins\Commands\Commands\Lenny;
@@ -30,6 +31,7 @@ class Commands extends Plugin implements PluginContract {
         $command->addCommand('fml',     new FML());
         $command->addCommand('hash',    new Hash());
         $command->addCommand('lenny',   new Lenny());
+        $command->addCommand('lmgtfy',  new LMGTFY());
         $command->addCommand('nbc',     new Nbc());
         $command->addCommand('ping',    new Ping());
         $command->addCommand('trp',     new Trp());
@@ -46,6 +48,7 @@ class Commands extends Plugin implements PluginContract {
         $command->removeCommand('fml');
         $command->removeCommand('hash');
         $command->removeCommand('lenny');
+        $command->removeCommand('lmgtfy');
         $command->removeCommand('nbc');
         $command->removeCommand('trp');
         $command->removeCommand('ping');
