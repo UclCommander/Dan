@@ -4,6 +4,7 @@
 use Dan\Commands\Command;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
+use Dan\Irc\MessageBuilder;
 
 class Urban extends Command {
 
@@ -34,7 +35,13 @@ class Urban extends Command {
         $item       = $list[0];
         $cleanDef   = str_replace(["\n", "\r"], '', $item['definition']);
 
-        $channel->sendMessage("{reset}[ {yellow}{$item['word']} {reset}| {cyan}{$cleanDef} {reset}| {green}+{$item['thumbs_up']}{reset}/{red}-{$item['thumbs_down']} {reset}]");
+        $channel->sendMessage(function(MessageBuilder $builder) use ($item, $cleanDef) {
+            $builder->required("{reset}[ {yellow}{$item['word']} {reset}| {cyan}");
+            $builder->message($cleanDef);
+            $builder->required(" {reset}| {green}+{$item['thumbs_up']}{reset}/{red}-{$item['thumbs_down']} {reset}]");
+
+            $builder->overflowMessage("{reset}[{cyan} Read more: {$item['permalink']} {reset}]");
+        });
     }
 
     /**

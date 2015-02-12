@@ -40,8 +40,8 @@ class Dan {
         if(!$this->filesystem->exists(STORAGE_DIR . '/plugins/'))
             $this->filesystem->makeDirectory(STORAGE_DIR . '/plugins/');
 
-        if(!$this->filesystem->exists(ROOT_DIR . '/log/'))
-            $this->filesystem->makeDirectory(ROOT_DIR . '/log/');
+        if(!$this->filesystem->exists(ROOT_DIR . '/logs/'))
+            $this->filesystem->makeDirectory(ROOT_DIR . '/logs/');
 
         Config::load();
 

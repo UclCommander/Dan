@@ -1,6 +1,7 @@
 <?php namespace Dan\Irc; 
 
 
+use Closure;
 use Dan\Contracts\PacketContract;
 use Dan\Contracts\ServiceContract;
 use Dan\Core\Config;
@@ -183,11 +184,19 @@ class Connection implements ServiceContract {
      * Sends a PRIVMSG to a location.
      *
      * @param Location $location
-     * @param string   $message
-     * @param bool     $colors
+     * @param string|Closure $message
+     * @param bool $colors
      */
     public function sendMessage(Location $location, $message, $colors = true)
     {
+        if($message instanceof Closure)
+        {
+            $builder = new MessageBuilder();
+            $message($builder);
+            $builder->parse($location);
+            return;
+        }
+
         Console::text("[{$location->getName()}] {$this->user->getNick()}: $message")->info()->push();
 
         if($colors)
@@ -242,6 +251,9 @@ class Connection implements ServiceContract {
     {
         if(!$this->running)
             return;
+
+        // Get only the first 510 characters to prevent overflow issues
+        $raw = substr($raw, 0, 510);
 
         Console::text("SENDING: {$raw}")->debug()->info()->push();
 
