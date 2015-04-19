@@ -47,7 +47,8 @@ class AutoVoice extends Plugin implements PluginContract {
 
         if($self->hasOneOf('hoaq'))
         {
-            $irc->send('MODE', $channel->getName(), '+v', $user->getNick());
+            if(!Str::contains($user->getNick(), 'Unidentified'))
+                $irc->send('MODE', $channel->getName(), '+v', $user->getNick());
 
             if(!$self->hasMode('v'))
                 $irc->send('MODE', $channel->getName(), '+v', $self->getNick());
@@ -90,10 +91,6 @@ class AutoVoice extends Plugin implements PluginContract {
 
         if($self == null)
             return false;
-
-
-
-        var_dump($self->hasOneOf('hoaq'),$self->modes());
 
         return $self->hasOneOf('hoaq');
     }
