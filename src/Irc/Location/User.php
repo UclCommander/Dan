@@ -11,6 +11,9 @@ class User extends Location {
     /** @var Storage  */
     protected static $storage = null;
 
+    /** @var Channel $channel */
+    protected $channel;
+
     public function __construct($nick, $user = null, $host = null)
     {
         parent::__construct();
@@ -128,5 +131,21 @@ class User extends Location {
     {
         $this->realName = $name;
         $this->save();
+    }
+
+    /**
+     * @param \Dan\Irc\Location\Channel $channel
+     */
+    public function setChannel(Channel $channel)
+    {
+        $this->channel = $channel;
+    }
+
+    /**
+     * @param string $reason
+     */
+    public function kick($reason = '')
+    {
+        $this->connection->send('KICK', $this->channel->getName(), $this->getNick(), $reason);
     }
 }

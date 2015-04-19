@@ -64,7 +64,9 @@ class Channel extends Location {
         if($nick instanceof User)
             $nick = $nick->getNick();
 
-        return $this->users->get($nick);
+        $user = $this->users->get($nick);
+        $user->setChannel($this);
+        return $user;
     }
 
     /**
@@ -77,4 +79,11 @@ class Channel extends Location {
         return $this->users;
     }
 
+    /**
+     * @param \Dan\Irc\Location\User $user
+     */
+    public function setBan(User $user)
+    {
+        $this->connection->send("MODE", '+B', "*@{$user->getHost()}");
+    }
 }

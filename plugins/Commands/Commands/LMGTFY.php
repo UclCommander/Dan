@@ -1,6 +1,7 @@
 <?php namespace Plugins\Commands\Commands;
 
 use Dan\Commands\Command;
+use Dan\Helpers\Linky;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
@@ -11,7 +12,8 @@ class LMGTFY extends Command {
      */
     public function run(Channel $channel, User $user, $message)
     {
-        $channel->sendMessage("http://lmgtfy.com/?q=" . urlencode($message));
+        $link = Linky::fetchLink("http://lmgtfy.com/?q=" . urlencode($message));
+        $channel->sendMessage("{reset}[{cyan} {$link} {reset}]");
     }
 
     /**

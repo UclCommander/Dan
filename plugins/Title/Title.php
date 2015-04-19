@@ -72,7 +72,7 @@ class Title extends Plugin implements PluginContract {
 
         preg_match_all('#\bhttps?://[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/))#', $message, $match);
 
-        if(count($match) == 0)
+        if(count($match[0]) == 0)
             return null;
 
         $matches = $match[0];

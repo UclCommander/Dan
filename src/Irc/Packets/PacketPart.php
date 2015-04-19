@@ -12,9 +12,6 @@ class PacketPart implements PacketContract {
 
     public function handle(Connection &$connection, PacketInfo $packetInfo)
     {
-        if($packetInfo->get('user')->getNick() === $connection->user->getNick())
-            $connection->removeChannel($packetInfo->get('command')[0]);
-
         $user       = $packetInfo->get('user');
         $channel    = $connection->getChannel($packetInfo->get('command')[0]);
         $channel->removeUser($user);
@@ -25,5 +22,8 @@ class PacketPart implements PacketContract {
         ]));
 
         Console::text("[{$channel->getName()}] {$user->getNick()} left the channel")->info()->push();
+
+        if($packetInfo->get('user')->getNick() === $connection->user->getNick())
+            $connection->removeChannel($packetInfo->get('command')[0]);
     }
 }

@@ -152,7 +152,6 @@ class Connection implements ServiceContract {
         $this->sendNick();
     }
 
-
     /**
      * Sends a NICK command.
      *
@@ -178,7 +177,6 @@ class Connection implements ServiceContract {
 
         $this->send("NOTICE", $location, $message);
     }
-
 
     /**
      * Sends a PRIVMSG to a location.
@@ -308,7 +306,23 @@ class Connection implements ServiceContract {
 
         $this->channels->forget($safe);
 
+        Console::text("Removing channel {$channel}")->debug()->push();
+
         unset($channel);
+    }
+
+    /**
+     * Removes a channel from the list.
+     *
+     * @param Channel|string $channel
+     * @param string         $reason
+     */
+    public function partChannel($channel, $reason = 'Requested')
+    {
+        if($channel instanceof Channel)
+           $channel = $channel->getName();
+
+        $this->send('PART', $channel, $reason);
     }
 
     /**

@@ -77,6 +77,7 @@ class CommandManager implements ServiceContract {
 
     /**
      * @param EventArgs $eventArgs
+     * @return bool
      */
     public function checkForCommand(EventArgs $eventArgs)
     {
@@ -91,18 +92,18 @@ class CommandManager implements ServiceContract {
 
 
         if(strpos($message, $config->get('command_starter')) !== 0)
-            return;
+            return null;
 
         if(Config::get('dan.blacklist_level') >= 1)
             if(Dan::blacklist()->check($user))
-                return;
+                return false;
 
         $data = explode(' ', $message, 2);
 
         $command = substr($data[0], 1);
 
         if(empty($command))
-            return;
+            return null;
 
         if($command == 'help')
         {
@@ -110,7 +111,7 @@ class CommandManager implements ServiceContract {
 
             $this->handleHelp($user, $data);
 
-            return;
+            return false;
         }
 
         if(!$this->commands->has($command))
@@ -118,7 +119,7 @@ class CommandManager implements ServiceContract {
             if($config->get('no_command_error'))
                 $user->sendNotice("Command '{$command}' does not exist");
 
-            return;
+            return false;
         }
 
         $cmd = $this->commands->get($command);
@@ -126,7 +127,7 @@ class CommandManager implements ServiceContract {
         if(!$this->hasPermission($cmd, $config, $user))
         {
             $user->sendNotice("You do not have the required permissions to use this command.");
-            return;
+            return false;
         }
 
         $cmd->run($channel, $user, @$data[1]);
@@ -167,10 +168,8 @@ class CommandManager implements ServiceContract {
      */
     private function hasPermission(CommandContract $command, Collection $config, User $user)
     {
-        // Sudo user? Check this first.
-        foreach(Config::get('dan.sudo_users') as $usr)
-            if (fnmatch($usr, "{$user->getNick()}!{$user->getUser()}@{$user->getHost()}"))
-                return true;
+        if(Dan::isSudoUser($user))
+            return true;
 
         $name = $command->getName();
         $perms = $config->get('ranks');

@@ -2,6 +2,7 @@
 
 
 use Dan\Commands\Command;
+use Dan\Helpers\Linky;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 use Dan\Irc\MessageBuilder;
@@ -40,7 +41,7 @@ class Urban extends Command {
             $builder->message($cleanDef);
             $builder->required(" {reset}| {green}+{$item['thumbs_up']}{reset}/{red}-{$item['thumbs_down']} {reset}]");
 
-            $builder->overflowMessage("{reset}[{cyan} Read more: {$item['permalink']} {reset}]");
+            $builder->overflowMessage("{reset}[{cyan} Read more: " . Linky::fetchLink($item['permalink']) . " {reset}]");
         });
     }
 

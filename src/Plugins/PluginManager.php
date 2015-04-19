@@ -103,7 +103,7 @@ class PluginManager {
 
         $key = "{$name}_" . $this->generateKey($name);
 
-        $this->copyPLuginFiles($name, $config, $key);
+        $this->copyPluginFiles($name, $config, $key);
         $this->initializePlugin($name, $config, $key);
 
         $this->loadingDir = '';
@@ -126,13 +126,6 @@ class PluginManager {
 
         if(!$this->pluginLoaded($name))
             throw new PluginIsNotLoadedException($name);
-
-
-        /*foreach($this->required as $plugin => $needs)
-        {
-            if($needs == $name)
-                throw new
-        }*/
 
         /** @var \Dan\Contracts\PluginContract|\Dan\Plugins\Plugin $plugin */
         $plugin = $this->loaded->get($name);
@@ -232,7 +225,7 @@ class PluginManager {
             $dir    = dirname($loadable);
             $temp   = "{$this->storageDir}{$key}/" . ($dir == '.' ? '' : $dir);
 
-            $file    = $this->parsePluginFile($loadable, $name, $key);
+            $file   = $this->parsePluginFile($loadable, $name, $key);
 
             if (!file_exists("{$this->storageDir}{$key}"))
                 mkdir("{$this->storageDir}{$key}");
@@ -300,6 +293,9 @@ class PluginManager {
             $file       = basename($path);
             $className  = str_replace(['.php', '/'], ['', '\\'], $file);
             $class      = "PluginTemp\\{$key}\\{$className}";
+
+            if(strpos($file, '.') === 0)
+                continue;
 
             $check = new ReflectionClass($class);
 

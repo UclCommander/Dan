@@ -2,6 +2,7 @@
 
 
 use Dan\Contracts\PacketContract;
+use Dan\Core\Config;
 use Dan\Core\Console;
 use Dan\Core\Dan;
 use Dan\Events\Event;
@@ -16,6 +17,10 @@ class PacketPrivmsg implements PacketContract {
         /** @var \Dan\Irc\Location\User $user */
         $user       = $packetInfo->get('user');
         $command    = $packetInfo->get('command');
+
+        if(Config::get('dan.blacklist_level') >= 2)
+            if(Dan::blacklist()->check($user))
+                return;
 
         if(strpos($command[1], "\001") !== false)
         {
@@ -50,7 +55,10 @@ class PacketPrivmsg implements PacketContract {
 
         if($command[0] == $connection->user->getNick())
         {
-            Event::fire('irc.packets.message.private', new EventArgs($packetInfo));
+            Event::fire('irc.packets.message.private', new EventArgs([
+                'user'      => $user,
+                'message'   => $command[1]
+            ]));
             return;
         }
 

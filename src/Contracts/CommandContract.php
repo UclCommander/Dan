@@ -6,11 +6,11 @@ use Dan\Irc\Location\User;
 interface CommandContract {
 
     /**
-     * Runs the command.
+     * The public message handler.
      *
-     * @param \Dan\Irc\Location\Channel  $channel
-     * @param \Dan\Irc\Location\User  $user
-     * @param string  $message
+     * @param \Dan\Irc\Location\Channel $channel
+     * @param \Dan\Irc\Location\User $user
+     * @param string $message
      */
     public function run(Channel $channel, User $user, $message);
 

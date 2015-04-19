@@ -15,6 +15,12 @@ class Hash extends Command {
 
         if(count($msg) != 2)
             return;
+        
+        if($msg[0] == 'bcrypt')
+        {
+            $channel->sendMessage(password_hash($msg[1], PASSWORD_BCRYPT));
+            return;
+        }
 
         if(in_array($msg[0], hash_algos()))
             $channel->sendMessage(hash($msg[0], $msg[1]));
@@ -26,6 +32,6 @@ class Hash extends Command {
     public function help(User $user, $message)
     {
         $user->sendNotice("hash <algo> <text> - Hashes <text> with <algo>");
-        $user->sendNotice("See http://php.net/manual/en/function.hash.php and http://php.net/manual/en/function.hash-algos.php for more information");
+        $user->sendNotice("See http://skycld.co/php-hash and http://skycld.co/php-algos for more information");
     }
 }

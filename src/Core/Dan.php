@@ -3,6 +3,7 @@
 use Dan\Commands\CommandManager;
 use Dan\Contracts\ServiceContract;
 use Dan\Irc\Connection;
+use Dan\Irc\Location\User;
 use Dan\Plugins\PluginManager;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
@@ -102,6 +103,15 @@ class Dan {
                 Console::exception($e)->push();
             }
         }
+    }
+
+    public static function isSudoUser(User $user)
+    {
+        foreach(Config::get('dan.sudo_users') as $usr)
+            if (fnmatch($usr, "{$user->getNick()}!{$user->getUser()}@{$user->getHost()}"))
+                return true;
+
+        return false;
     }
 
     /**

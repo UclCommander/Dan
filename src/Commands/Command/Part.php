@@ -11,27 +11,33 @@ class Part extends Command {
     protected $defaultRank = 'S';
 
     /**
-     * @inheritdoc
+     * @param \Dan\Irc\Location\Channel $channel
+     * @param \Dan\Irc\Location\User $user
+     * @param string $message
      */
     public function run(Channel $channel, User $user, $message)
     {
         $partFrom   = trim($message);
+
+        if($partFrom == '')
+            $partFrom = $channel->getName();
 
         /** @var Connection $irc */
         $irc = Dan::service('irc');
 
         if(!$irc->hasChannel($partFrom))
         {
-            $user->sendMessage("Bot is not in the channel");
+            $user->sendNotice("I'm not in this channel!");
             return;
         }
 
-        $irc->removeChannel($partFrom, "Requestion");
+        $irc->partChannel($partFrom, "Requested");
     }
 
 
     /**
-     * @inheritdoc
+     * @param \Dan\Irc\Location\User $user
+     * @param string $message
      */
     public function help(User $user, $message)
     {

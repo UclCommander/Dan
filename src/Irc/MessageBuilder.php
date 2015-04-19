@@ -13,7 +13,7 @@ class MessageBuilder {
     protected $totalLength = 0;
     protected $requiredLength = 0;
 
-    protected $rfcLength = 470;
+    protected $rfcLength = 460;
 
     /**
      * Adds a message that can be cut up.

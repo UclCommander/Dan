@@ -11,7 +11,7 @@ class Nbc extends Command {
      */
     public function run(Channel $channel, User $user, $message)
     {
-        $channel->sendMessage("http://youtu.be/6qLz1L9YqIs");
+        $channel->sendMessage("http://skycld.co/nbc");
     }
 
     /**

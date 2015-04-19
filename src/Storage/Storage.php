@@ -61,6 +61,9 @@ class Storage {
         $data = $this->filesystem->get($file);
         $json = json_decode($data, true);
 
+        if($json == null)
+            $json = [];
+
         $this->data = new Collection($json);
     }
 

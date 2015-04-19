@@ -6,6 +6,7 @@ use Dan\Events\EventArgs;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 use Dan\Plugins\Plugin;
+use Illuminate\Support\Str;
 
 class AutoVoice extends Plugin implements PluginContract {
 
@@ -16,6 +17,7 @@ class AutoVoice extends Plugin implements PluginContract {
     public function register()
     {
         $this->listenForEvent('irc.packets.join', [$this, 'voiceUser']);
+        $this->listenForEvent('irc.packets.nick', [$this, 'checkUnidentified']);
     }
 
     public function unregister()
@@ -50,5 +52,49 @@ class AutoVoice extends Plugin implements PluginContract {
             if(!$self->hasMode('v'))
                 $irc->send('MODE', $channel->getName(), '+v', $self->getNick());
         }
+    }
+
+    public function checkUnidentified(EventArgs $eventArgs)
+    {
+        $nick = $eventArgs->get('command');
+
+        $mode = "+v";
+
+        var_dump($nick);
+
+        if(Str::contains($nick[0], 'Unidentified'))
+            $mode = "-v";
+
+        $irc = Dan::service('irc');
+
+        $channels = $irc->getChannels();
+
+        foreach($channels as $channel)
+        {
+            var_dump($this->canVoice($channel));
+
+            if(!$this->canVoice($channel))
+                continue;
+
+            $irc->send('MODE', $channel->getName(), $mode, $nick[0]);
+        }
+    }
+
+
+    public function canVoice(Channel $channel)
+    {
+        $irc = Dan::service('irc');
+
+        /** @var User $self */
+        $self = $channel->getUser($irc->user->getNick());
+
+        if($self == null)
+            return false;
+
+
+
+        var_dump($self->hasOneOf('hoaq'),$self->modes());
+
+        return $self->hasOneOf('hoaq');
     }
 }

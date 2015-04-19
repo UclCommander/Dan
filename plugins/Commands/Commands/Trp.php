@@ -11,7 +11,7 @@ class Trp extends Command {
      */
     public function run(Channel $channel, User $user, $message)
     {
-        $channel->sendMessage("popcorn anyone? http://puu.sh/4JYlr/0b652af25d.jpg");
+        $channel->sendMessage("popcorn anyone? http://skycld.co/popcorn");
     }
 
     /**
