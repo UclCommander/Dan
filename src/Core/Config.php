@@ -29,11 +29,21 @@ class Config {
 
     /**
      * Saves config as JSON
+     *
+     * @param string $file
      */
-    public static function save()
+    public static function save($file = '')
     {
-        foreach(static::$config as $file => $config)
-            static::$filesystem->put(CONFIG_DIR . "/{$file}.json", json_encode($config, JSON_PRETTY_PRINT));
+        if($file == '')
+        {
+            foreach (static::$config as $file => $config)
+                static::$filesystem->put(CONFIG_DIR . "/{$file}.json", json_encode($config, JSON_PRETTY_PRINT));
+        }
+        else
+        {
+            if (array_key_exists($file, static::$config))
+                static::$filesystem->put(CONFIG_DIR . "/{$file}.json", json_encode(static::$config[$file], JSON_PRETTY_PRINT));
+        }
     }
 
     /**

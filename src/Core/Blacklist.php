@@ -32,6 +32,7 @@ class Blacklist {
      * Adds a blacklist item.
      *
      * @param $user
+     * @return string
      */
     public function add($user)
     {
@@ -39,12 +40,15 @@ class Blacklist {
 
         $this->data->add($str, $str);
         $this->data->save();
+
+        return $str;
     }
 
     /**
      * Removes a blacklist item.
      *
      * @param $user
+     * @return string
      */
     public function remove($user)
     {
@@ -52,6 +56,8 @@ class Blacklist {
 
         $this->data->remove($str);
         $this->data->save();
+
+        return $str;
     }
 
     /**
