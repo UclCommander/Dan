@@ -14,12 +14,18 @@ class AutoVoice extends Plugin implements PluginContract {
     protected $author      = "UclCommander";
     protected $description = "AutoVoice plugin";
 
+    /**
+     * Registers the plugin.
+     */
     public function register()
     {
         $this->listenForEvent('irc.packets.join', [$this, 'voiceUser']);
         $this->listenForEvent('irc.packets.nick', [$this, 'checkUnidentified']);
     }
 
+    /**
+     * Unregisters the plugin.
+     */
     public function unregister()
     {
         parent::unregister();
@@ -55,13 +61,16 @@ class AutoVoice extends Plugin implements PluginContract {
         }
     }
 
+    /**
+     * Checks to see if the user is unidentified, if so, devoice.
+     *
+     * @param \Dan\Events\EventArgs $eventArgs
+     */
     public function checkUnidentified(EventArgs $eventArgs)
     {
         $nick = $eventArgs->get('command');
 
         $mode = "+v";
-
-        var_dump($nick);
 
         if(Str::contains($nick[0], 'Unidentified'))
             $mode = "-v";
@@ -72,8 +81,6 @@ class AutoVoice extends Plugin implements PluginContract {
 
         foreach($channels as $channel)
         {
-            var_dump($this->canVoice($channel));
-
             if(!$this->canVoice($channel))
                 continue;
 
@@ -81,7 +88,12 @@ class AutoVoice extends Plugin implements PluginContract {
         }
     }
 
-
+    /**
+     * Do I have permission to voice users?
+     *
+     * @param \Dan\Irc\Location\Channel $channel
+     * @return bool
+     */
     public function canVoice(Channel $channel)
     {
         $irc = Dan::service('irc');
