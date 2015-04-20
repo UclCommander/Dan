@@ -148,7 +148,7 @@ class Connection implements ServiceContract {
      */
     public function sendLoginInformation()
     {
-        $this->send('USER', $this->config->get('nickname'), $this->config->get('username'), '*', $this->config->get('realname'));
+        $this->send('USER', $this->config->get('username'), $this->config->get('username'), '*', $this->config->get('realname'));
         $this->sendNick();
     }
 
