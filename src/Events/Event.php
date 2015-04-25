@@ -170,7 +170,7 @@ class Event {
             if($response === false && $event->getPriority() !== EventPriority::Critical)
             {
                 Console::text("Halting execution of further events for {$name} - Halted by event ID {$event->getId()}")->debug()->alert()->push();
-                break;
+                return false;
             }
 
             $responses[] = $response;

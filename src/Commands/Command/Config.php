@@ -62,8 +62,8 @@ class Config extends Command {
 
             case 'get':
                 $item = Cfg::get($data[1]);
-                
-                $user->sendNotice($data[1] . " : " . (is_array($item) ? implode(', ', $item->toArray()) : $item));
+
+                $user->sendNotice($data[1] . " : " . (is_string($item) ? $item : implode(', ', $item->toArray())));
                 break;
 
             case 'save':

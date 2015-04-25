@@ -13,13 +13,12 @@ interface CommandContract {
      * @param string $message
      */
     public function run(Channel $channel, User $user, $message);
-
+    
     /**
-     * Command help.
+     * Help entry point.
      *
-     * @param \Dan\Irc\Location\User  $user
-     * @param  string $message
-     * @return mixed
+     * @param \Dan\Irc\Location\User $user
+     * @param string $message
      */
     public function help(User $user, $message);
 

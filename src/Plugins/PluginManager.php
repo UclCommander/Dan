@@ -168,6 +168,13 @@ class PluginManager {
 
         foreach($pluginDir as $dir)
         {
+            if($dir == 'vendor')
+                continue;
+
+            if(strpos($dir, '.') === 0 || strpos($dir, 'composer.') === 0)
+                continue;
+
+
             if(is_dir($scan . $dir))
             {
                 $result[] = $this->recursiveScan($scan . $dir.'/', $prepend.$dir.'/');
@@ -293,9 +300,6 @@ class PluginManager {
             $file       = basename($path);
             $className  = str_replace(['.php', '/'], ['', '\\'], $file);
             $class      = "PluginTemp\\{$key}\\{$className}";
-
-            if(strpos($file, '.') === 0)
-                continue;
 
             $check = new ReflectionClass($class);
 

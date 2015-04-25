@@ -9,5 +9,11 @@
         "title",
         "textreplace"
     ],
-    "blacklist_level": 1
+    "blacklist_level": 1,
+    "minecraft": {
+        "channels": [],
+        "regex": {
+            "message": "/<?(.*)(?:>|:) (.*)/"
+        }
+    }
 }

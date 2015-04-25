@@ -16,6 +16,7 @@ use Dan\Core\Dan;
 use Dan\Events\Event;
 use Dan\Events\EventArgs;
 use Dan\Events\EventPriority;
+use Dan\Helpers\Minecraft;
 use Dan\Irc\Location\User;
 use Illuminate\Support\Collection;
 
@@ -43,6 +44,15 @@ class CommandManager implements ServiceContract {
     }
 
     /**
+     * @param $name
+     * @return bool
+     */
+    public function hasCommand($name)
+    {
+        return $this->commands->has($name);
+    }
+
+    /**
      * Removes a command.
      *
      * @param $name
@@ -58,7 +68,7 @@ class CommandManager implements ServiceContract {
     public function register()
     {
         Dan::registerService('commands', $this);
-        Event::subscribe('irc.packets.message.public', [$this, 'checkForCommand'], EventPriority::Critical);
+        Event::subscribe('irc.packets.message.public',  [$this, 'checkForCommand'], EventPriority::VeryHigh);
 
         $this->addCommand('blacklist',  new BlacklistCommand);
         $this->addCommand('config',     new ConfigCommand);
@@ -84,18 +94,22 @@ class CommandManager implements ServiceContract {
         $config     = Config::get('commands');
         $message    = $eventArgs->get('message');
 
-        /** @var \Dan\Irc\Location\Channel $user */
+        /** @var \Dan\Irc\Location\Channel $channel */
         $channel    = $eventArgs->get('channel');
 
         /** @var \Dan\Irc\Location\User $user */
         $user       = $eventArgs->get('user');
 
+        $mcuser     = null;
+
+        if(in_array($channel->getName(), Config::get('dan.minecraft.channels')->toArray()))
+            Minecraft::parse($mcuser, $user, $message);
 
         if(strpos($message, $config->get('command_starter')) !== 0)
             return null;
 
         if(Config::get('dan.blacklist_level') >= 1)
-            if(Dan::blacklist()->check($user))
+            if (Dan::blacklist()->check($user) || ($mcuser != null && Dan::blacklist()->check($mcuser)))
                 return false;
 
         $data = explode(' ', $message, 2);
@@ -114,6 +128,16 @@ class CommandManager implements ServiceContract {
             return false;
         }
 
+        $stop = Event::fire('commands.use', new EventArgs([
+            'command'   => $command,
+            'message'   => @$data[1],
+            'channel'   => $channel,
+            'user'      => $user,
+        ]), true);
+
+        if($stop === false)
+            return false;
+
         if(!$this->commands->has($command))
         {
             if($config->get('no_command_error'))
@@ -131,6 +155,7 @@ class CommandManager implements ServiceContract {
         }
 
         $cmd->run($channel, $user, @$data[1]);
+        return false;
     }
 
     /**
@@ -143,7 +168,7 @@ class CommandManager implements ServiceContract {
     {
         if(count($data) == 0)
         {
-            $user->sendNotice(implode(', ', $this->commands->keys()));
+            $user->sendNotice(implode(', ', $this->commands->keys()->toArray()));
             return;
         }
 

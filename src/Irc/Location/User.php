@@ -60,6 +60,11 @@ class User extends Location {
         ])->save();
     }
 
+    public function asString()
+    {
+        return "{$this->name}!{$this->username}@{$this->userHost}";
+    }
+
     /**
      * Gets the user's nickname.
      *
