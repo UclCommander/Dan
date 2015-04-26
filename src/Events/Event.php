@@ -1,7 +1,7 @@
 <?php namespace Dan\Events; 
 
 
-use Dan\Core\Console;
+use Dan\Console\Console;
 use Illuminate\Support\Arr;
 
 class Event {
@@ -89,7 +89,7 @@ class Event {
      */
     public function destroy()
     {
-        Console::text("Destroying event for {$this->name} - ID: {$this->id}")->debug()->alert()->push();
+        Console::debug("Destroying event for {$this->name} - ID: {$this->id}");
         unset(static::$listeners[$this->name][$this->priority][$this->id]);
     }
 
@@ -109,7 +109,7 @@ class Event {
     {
         $id = static::makeId($name, $priority);
 
-        Console::text("Subscribing for event {$name} - Priority {$priority} - Event ID: {$id}")->debug()->alert()->push();
+        Console::debug("[EVENTS]{brown} Subscribing for event {$name} - Priority {$priority} - Event ID: {$id}");
 
         $event = new static($name, $function, $priority, $id);
 
@@ -128,7 +128,7 @@ class Event {
         $id = static::makeId($name, $priority);
         static::$listeners[$name][$priority][$id] = new static($name, $function, $priority, $id, true);
 
-        Console::text("Subscribing ONCE for event {$name} - Priority {$priority} - Event ID: {$id}")->debug()->alert()->push();
+        Console::debug("[EVENTS]{brown} Subscribing ONCE for event {$name} - Priority {$priority} - Event ID: {$id}");
     }
 
     /**
@@ -141,7 +141,7 @@ class Event {
      */
     public static function fire($name, EventArgs $args, $halt = false)
     {
-        Console::text("Firing event {$name}")->debug()->alert()->push();
+        Console::debug("Firing event {$name}");
 
         $responses  = [];
         $events     = static::getListeners($name);
@@ -163,13 +163,13 @@ class Event {
 
             if(!is_null($response) && $halt)
             {
-                Console::text("Halting execution of further events for {$name} - Halted firing function.")->debug()->alert()->push();
+                Console::debug("Halting execution of further events for {$name} - Halted firing function.");
                 return $response;
             }
 
             if($response === false && $event->getPriority() !== EventPriority::Critical)
             {
-                Console::text("Halting execution of further events for {$name} - Halted by event ID {$event->getId()}")->debug()->alert()->push();
+                Console::debug("Halting execution of further events for {$name} - Halted by event ID {$event->getId()}");
                 return false;
             }
 

@@ -1,9 +1,8 @@
 <?php namespace Dan\Plugins; 
 
-use Dan\Core\Console;
+use Dan\Console\Console;
 use Dan\Exceptions\PluginDoesNotExistException;
 use Dan\Exceptions\PluginIsNotLoadedException;
-use Dan\Exceptions\RequiredPluginNeedsToBeLoadedException;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -92,23 +91,21 @@ class PluginManager {
     {
         $name = $this->getPluginName($name);
 
-        Console::text("Loading plugin {$name}")->info()->push();
+        Console::info("Loading plugin {$name}");
 
         if(!$this->pluginExists($name))
             throw new PluginDoesNotExistException("Plugin $name does not exist");
 
         $this->loadingDir = PLUGIN_DIR . "/{$name}/";
 
-        $config = $this->loadConfig($name);
-
         $key = "{$name}_" . $this->generateKey($name);
 
-        $this->copyPluginFiles($name, $config, $key);
-        $this->initializePlugin($name, $config, $key);
+        $this->copyPluginFiles($name, $key);
+        $this->initializePlugin($name, $key);
 
         $this->loadingDir = '';
 
-        Console::text("Plugin {$name} loaded")->success()->push();
+        Console::success("Plugin {$name} loaded");
 
         return true;
     }
@@ -222,12 +219,11 @@ class PluginManager {
      * Copy all plugin files to a temp directory.
      *
      * @param $name
-     * @param $config
      * @param $key
      */
-    protected function copyPluginFiles($name, $config, $key)
+    protected function copyPluginFiles($name, $key)
     {
-        foreach($config['files'] as $loadable)
+        foreach($this->recursiveScan($this->loadingDir) as $loadable)
         {
             $dir    = dirname($loadable);
             $temp   = "{$this->storageDir}{$key}/" . ($dir == '.' ? '' : $dir);
@@ -281,11 +277,10 @@ class PluginManager {
     /**
      * Initialize a plugin.
      *
-     * @param       $name
-     * @param array $config
-     * @param       $key
+     * @param string $name
+     * @param string $key
      */
-    protected function initializePlugin($name, array $config, $key)
+    protected function initializePlugin($name, $key)
     {
         $files = $this->recursiveScan($this->storageDir . $key);
 
@@ -318,38 +313,6 @@ class PluginManager {
 
             $this->classMap->put("Plugins\\{$name}", "PluginTemp\\{$key}");
         }
-    }
-
-    /**
-     * Loads the config for a plugin
-     *
-     * @param $name
-     * @return array
-     * @throws \Dan\Exceptions\RequiredPluginNeedsToBeLoadedException
-     * @throws \Illuminate\Filesystem\FileNotFoundException
-     */
-    protected function loadConfig($name)
-    {
-        $config = [];
-        $config['required'] = [];
-
-        $inc = [];
-
-        if ($this->filesystem->exists($this->loadingDir . 'config.inc'))
-            $inc = $this->filesystem->getRequire($this->loadingDir . 'config.inc');
-
-        $config = array_merge($config, $inc);
-        $config['files'] = $this->recursiveScan($this->loadingDir);
-
-        foreach ($config['required'] as $plugin)
-        {
-            if (!$this->pluginLoaded($plugin))
-                throw new RequiredPluginNeedsToBeLoadedException("Plugin '{$plugin}' needs to be loaded for plugin '{$name}' to work.");
-
-            $this->required[$name] = $plugin;
-        }
-
-        return $config;
     }
 }
 

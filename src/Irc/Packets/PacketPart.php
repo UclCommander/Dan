@@ -2,7 +2,7 @@
 
 
 use Dan\Contracts\PacketContract;
-use Dan\Core\Console;
+use Dan\Console\Console;
 use Dan\Events\Event;
 use Dan\Events\EventArgs;
 use Dan\Irc\Connection;
@@ -21,7 +21,7 @@ class PacketPart implements PacketContract {
             'channel'   => $channel
         ]));
 
-        Console::text("[{$channel->getName()}] {$user->getNick()} left the channel")->info()->push();
+        Console::info("[{$channel->getName()}] {$user->getNick()} left the channel");
 
         if($packetInfo->get('user')->getNick() === $connection->user->getNick())
             $connection->removeChannel($packetInfo->get('command')[0]);

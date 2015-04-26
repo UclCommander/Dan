@@ -1,4 +1,4 @@
-<?php namespace Dan\Sockets;
+<?php namespace Dan\Network;
 
 class Socket
 {
@@ -29,11 +29,10 @@ class Socket
     {
         $socket = socket_create($domain, $type, $protocol);
 
-        if($socket !== false)
-            $this->socket = $socket;
-        else
+        if($socket === false)
             $this->throwError();
 
+        $this->socket = $socket;
     }
 
     /**
@@ -53,24 +52,40 @@ class Socket
      */
     public function close()
     {
-       socket_close($this->socket);
+        socket_close($this->socket);
     }
 
     /**
+     * Reads from the socket
+     *
+     * @param int $limit
      * @return string
      */
-    public function read()
+    public function read($limit = 512)
     {
-        return trim(socket_read($this->socket, 512, PHP_NORMAL_READ));
+        $read = socket_read($this->socket, $limit, PHP_NORMAL_READ);
+
+        if($read === false)
+            $this->throwError();
+
+        return trim($read);
     }
 
-    public function send($data)
+    /**
+     * Writes to the socket.
+     *
+     * @param $data
+     * @param int $limit
+     */
+    public function write($data, $limit = 512)
     {
-        socket_write($this->socket, $data, 512);
+        socket_write($this->socket, $data, $limit);
     }
 
-
-    private function throwError()
+    /**
+     * Throws last error.
+     */
+    protected function throwError()
     {
         $error = socket_last_error($this->socket);
         die(socket_strerror($error));

@@ -44,7 +44,7 @@ class Storage {
     /**
      * Loads the file.
      *
-     * @throws \Illuminate\Filesystem\FileNotFoundException
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function loadFile()
     {

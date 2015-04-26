@@ -13,7 +13,7 @@ interface CommandContract {
      * @param string $message
      */
     public function run(Channel $channel, User $user, $message);
-    
+
     /**
      * Help entry point.
      *
@@ -36,3 +36,4 @@ interface CommandContract {
      */
     public function getDefaultRank();
 }
+

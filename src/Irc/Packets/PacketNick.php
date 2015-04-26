@@ -2,7 +2,7 @@
 
 
 use Dan\Contracts\PacketContract;
-use Dan\Core\Console;
+use Dan\Console\Console;
 use Dan\Events\Event;
 use Dan\Events\EventArgs;
 use Dan\Irc\Connection;
@@ -27,6 +27,6 @@ class PacketNick implements PacketContract {
         }
 
         Event::fire('irc.packets.nick', new EventArgs($packetInfo));
-        Console::text("[   ] {$user->getNick()} is now know as {$nick}")->info()->push();
+        Console::info("[   ] {$user->getNick()} is now know as {$nick}");
     }
 }

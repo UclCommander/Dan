@@ -2,7 +2,7 @@
 
 
 use Dan\Contracts\PacketContract;
-use Dan\Core\Console;
+use Dan\Console\Console;
 use Dan\Events\Event;
 use Dan\Events\EventArgs;
 use Dan\Irc\Connection;
@@ -21,7 +21,7 @@ class PacketMode implements PacketContract {
         $users = implode(' ', $list);
 
         if($user != null)
-            Console::text("[{$command[0]}] {$user->getNick()} sets mode {$command[1]} on {$users}")->info()->push();
+            Console::info("[{$command[0]}] {$user->getNick()} sets mode {$command[1]} on {$users}");
 
         Event::fire('irc.packets.mode', new EventArgs($packetInfo));
 

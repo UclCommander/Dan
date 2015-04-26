@@ -5,14 +5,13 @@ use Closure;
 use Dan\Contracts\PacketContract;
 use Dan\Contracts\ServiceContract;
 use Dan\Core\Config;
-use Dan\Core\Console;
-use Dan\Core\ConsoleColor;
+use Dan\Console\Console;
 use Dan\Irc\Helpers\Color;
 use Dan\Irc\Helpers\Parser;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\Location;
 use Dan\Irc\Location\User;
-use Dan\Sockets\Socket;
+use Dan\Network\Socket;
 use Illuminate\Support\Collection;
 
 class Connection implements ServiceContract {
@@ -78,7 +77,7 @@ class Connection implements ServiceContract {
             if(empty($line))
                 continue;
 
-            Console::text($line)->debug()->color(ConsoleColor::Cyan)->push();
+            Console::debug($line);
 
             $this->handleLine($line);
         }
@@ -107,7 +106,7 @@ class Connection implements ServiceContract {
         if($cmd == 'ERROR')
         {
             $this->running = false;
-            Console::text("ERROR: {$command[0]}")->critical()->push();
+            Console::critical($command[0]);
         }
 
         $this->handlePacket($cmd, new PacketInfo([
@@ -130,7 +129,7 @@ class Connection implements ServiceContract {
 
         if (!class_exists($class))
         {
-            Console::text("Cannot find packet handler for {$name}")->debug()->warning()->push();
+            Console::debug("Cannot find packet handler for {$name}");
             return;
         }
 
@@ -173,7 +172,7 @@ class Connection implements ServiceContract {
      */
     public function sendNotice(Location $location, $message)
     {
-        Console::text("[{$location->getName()}] {$this->user->getNick()}: $message")->info()->push();
+        Console::info("[{$location->getName()}] {$this->user->getNick()}: $message");
 
         $this->send("NOTICE", $location, $message);
     }
@@ -195,7 +194,7 @@ class Connection implements ServiceContract {
             return;
         }
 
-        Console::text("[{$location->getName()}] {$this->user->getNick()}: $message")->info()->push();
+        Console::info("[{$location->getName()}] {$this->user->getNick()}: $message");
 
         if($colors)
             $message = Color::parse($message);
@@ -253,9 +252,9 @@ class Connection implements ServiceContract {
         // Get only the first 510 characters to prevent overflow issues
         $raw = substr($raw, 0, 510);
 
-        Console::text("SENDING: {$raw}")->debug()->info()->push();
+        Console::debug("SENDING: {$raw}");
 
-        $this->socket->send("{$raw}\r\n");
+        $this->socket->write("{$raw}\r\n");
     }
 
 
@@ -306,7 +305,7 @@ class Connection implements ServiceContract {
 
         $this->channels->forget($safe);
 
-        Console::text("Removing channel {$channel}")->debug()->push();
+        Console::debug("Removing channel {$channel}");
 
         unset($channel);
     }
@@ -374,15 +373,15 @@ class Connection implements ServiceContract {
         if($this->running)
             return;
 
-        Console::text('Starting Socket Reader..')->debug()->push();
+        Console::debug('Starting Socket Reader..');
 
         $this->socket = new Socket();
         $this->socket->init(AF_INET, SOCK_STREAM, 0);
 
-        Console::text("Connecting to {$this->config->get('server')}:{$this->config->get('port')} ")->debug()->info()->push();
+        Console::debug("Connecting to {$this->config->get('server')}:{$this->config->get('port')} ");
 
         if(($cnt = $this->socket->connect($this->config->get('server'), $this->config->get('port'))) === false)
-            Console::text($this->socket->getLastErrorStr())->critical()->push();
+            Console::critical($this->socket->getLastErrorStr());
 
         $this->running = true;
     }

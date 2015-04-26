@@ -1,7 +1,6 @@
 <?php namespace Dan\Irc;
 
 
-use Dan\Core\Console;
 use Illuminate\Support\Collection;
 
 abstract class ModeObject {

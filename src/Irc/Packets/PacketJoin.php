@@ -2,7 +2,7 @@
 
 
 use Dan\Contracts\PacketContract;
-use Dan\Core\Console;
+use Dan\Console\Console;
 use Dan\Events\Event;
 use Dan\Events\EventArgs;
 use Dan\Irc\Connection;
@@ -15,12 +15,12 @@ class PacketJoin implements PacketContract {
         if($packetInfo->get('user')->getNick() === $connection->user->getNick())
             $connection->addChannel($packetInfo->get('command')[0]);
 
-        $user       = $packetInfo->get('user');
+        $user = $packetInfo->get('user');
 
         if(!$connection->hasChannel($packetInfo->get('command')[0]))
             return;
 
-        $channel    = $connection->getChannel($packetInfo->get('command')[0]);
+        $channel = $connection->getChannel($packetInfo->get('command')[0]);
         $channel->addUser($user);
 
         Event::fire('irc.packets.join', new EventArgs([
@@ -28,6 +28,6 @@ class PacketJoin implements PacketContract {
             'channel'   => $channel
         ]));
 
-        Console::text("[{$channel->getName()}] {$user->getNick()} joined the channel")->info()->push();
+        Console::info("[{$channel->getName()}] {$user->getNick()} joined the channel");
     }
 }

@@ -7,10 +7,12 @@ use Dan\Irc\Location\User;
 use Dan\Plugins\PluginManager;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
+use Dan\Console\Console;
+use League\Flysystem\Exception;
 
 class Dan {
 
-    const VERSION = '3.2.0';
+    const VERSION = '3.3.0';
 
     /** @var object[] */
     protected $services = [];
@@ -56,15 +58,13 @@ class Dan {
      */
     public function boot($args)
     {
-        Console::open();
-
-        Console::text('Booting Dan...')->info()->push();
+        Console::info('Loading bot..');
 
         if(Config::get('dan.debug'))
         {
             error_reporting(E_ALL);
             ini_set("display_errors", true);
-            Console::text("Debug mode is active!")->debug()->alert()->push();
+            Console::alert("{brown}!!!!Debug mode is active!!!!");
         }
 
         CommandManager::init();
@@ -73,7 +73,7 @@ class Dan {
         if(!in_array('--safemode', $args))
            $this->loadPlugins();
 
-        Console::text('System Booted. Starting IRC connection. ')->alert()->push();
+        Console::success("Bot loaded. Connecting to IRC.");
 
         if(in_array('--dry', $args))
             die;
@@ -100,7 +100,7 @@ class Dan {
             }
             catch (\Exception $e)
             {
-                Console::exception($e)->push();
+                Console::exception($e);
             }
         }
     }

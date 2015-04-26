@@ -2,7 +2,7 @@
 
 
 use Dan\Contracts\PacketContract;
-use Dan\Core\Console;
+use Dan\Console\Console;
 use Dan\Events\Event;
 use Dan\Events\EventArgs;
 use Dan\Irc\Connection;
@@ -20,6 +20,6 @@ class PacketKick implements PacketContract {
         $channel->removeUser($user);
 
         Event::fire('irc.packets.kick', new EventArgs($packetInfo));
-        Console::text("[   ] {$kicker->getNick()} kicked {$user->getNick()} ({$packetInfo->get('command')[2]})")->info()->push();
+        Console::info("[   ] {$kicker->getNick()} kicked {$user->getNick()} ({$packetInfo->get('command')[2]})");
     }
 }

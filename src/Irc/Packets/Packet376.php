@@ -2,7 +2,7 @@
 
 
 use Dan\Contracts\PacketContract;
-use Dan\Core\Console;
+use Dan\Console\Console;
 use Dan\Events\Event;
 use Dan\Events\EventArgs;
 use Dan\Events\EventPriority;
@@ -15,7 +15,7 @@ class Packet376 implements PacketContract {
     public function handle(Connection &$connection, PacketInfo $packetInfo)
     {
         if($connection->config->get('show_motd') === true)
-            Console::text($packetInfo->get('command')[1])->info()->push();
+            Console::info($packetInfo->get('command')[1]);
 
         // If it's an unreal server, send +B for bots
         foreach($connection->numeric->get('004') as $d)
@@ -24,7 +24,8 @@ class Packet376 implements PacketContract {
 
         if(!empty($connection->config->get('password')))
         {
-            Console::text('Sending NickServ password..')->info()->debug()->push();
+            Console::info('Authenticating with NickServ');
+
             $connection->sendRaw(sprintf($connection->config->get('nickserv_auth_command'), $connection->config->get('password')));
 
             Event::subscribe('irc.packet.mode', function(EventArgs $eventArgs) use($connection)

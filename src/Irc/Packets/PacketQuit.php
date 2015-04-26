@@ -2,7 +2,7 @@
 
 
 use Dan\Contracts\PacketContract;
-use Dan\Core\Console;
+use Dan\Console\Console;
 use Dan\Events\Event;
 use Dan\Events\EventArgs;
 use Dan\Irc\Connection;
@@ -19,6 +19,6 @@ class PacketQuit implements PacketContract {
             $channel->removeUser($user);
 
         Event::fire('irc.packets.quit', new EventArgs($packetInfo));
-        Console::text("[   ] {$user->getNick()} quit IRC ({$packetInfo->get('command')[0]})")->info()->push();
+        Console::info("[   ] {$user->getNick()} quit IRC ({$packetInfo->get('command')[0]})");
     }
 }

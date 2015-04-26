@@ -2,7 +2,7 @@
 
 
 use Dan\Contracts\PacketContract;
-use Dan\Core\Console;
+use Dan\Console\Console;
 use Dan\Events\Event;
 use Dan\Events\EventArgs;
 use Dan\Irc\Connection;
@@ -17,7 +17,7 @@ class PacketNotice implements PacketContract {
         // Ignore AUTH Notices
         if($command[0] == 'AUTH')
         {
-            Console::text($command[1])->info()->push();
+            Console::info($command[1]);
             return;
         }
 
