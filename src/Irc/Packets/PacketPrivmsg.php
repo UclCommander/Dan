@@ -62,6 +62,9 @@ class PacketPrivmsg implements PacketContract {
             return;
         }
 
+        if(!$connection->hasChannel($command[0]))
+            return;
+        
         Event::fire('irc.packets.message.public', new EventArgs([
             'channel'   => $connection->getChannel($command[0]),
             'message'   => $command[1],
