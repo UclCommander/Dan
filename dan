@@ -1,10 +1,8 @@
 #! /usr/bin/env php
 <?php
 
-/**
- * Dan loader file.
- * Do not directly edit this file.
- */
+error_reporting(E_ALL);
+ini_set("display_errors", true);
 
 if (phpversion() < '5.6')
 {
@@ -16,12 +14,17 @@ if (!defined('STDIN'))
     throw new Exception("CLI Only");
 }
 
-define("ROOT_DIR", __DIR__);
+$phar = Phar::running(false);
+
+define("PHAR", !empty($phar));
+
+define("ROOT_DIR", PHAR ? dirname($phar) : __DIR__);
+define("BASE_DIR", __DIR__);
 define('CONFIG_DIR', ROOT_DIR . '/config');
 define('STORAGE_DIR', ROOT_DIR . '/storage');
 define('PLUGIN_DIR', ROOT_DIR . '/plugins');
 
-require(__DIR__ . '/vendor/autoload.php');
-require(__DIR__ . '/src/exceptions.php');
 
-(new Dan\Core\Dan())->boot($argv);
+require(BASE_DIR . '/vendor/autoload.php');
+
+(new Dan\Core\Dan())->boot();

@@ -66,7 +66,7 @@ class Console {
      */
     public static function info($message)
     {
-        static::send("{blue}[INFO] {$message}");
+        static::send("{cyan}[INFO] {$message}");
     }
 
     /**
@@ -76,7 +76,7 @@ class Console {
      */
     public static function debug($message)
     {
-        static::send("{purple}[DEBUG]{cyan} {$message}");
+        static::send("{purple}[DEBUG] {$message}");
     }
 
     /**

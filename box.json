@@ -1,0 +1,10 @@
+{
+    "files": ["dan"],
+    "directories": [
+        "src",
+        "vendor"
+    ],
+    "main": "dan",
+    "output": "build/dan.phar",
+    "stub": true
+}
