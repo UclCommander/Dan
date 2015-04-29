@@ -6,6 +6,8 @@ use Illuminate\Filesystem\Filesystem;
 
 class Dan {
 
+    const VERSION = '1.0dev';
+
     /**
      * @var Filesystem $filesystem
      */
@@ -30,7 +32,7 @@ class Dan {
 
         if(!Setup::isSetup())
         {
-            info("It appears this is a first time run, setting defaults up.");
+            info("It appears this is a first time run, or there was an update. Setting defaults up.");
 
             Setup::runSetup();
         }
@@ -40,6 +42,10 @@ class Dan {
 
         if(DEBUG)
             debug("!!!DEBUG MODE ACTIVATED!!!");
+
+        //TODO: load plugins
+
+
     }
 
     /**

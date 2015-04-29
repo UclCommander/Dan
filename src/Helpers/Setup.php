@@ -1,6 +1,7 @@
 <?php namespace Dan\Helpers; 
 
 use Dan\Core\Config;
+use Dan\Core\Dan;
 
 class Setup {
 
@@ -11,7 +12,10 @@ class Setup {
      */
     public static function isSetup()
     {
-        return filesystem()->exists(CONFIG_DIR . '/dan.json');
+        if(!filesystem()->exists(CONFIG_DIR . '/dan.json'))
+            return false;
+
+        return config('dan.version') == Dan::VERSION;
     }
 
     /**
@@ -31,9 +35,27 @@ class Setup {
         info('Updating dan.json...');
         $dan = new Config('dan');
 
+        $dan->putIfNull('version', Dan::VERSION);
         $dan->putIfNull('debug', false);
         $dan->putIfNull('sudo_users', []);
         $dan->putIfNull('plugins', []);
+
+        $dan->save();
+
+
+        info('Updating irc.json...');
+        $dan = new Config('irc');
+
+        $dan->putIfNull('server', "irc.joebukkit.com");
+        $dan->putIfNull('port', 6667);
+        $dan->putIfNull('user.nick', "Example");
+        $dan->putIfNull('user.name', "Example");
+        $dan->putIfNull('user.real', "Example Real Name");
+        $dan->putIfNull('user.pass', "");
+        $dan->putIfNull('channels', ['#UclCommander']);
+        $dan->putIfNull('nickserv_auth_command', 'PRIVMSG NickServ IDENTIFY %s');
+        $dan->putIfNull('autorun_commands', ['MODE {NICK} +B']);
+        $dan->putIfNull('show_motd', false);
 
         $dan->save();
     }
