@@ -1,5 +1,6 @@
 <?php namespace Dan\Core; 
 
+use Dan\Console\Console;
 use Dan\Helpers\Setup;
 use Illuminate\Filesystem\Filesystem;
 
@@ -21,6 +22,10 @@ class Dan {
 
     public function boot()
     {
+        global $argv;
+
+        $args = Console::parseArgs($argv);
+
         info('Loading bot..');
 
         if(!Setup::isSetup())
@@ -29,6 +34,12 @@ class Dan {
 
             Setup::runSetup();
         }
+
+        // If dan.debug is true, --debug is true, or we're running outside the PHAR file, turn on debug.
+        define('DEBUG', (config('dan.debug') || (array_key_exists('--debug', $args) && $args['--debug'] == 'true')) || !PHAR);
+
+        if(DEBUG)
+            debug("!!!DEBUG MODE ACTIVATED!!!");
     }
 
     /**

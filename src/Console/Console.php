@@ -76,7 +76,8 @@ class Console {
      */
     public static function debug($message)
     {
-        static::send("{purple}[DEBUG] {$message}");
+        if(defined("DEBUG") && DEBUG)
+            static::send("{purple}[DEBUG] {$message}");
     }
 
     /**
