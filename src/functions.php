@@ -68,6 +68,18 @@ namespace {
         Console::critical($text, $die);
     }
 
+    /**
+     * Var dump with colors!
+     *
+     * @param ...$params
+     */
+    function vd(...$params)
+    {
+        Console::send("{white}----- VAR DUMP-----");
+        var_dump(...$params);
+        Console::send("----- END VAR DUMP-----{reset}");
+    }
+
 
     function message($location, $message)
     {

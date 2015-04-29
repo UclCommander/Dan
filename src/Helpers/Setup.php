@@ -15,8 +15,6 @@ class Setup {
         if(!filesystem()->exists(CONFIG_DIR . '/dan.json'))
             return false;
 
-        var_dump(config('dan.version'));
-
         return config('dan.version') == Dan::VERSION;
     }
 

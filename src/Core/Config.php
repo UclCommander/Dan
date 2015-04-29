@@ -61,6 +61,22 @@ class Config extends Collection {
         return $default;
     }
 
+    /**
+     * Puts a value only if it doesn't exist with dot notation
+     *
+     * @param $key
+     * @param $value
+     * @return bool|null
+     */
+    public function putIfNull($key, $value)
+    {
+        if(Arr::has($this->items, $key))
+            return null;
+
+        Arr::set($this->items, $key, $value);
+
+        return true;
+    }
 
     /**
      * Gets a config value by dot notation. Returns NULL if the config isn't found.
@@ -84,19 +100,16 @@ class Config extends Collection {
     }
 
     /**
-     * Puts a value only if it doesn't exist with dot notation
-     *
-     * @param $key
-     * @param $value
-     * @return bool|null
+     * Load all config files.
      */
-    public function putIfNull($key, $value)
+    public static function load()
     {
-        if(Arr::has($this->items, $key))
-            return null;
+        static::$configs = [];
 
-        Arr::set($this->items, $key, $value);
-
-        return true;
+        foreach(filesystem()->glob(CONFIG_DIR . '/*.json') as $file)
+        {
+            $name = basename($file, '.json');
+            new Config($name);
+        }
     }
 }

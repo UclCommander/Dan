@@ -41,6 +41,8 @@ class Dan {
 
         info('Loading bot..');
 
+        Config::load();
+
         if(!Setup::isSetup())
         {
             alert("It appears this is a first time run, or there was an update. Setting defaults up.");
