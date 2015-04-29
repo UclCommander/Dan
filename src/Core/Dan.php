@@ -1,66 +1,42 @@
 <?php namespace Dan\Core; 
 
-
-use Dan\Console\Console;
+use Dan\Helpers\Setup;
 use Illuminate\Filesystem\Filesystem;
 
 class Dan {
 
+    /**
+     * @var Filesystem $filesystem
+     */
     protected $filesystem;
+
+    protected static $dan;
+
+    public function __construct()
+    {
+        static::$dan = $this;
+
+        $this->filesystem = new Filesystem();
+    }
 
     public function boot()
     {
-        Console::info('Loading bot..');
+        info('Loading bot..');
 
-        $this->createDirectories();
+        if(!Setup::isSetup())
+        {
+            info("It appears this is a first time run, setting defaults up.");
 
-
+            Setup::runSetup();
+        }
     }
-
 
     /**
-     * Creates directories if they don't exist
+     * @return Filesystem
      */
-    public function createDirectories()
+    public static function filesystem()
     {
-        Console::debug('Creating directories...');
-
-        $this->filesystem = new Filesystem();
-
-        if(!$this->filesystem->exists(PLUGIN_DIR))
-        {
-            Console::debug("Directory '" . PLUGIN_DIR ."' not found, creating.");
-            $this->filesystem->makeDirectory(PLUGIN_DIR);
-        }
-
-        if(!$this->filesystem->exists(CONFIG_DIR))
-        {
-            Console::debug("Directory '" . CONFIG_DIR ."' not found, creating.");
-            $this->filesystem->makeDirectory(CONFIG_DIR);
-        }
-
-        if(!$this->filesystem->exists(STORAGE_DIR))
-        {
-            Console::debug("Directory '" . STORAGE_DIR ."' not found, creating.");
-            $this->filesystem->makeDirectory(STORAGE_DIR);
-        }
-
-        if(!$this->filesystem->exists(STORAGE_DIR . '/database/'))
-        {
-            Console::debug("Directory '" . STORAGE_DIR ."/database/' not found, creating.");
-            $this->filesystem->makeDirectory(STORAGE_DIR . '/database/');
-        }
-
-        if(!$this->filesystem->exists(STORAGE_DIR . '/plugins/'))
-        {
-            Console::debug("Directory '" . STORAGE_DIR ."/plugins/' not found, creating.");
-            $this->filesystem->makeDirectory(STORAGE_DIR . '/plugins/');
-        }
-
-        if(!$this->filesystem->exists(ROOT_DIR . '/logs/'))
-        {
-            Console::debug("Directory '" . STORAGE_DIR ."/logs/' not found, creating.");
-            $this->filesystem->makeDirectory(ROOT_DIR . '/logs/');
-        }
+        return static::$dan->filesystem;
     }
+
 }

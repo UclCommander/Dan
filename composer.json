@@ -4,7 +4,10 @@
             "Dan\\"         : "src/",
             "Plugins\\"     : "plugins/",
             "PluginTemp\\"  : "storage/plugins"
-        }
+        },
+        "files": [
+            "src/functions.php"
+        ]
     },
     "require": {
         "php": ">=5.6.0",
