@@ -15,6 +15,8 @@ class Setup {
         if(!filesystem()->exists(CONFIG_DIR . '/dan.json'))
             return false;
 
+        var_dump(config('dan.version'));
+
         return config('dan.version') == Dan::VERSION;
     }
 
@@ -32,17 +34,6 @@ class Setup {
      */
     protected static function createDefaultConfig()
     {
-        info('Updating dan.json...');
-        $dan = new Config('dan');
-
-        $dan->putIfNull('version', Dan::VERSION);
-        $dan->putIfNull('debug', false);
-        $dan->putIfNull('sudo_users', []);
-        $dan->putIfNull('plugins', []);
-
-        $dan->save();
-
-
         info('Updating irc.json...');
         $dan = new Config('irc');
 
@@ -56,6 +47,18 @@ class Setup {
         $dan->putIfNull('nickserv_auth_command', 'PRIVMSG NickServ IDENTIFY %s');
         $dan->putIfNull('autorun_commands', ['MODE {NICK} +B']);
         $dan->putIfNull('show_motd', false);
+
+        $dan->save();
+
+
+        // ALWAYS update dan.json last incase of errors
+        info('Updating dan.json...');
+        $dan = new Config('dan');
+
+        $dan->put('version', Dan::VERSION);
+        $dan->putIfNull('debug', false);
+        $dan->putIfNull('sudo_users', []);
+        $dan->putIfNull('plugins', []);
 
         $dan->save();
     }

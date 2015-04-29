@@ -1,9 +1,9 @@
-<?php namespace Dan\Core; 
+<?php namespace Dan\Core;
 
 
+use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use League\Flysystem\Exception;
 
 class Config extends Collection {
 
@@ -16,7 +16,7 @@ class Config extends Collection {
     /**
      * @param array|mixed $name
      * @param array $data
-     * @throws \League\Flysystem\Exception
+     * @throws \Exception
      */
     public function __construct($name, $data = [])
     {
@@ -25,11 +25,11 @@ class Config extends Collection {
         $this->name = $name;
         $this->file = CONFIG_DIR . '/' . $this->name . '.json';
 
-        if(Dan::filesystem()->exists($this->file))
+        if(filesystem()->exists($this->file))
         {
-            $json = json_decode($this->file);
+            $json = json_decode(filesystem()->get($this->file), true);
 
-            if($json == null)
+            if(!is_array($json))
                 throw new Exception("Error loading JSON for {$name}. Please check and correct the file.");
 
             $this->items = $json;

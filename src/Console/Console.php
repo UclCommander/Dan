@@ -34,7 +34,7 @@ class Console {
     public static function send($message, $color = true)
     {
         if($color)
-            $message = ConsoleFormat::parse($message);
+            $message = ConsoleFormat::parse($message . "{reset}");
 
         echo $message . PHP_EOL;
     }
@@ -84,10 +84,14 @@ class Console {
      * Sends a CRITICAL message.
      *
      * @param $message
+     * @param bool $die
      */
-    public static function critical($message)
+    public static function critical($message, $die = false)
     {
         static::send("{red}[CRITICAL] {$message}");
+
+        if($die)
+            die;
     }
 
     /**

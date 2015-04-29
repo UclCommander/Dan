@@ -2,19 +2,27 @@
 
 use Dan\Console\Console;
 use Dan\Helpers\Setup;
+use Dan\Irc\Connection;
 use Illuminate\Filesystem\Filesystem;
 
 class Dan {
 
-    const VERSION = '1.0dev';
+    const VERSION = '1.0.1dev';
 
     /**
      * @var Filesystem $filesystem
      */
     protected $filesystem;
 
+    /** @var Connection $connection */
+    protected $connection;
+
+    /** @var static $dan  */
     protected static $dan;
 
+    /**
+     * \
+     */
     public function __construct()
     {
         static::$dan = $this;
@@ -22,6 +30,9 @@ class Dan {
         $this->filesystem = new Filesystem();
     }
 
+    /**
+     * Boots up Dan
+     */
     public function boot()
     {
         global $argv;
@@ -32,9 +43,9 @@ class Dan {
 
         if(!Setup::isSetup())
         {
-            info("It appears this is a first time run, or there was an update. Setting defaults up.");
-
+            alert("It appears this is a first time run, or there was an update. Setting defaults up.");
             Setup::runSetup();
+            alert("Setup complete.");
         }
 
         // If dan.debug is true, --debug is true, or we're running outside the PHAR file, turn on debug.
@@ -43,9 +54,8 @@ class Dan {
         if(DEBUG)
             debug("!!!DEBUG MODE ACTIVATED!!!");
 
-        //TODO: load plugins
-
-
+        $this->connection = new Connection();
+        $this->connection->start();
     }
 
     /**
