@@ -80,6 +80,14 @@ namespace {
         Console::send("----- END VAR DUMP-----{reset}");
     }
 
+    /**
+     * @param ...$params
+     */
+    function send(...$params)
+    {
+        Dan::connection()->send(...$params);
+    }
+
 
     function message($location, $message)
     {

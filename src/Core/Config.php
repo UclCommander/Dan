@@ -43,7 +43,7 @@ class Config extends Collection {
      */
     public function save()
     {
-        Dan::filesystem()->put(CONFIG_DIR . '/' . $this->name . '.json', json_encode($this->items, JSON_PRETTY_PRINT));
+        filesystem()->put(CONFIG_DIR . '/' . $this->name . '.json', json_encode($this->items, JSON_PRETTY_PRINT));
     }
 
     /**

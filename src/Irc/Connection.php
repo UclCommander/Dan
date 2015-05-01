@@ -1,6 +1,7 @@
 <?php namespace Dan\Irc; 
 
 
+use Dan\Contracts\PacketContract;
 use Dan\Helpers\Parser;
 use Dan\Network\Socket;
 
@@ -130,18 +131,41 @@ class Connection {
 
             debug("{cyan}<< {$line}");
 
-            $data = Parser::parseLine($line);
-
-            $cmd    = $data['command'];
-            $from   = $data['from'];
-
-            if($cmd[0] == 'PING')
-                $this->send("PONG", $cmd[1]);
-
-            //$this->handleLine($line);
+            $this->handleLine($line);
         }
     }
 
+    /**
+     * @param $line
+     */
+    protected function handleLine($line)
+    {
+        $data = Parser::parseLine($line);
+
+        $cmd    = $data['command'];
+        $from   = $data['from'];
+
+        $data = $cmd;
+
+        array_shift($data);
+
+        $normal = ucfirst(strtolower($cmd[0]));
+
+        $class = "Dan\\Irc\\Packets\\Packet{$normal}";
+
+
+        if(!class_exists($class))
+        {
+            debug("Unable to find packet handler for {$normal}");
+            return;
+        }
+
+        /** @var PacketContract $handler */
+        $handler = new $class();
+
+        $handler->handle($from, $data);
+
+    }
 
     /**
      * Sends USER and NICK.

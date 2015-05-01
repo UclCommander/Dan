@@ -68,4 +68,12 @@ class Dan {
         return static::$dan->filesystem;
     }
 
+    /**
+     * @return Connection
+     */
+    public static function connection()
+    {
+        return static::$dan->connection;
+    }
+
 }
