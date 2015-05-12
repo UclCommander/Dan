@@ -1,7 +1,7 @@
 <?php namespace Dan\Database;
 
 
-use League\Flysystem\Exception;
+use \Exception;
 
 class Database {
 
@@ -37,7 +37,7 @@ class Database {
      * @param string $table
      * @param array $values
      * @return bool
-     * @throws \League\Flysystem\Exception
+     * @throws \Exception
      */
     public function insert($table, array $values)
     {
@@ -70,7 +70,7 @@ class Database {
      * @param array $where
      * @param array $values
      * @return bool
-     * @throws \League\Flysystem\Exception
+     * @throws \Exception
      */
     public function update($table, array $where, array $values)
     {
@@ -101,7 +101,7 @@ class Database {
      * @param array $where
      * @param array $values
      * @return bool
-     * @throws \League\Flysystem\Exception
+     * @throws \Exception
      */
     public function insertOrUpdate($table, array $where, array $values)
     {
@@ -148,7 +148,7 @@ class Database {
      * @param $table
      * @param $data
      * @return bool
-     * @throws \League\Flysystem\Exception
+     * @throws \Exception
      */
     public function create($table, $data)
     {
@@ -179,7 +179,7 @@ class Database {
      * @param $where
      * @param $column
      * @return bool
-     * @throws \League\Flysystem\Exception
+     * @throws \Exception
      */
     public function increment($table, $where, $column)
     {
@@ -211,12 +211,12 @@ class Database {
 
     /**
      * Checks to see if a row exists by column and value.
-     * 
+     *
      * @param $table
      * @param $column
      * @param $value
      * @return int|string
-     * @throws \League\Flysystem\Exception
+     * @throws \Exception
      */
     protected function rowOffsetWhere($table, $column, $value)
     {
@@ -238,7 +238,7 @@ class Database {
      * @param $table
      * @param $column
      * @return bool
-     * @throws \League\Flysystem\Exception
+     * @throws \Exception
      */
     protected function columnExists($table, $column)
     {
