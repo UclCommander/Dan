@@ -1,6 +1,7 @@
 <?php namespace Dan\Irc; 
 
 
+use Dan\Console\Console;
 use Dan\Contracts\PacketContract;
 use Dan\Helpers\IrcColor;
 use Dan\Helpers\Parser;
@@ -207,7 +208,6 @@ class Connection {
      */
     protected function read()
     {
-
         $this->login();
 
         while ($this->running)
@@ -234,6 +234,8 @@ class Connection {
             }
             catch (\Exception $exception)
             {
+                Console::exception($exception);
+
                 if($this->inChannel(config('dan.control_channel')))
                 {
                     $this->message(config('dan.control_channel'), "Exception was thrown. {$exception->getMessage()} File: " . relative($exception->getTrace()[0]['file']) . "@{$exception->getLine()}");

@@ -82,6 +82,17 @@ namespace {
     }
 
     /**
+     * Sends a console message.
+     *
+     * @param $text
+     * @param bool $color
+     */
+    function console($text, $color = true)
+    {
+        Console::send($text, $color);
+    }
+
+    /**
      * Var dump with colors!
      *
      * @param ...$params

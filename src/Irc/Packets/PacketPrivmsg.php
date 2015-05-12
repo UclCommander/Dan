@@ -67,6 +67,8 @@ class PacketPrivmsg implements PacketContract {
 
         database()->increment('users', ['nick' => $user->nick()], 'messages');
 
+        console("[{$channel->getLocation()}] {$user->nick()}: {$message}");
+
         event('irc.packets.message.public', [
             'user'      => $channel->getUser($user->nick()),
             'channel'   => $channel,

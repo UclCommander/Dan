@@ -26,17 +26,17 @@ class ColorParser {
             $build  = '';
 
             if($first == 'reset')
+            {
                 $build = static::$resetChar;
-
-            if(array_key_exists($first, static::$colors))
+            }
+            else if(array_key_exists($first, static::$colors))
             {
                 $color      = static::$colors[$first];
                 $background = (isset(static::$colors[$second]) ? static::$colors[$second] : null);
 
                 $build = static::$char . $color . ($background != null ? ',' . $background : '');
             }
-
-            if(array_key_exists($first, static::$fontType))
+            else if(array_key_exists($first, static::$fontType))
             {
                 $build = static::$fontType[$first];
             }

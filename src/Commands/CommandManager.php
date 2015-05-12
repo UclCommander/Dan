@@ -52,6 +52,12 @@ class CommandManager {
             return;
         }
 
+
+        event('command.use', [
+            'command'   => $command,
+            ''
+        ]);
+
         $this->runCommand($command, 'use', $channel, $user, @$data[1]);
     }
 

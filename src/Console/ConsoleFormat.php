@@ -5,7 +5,7 @@ use Dan\Helpers\ColorParser;
 
 class ConsoleFormat extends ColorParser {
 
-    protected static $reset    = "\x1B[0m";
+    protected static $resetChar = "\x1B[39m";
 
     protected static $colors = [
         'black'         => "[30m",
@@ -17,23 +17,15 @@ class ConsoleFormat extends ColorParser {
         'cyan'          => "[36m",
         'white'         => "[37m",
 
-        'darkGray'      => "[30m",
-        'lightBlue'     => "[34m",
-        'lightGreen'    => "[32m",
-        'lightCyan'     => "[36m",
-        'lightRed'      => "[31m",
-        'lightPurple'   => "[35m",
-        'brown'         => "[33m",
-        'lightGray'     => "[37m",
-
-        'backBlack'     => "[040",
-        'backRed'       => "[041",
-        'backGreen'     => "[042",
-        'backYellow'    => "[043",
-        'backBlue'      => "[044",
-        'backMagenta'   => "[045",
-        'backCyan'      => "[046",
-        'backLightGray' => "[047",
+        'backBlack'     => "[40m",
+        'backRed'       => "[41m",
+        'backGreen'     => "[42m",
+        'backYellow'    => "[43m",
+        'backBlue'      => "[44m",
+        'backMagenta'   => "[45m",
+        'backCyan'      => "[46m",
+        'backLightGray' => "[47m",
+        'backDefault'   => "[49m",
     ];
 
     protected static $char = "\x1B";
