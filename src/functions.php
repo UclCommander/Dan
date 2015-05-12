@@ -5,6 +5,9 @@ namespace {
     use Dan\Console\Console;
     use Dan\Core\Config;
     use Dan\Core\Dan;
+    use Dan\Events\Event;
+    use Dan\Events\EventPriority;
+    use Dan\Irc\Location\User;
 
     /**
      * Gets the filesystem class.
@@ -14,6 +17,16 @@ namespace {
     function filesystem()
     {
         return Dan::filesystem();
+    }
+
+    /**
+     * Returns the database instance.
+     *
+     * @return \Dan\Database\Database
+     */
+    function database()
+    {
+        return Dan::database();
     }
 
     /**
@@ -81,6 +94,8 @@ namespace {
     }
 
     /**
+     * Sends am IRC line using the message builder.
+     *
      * @param ...$params
      */
     function send(...$params)
@@ -88,14 +103,115 @@ namespace {
         Dan::connection()->send(...$params);
     }
 
-
-    function message($location, $message)
+    /**
+     * Sends a raw IRC line.
+     *
+     * @param $line
+     */
+    function raw($line)
     {
-
+        Dan::connection()->raw($line);
     }
 
+    /**
+     * Gets the connection.
+     *
+     * @return \Dan\Irc\Connection
+     */
+    function connection()
+    {
+        return Dan::connection();
+    }
+
+    /**
+     * Fires an event.
+     *
+     * @param $name
+     * @param $data
+     * @return mixed
+     */
+    function event($name, $data = null)
+    {
+        return Event::fire($name, $data);
+    }
+
+    /**
+     * Subscribes to an event.
+     *
+     * @param $name
+     * @param $function
+     * @param int $priority
+     */
+    function subscribe($name, $function, $priority = EventPriority::Normal)
+    {
+        Event::subscribe($name, $function, $priority);
+    }
+
+
+    /**
+     * Sends a message.
+     *
+     * @param $location
+     * @param $message
+     */
+    function message($location, $message)
+    {
+        Dan::connection()->message($location, $message);
+    }
+
+    /**
+     * Sends a notice.
+     *
+     * @param $location
+     * @param $message
+     */
     function notice($location, $message)
     {
+        Dan::connection()->notice($location, $message);
+    }
 
+    /**
+     * Returns a new user.
+     *
+     * @param $data
+     * @return \Dan\Irc\Location\User
+     */
+    function user($data)
+    {
+        return new User(['nick' => $data[0], 'user' => $data[1], 'host' => $data[2], 'rank' => @$data[3]]);
+    }
+
+    /**
+     * Coverts a number to a human readable size.
+     *
+     * @param $size
+     * @return string
+     */
+    function convert($size)
+    {
+        $unit=['b','kb','mb','gb','tb','pb'];
+        return @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
+    }
+
+    /**
+     * Checks to see if the string is a channel.
+     *
+     * @param $channel
+     * @return bool
+     */
+    function isChannel($channel)
+    {
+        return boolval(preg_match("/#([a-zA-Z0-9_\-\.]+)/", $channel));
+    }
+
+    /**
+     * Gets relative path from executable.
+     *
+     * @param $path
+     * @return mixed
+     */
+    function relative($path)
+    {
+        return str_replace(ROOT_DIR, '', $path);
     }
 }

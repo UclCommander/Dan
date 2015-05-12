@@ -2,7 +2,11 @@
 
 
 use Dan\Contracts\PacketContract;
+use Dan\Helpers\IrcColor;
 use Dan\Helpers\Parser;
+use Dan\Irc\Location\Channel;
+use Dan\Irc\Location\Location;
+use Dan\Irc\Location\User;
 use Dan\Network\Socket;
 
 class Connection {
@@ -13,6 +17,16 @@ class Connection {
     /** @var Socket $socket */
     protected $socket;
 
+    /** @var User $self */
+    protected $self;
+
+    protected $channels = [];
+
+
+    public function __construct()
+    {
+        $this->self = user([config('irc.user.nick'), config('irc.user.name'), '']);
+    }
 
     /**
      *
@@ -42,14 +56,19 @@ class Connection {
         $this->read();
     }
 
-
     /**
      * @param $location
      * @param $message
      */
-    public function message($location, $message)
+    public function message($location, $message, $color = true)
     {
+        if($location instanceof Location)
+            $location = $location->getLocation();
 
+        if($color)
+            $message = IrcColor::parse($message);
+
+        $this->send("PRIVMSG", $location, $message);
     }
 
     /**
@@ -58,7 +77,10 @@ class Connection {
      */
     public function notice($location, $message)
     {
+        if($location instanceof Location)
+            $location = $location->getLocation();
 
+        $this->send("NOTICE", $location, $message);
     }
 
     /**
@@ -110,28 +132,113 @@ class Connection {
         // Get only the first 510 characters to prevent overflow issues
         $raw = substr($raw, 0, 510);
 
-        debug("{brown}>> {$raw}");
+        $console = str_replace(config('irc.user.pass'), '[PASSWORD]', $raw);
+
+        debug("{brown}>> {$console}");
 
         $this->socket->write("{$raw}\r\n");
     }
+
+    /**
+     * Am I in the channel?
+     *
+     * @param $channel
+     * @return bool
+     */
+    public function inChannel($channel)
+    {
+        return array_key_exists($channel, $this->channels);
+    }
+
+    /**
+     * Gets a channel.
+     *
+     * @param $channel
+     * @return Channel
+     */
+    public function getChannel($channel)
+    {
+        return $this->channels[$channel];
+    }
+
+    /**
+     * Adds a channel.
+     *
+     * @param $channel
+     */
+    public function addChannel($channel)
+    {
+        $this->channels[$channel] = new Channel($channel);
+    }
+
+    /**
+     * Joins a channel.
+     *
+     * @param $channel
+     */
+    public function joinChannel($channel)
+    {
+        $this->send("JOIN", $channel);
+    }
+
+    /**
+     * Parts a channel.
+     *
+     * @param $channel
+     * @param string $reason
+     * @return bool
+     */
+    public function partChannel($channel, $reason = 'Requested')
+    {
+        if(!$this->inChannel($channel))
+            return false;
+
+        $this->send("PART", $channel, $reason);
+
+        return true;
+    }
+
+    //
+    //
+    //
 
     /**
      * Reads the connection.
      */
     protected function read()
     {
+
         $this->login();
 
-        while($this->running)
+        while ($this->running)
         {
             $line = $this->socket->read();
 
-            if(empty($line))
+            if (empty($line))
+            {
                 continue;
+            }
+
+            $line = event('connection.line', $line);
+
+            if (empty($line))
+            {
+                continue;
+            }
 
             debug("{cyan}<< {$line}");
 
-            $this->handleLine($line);
+            try
+            {
+                $this->handleLine($line);
+            }
+            catch (\Exception $exception)
+            {
+                if($this->inChannel(config('dan.control_channel')))
+                {
+                    $this->message(config('dan.control_channel'), "Exception was thrown. {$exception->getMessage()} File: " . relative($exception->getTrace()[0]['file']) . "@{$exception->getLine()}");
+                }
+            }
         }
     }
 
@@ -156,7 +263,7 @@ class Connection {
 
         if(!class_exists($class))
         {
-            debug("Unable to find packet handler for {$normal}");
+            debug("{red}Unable to find packet handler for {$normal}");
             return;
         }
 

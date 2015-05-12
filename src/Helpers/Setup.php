@@ -15,6 +15,9 @@ class Setup {
         if(!filesystem()->exists(CONFIG_DIR . '/dan.json'))
             return false;
 
+        if(!filesystem()->exists(STORAGE_DIR . '/database.json'))
+            return false;
+
         return config('dan.version') == Dan::VERSION;
     }
 
@@ -25,6 +28,7 @@ class Setup {
     {
         static::createDirectories();
         static::createDefaultConfig();
+        static::checkDatabase();
     }
 
     /**
@@ -48,6 +52,17 @@ class Setup {
 
         $dan->save();
 
+        info('Updating commands.json...');
+        $dan = new Config('commands');
+        $dan->putIfNull('command_starter', '.');
+        $dan->putIfNull('default_permissions', '+%@&~');
+        $dan->putIfNull('commands', []);
+        $dan->putIfNull('commands.memory', 'S');
+        $dan->putIfNull('commands.say', 'S');
+        $dan->putIfNull('commands.raw', 'S');
+        $dan->putIfNull('commands.join', 'S');
+        $dan->putIfNull('commands.part', 'S');
+        $dan->save();
 
         // ALWAYS update dan.json last incase of errors
         info('Updating dan.json...');
@@ -55,7 +70,9 @@ class Setup {
 
         $dan->put('version', Dan::VERSION);
         $dan->putIfNull('debug', false);
-        $dan->putIfNull('sudo_users', []);
+        $dan->putIfNull('control_channel', '#DanControl');
+        $dan->putIfNull('owners', []);
+        $dan->putIfNull('admins', []);
         $dan->putIfNull('plugins', []);
 
         $dan->save();
@@ -68,11 +85,16 @@ class Setup {
     {
         info('Creating directories...');
 
-
         if(!filesystem()->exists(PLUGIN_DIR))
         {
             info("Directory '" . PLUGIN_DIR ."' not found, creating.");
             filesystem()->makeDirectory(PLUGIN_DIR);
+        }
+
+        if(!filesystem()->exists(COMMAND_DIR))
+        {
+            info("Directory '" . COMMAND_DIR ."' not found, creating.");
+            filesystem()->makeDirectory(COMMAND_DIR);
         }
 
         if(!filesystem()->exists(CONFIG_DIR))
@@ -87,22 +109,40 @@ class Setup {
             filesystem()->makeDirectory(STORAGE_DIR);
         }
 
-        if(!filesystem()->exists(STORAGE_DIR . '/database/'))
-        {
-            info("Directory '" . STORAGE_DIR ."/database/' not found, creating.");
-            filesystem()->makeDirectory(STORAGE_DIR . '/database/');
-        }
-
         if(!filesystem()->exists(STORAGE_DIR . '/plugins/'))
         {
             info("Directory '" . STORAGE_DIR ."/plugins/' not found, creating.");
             filesystem()->makeDirectory(STORAGE_DIR . '/plugins/');
         }
 
+        if(!filesystem()->exists(STORAGE_DIR . '/commands/'))
+        {
+            info("Directory '" . STORAGE_DIR ."/commands/' not found, creating.");
+            filesystem()->makeDirectory(STORAGE_DIR . '/commands/');
+        }
+
         if(!filesystem()->exists(ROOT_DIR . '/logs/'))
         {
             info("Directory '" . STORAGE_DIR ."/logs/' not found, creating.");
             filesystem()->makeDirectory(ROOT_DIR . '/logs/');
+        }
+    }
+
+    /**
+     *
+     */
+    public static function checkDatabase()
+    {
+        info('Updating database...');
+
+        if(!database()->exists('users'))
+        {
+            database()->create('users', [
+                'nick'      => '',
+                'user'      => '',
+                'host'      => '',
+                'messages'  => 0,
+            ]);
         }
     }
 }

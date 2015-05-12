@@ -1,11 +1,10 @@
 <?php namespace Dan\Core;
 
 
+use Dan\Helpers\DotCollection;
 use Exception;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 
-class Config extends Collection {
+class Config extends DotCollection {
 
     /** @var static[]  */
     protected static $configs = [];
@@ -47,35 +46,17 @@ class Config extends Collection {
     }
 
     /**
-     * Gets an item using dot notation.
-     *
-     * @param mixed $key
-     * @param null $default
-     * @return mixed
+     * Load all config files.
      */
-    public function get($key, $default = null)
+    public static function load()
     {
-        if(Arr::has($this->items, $key))
-            return Arr::get($this->items, $key);
+        static::$configs = [];
 
-        return $default;
-    }
-
-    /**
-     * Puts a value only if it doesn't exist with dot notation
-     *
-     * @param $key
-     * @param $value
-     * @return bool|null
-     */
-    public function putIfNull($key, $value)
-    {
-        if(Arr::has($this->items, $key))
-            return null;
-
-        Arr::set($this->items, $key, $value);
-
-        return true;
+        foreach(filesystem()->glob(CONFIG_DIR . '/*.json') as $file)
+        {
+            $name = basename($file, '.json');
+            new Config($name);
+        }
     }
 
     /**
@@ -97,19 +78,5 @@ class Config extends Collection {
         }
 
         return null;
-    }
-
-    /**
-     * Load all config files.
-     */
-    public static function load()
-    {
-        static::$configs = [];
-
-        foreach(filesystem()->glob(CONFIG_DIR . '/*.json') as $file)
-        {
-            $name = basename($file, '.json');
-            new Config($name);
-        }
     }
 }
