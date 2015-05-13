@@ -115,12 +115,6 @@ class Setup {
             filesystem()->makeDirectory(STORAGE_DIR . '/plugins/');
         }
 
-        if(!filesystem()->exists(STORAGE_DIR . '/commands/'))
-        {
-            info("Directory '" . STORAGE_DIR ."/commands/' not found, creating.");
-            filesystem()->makeDirectory(STORAGE_DIR . '/commands/');
-        }
-
         if(!filesystem()->exists(ROOT_DIR . '/logs/'))
         {
             info("Directory '" . STORAGE_DIR ."/logs/' not found, creating.");
