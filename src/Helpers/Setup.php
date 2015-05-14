@@ -26,9 +26,13 @@ class Setup {
      */
     public static function runSetup()
     {
+        $first = filesystem()->exists(CONFIG_DIR . '/dan.json');
+
         static::createDirectories();
         static::createDefaultConfig();
         static::checkDatabase();
+
+        return !$first;
     }
 
     /**
@@ -131,10 +135,23 @@ class Setup {
 
         if(!database()->exists('users'))
         {
+            info('Creating users table...');
+
             database()->create('users', [
                 'nick'      => '',
                 'user'      => '',
                 'host'      => '',
+                'messages'  => 0,
+            ]);
+        }
+
+        if(!database()->exists('channels'))
+        {
+            info('Creating channels table...');
+
+            database()->create('channels', [
+                'name'      => '',
+                'max_users' => 0,
                 'messages'  => 0,
             ]);
         }

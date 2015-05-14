@@ -10,7 +10,7 @@ use Illuminate\Filesystem\Filesystem;
 
 class Dan {
 
-    const VERSION = '4.0.10dev';
+    const VERSION = '4.0.11dev';
 
     /**
      * @var Filesystem $filesystem
@@ -59,10 +59,16 @@ class Dan {
             event('dan.setup.start');
             alert("It appears this is a first time run, or there was an update. Setting defaults up.");
 
-            Setup::runSetup();
+            $first = Setup::runSetup();
 
             alert("Setup complete.");
             event('dan.setup.end');
+
+            if($first)
+            {
+                alert("This was a first time setup. You can now configure the bot in the config directory.");
+                die;
+            }
         }
 
         // If dan.debug is true, --debug is true, or we're running outside the PHAR file, turn on debug.

@@ -11,6 +11,11 @@ class Channel extends Location {
 
         $this->name     = $name;
         $this->location = $name;
+
+
+        database()->insertOrUpdate('channels', ['name' => $name], [
+           'name'   => $name
+        ]);
     }
 
     /**
@@ -49,6 +54,15 @@ class Channel extends Location {
             }
 
             $this->users[$nick] = $rank;
+        }
+
+        $channel = database()->get('channels', ['name' => $this->name]);
+
+        if($channel['max_users'] < count($this->users))
+        {
+            database()->update('channels', ['name' => $this->name], [
+                'max_users' => count($this->users)
+            ]);
         }
 
         return array_keys($this->users);
