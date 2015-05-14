@@ -36,7 +36,7 @@ class Console {
         if($color)
             $message = ConsoleFormat::parse($message . "{reset}");
 
-        echo ConsoleFormat::parse("{reset}[ " . date('r') . " ] ") . $message . PHP_EOL;
+        echo ConsoleFormat::parse("{reset}[" . date('m-d-Y H:m:s') . "] ") . $message . PHP_EOL;
     }
 
     /**
