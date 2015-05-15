@@ -176,10 +176,11 @@ class Connection {
      * Joins a channel.
      *
      * @param $channel
+     * @param string $key
      */
-    public function joinChannel($channel)
+    public function joinChannel($channel, $key = null)
     {
-        $this->send("JOIN", $channel);
+        $this->send("JOIN", $channel, $key);
     }
 
     /**
@@ -236,9 +237,9 @@ class Connection {
             {
                 Console::exception($exception);
 
-                if($this->inChannel(config('dan.control_channel')))
+                if($this->inChannel(explode(':', config('dan.control_channel'))[0]))
                 {
-                    $this->message(config('dan.control_channel'), "Exception was thrown. {$exception->getMessage()} File: " . relative($exception->getTrace()[0]['file']) . "@{$exception->getLine()}");
+                    $this->message(explode(':', config('dan.control_channel'))[0], "Exception was thrown. {$exception->getMessage()} File: " . relative($exception->getTrace()[0]['file']) . "@{$exception->getLine()}");
                 }
             }
         }

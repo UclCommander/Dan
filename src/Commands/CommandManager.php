@@ -12,13 +12,15 @@ class CommandManager {
      */
     public function __construct()
     {
-        subscribe('irc.packets.message.public', [$this, 'run']);
+        subscribe('irc.packets.message.public', [$this, 'checkForCommand']);
     }
 
     /**
+     * Checks to see if the message is a command.
+     *
      * @param \Dan\Events\EventArgs $eventArgs
      */
-    public function run(EventArgs $eventArgs)
+    public function checkForCommand(EventArgs $eventArgs)
     {
         $message    = $eventArgs->get('message');
 
@@ -34,11 +36,10 @@ class CommandManager {
         $data       = explode(' ', $message, 2);
         $command    = strtolower(substr($data[0], 1));
 
-        if($command == 'help')
-        {
-            $this->help($channel, $user, @$data[1]);
-            return;
-        }
+        event('command.use', [
+            'command'   => $command,
+            ''
+        ]);
 
         if(!$this->exists($command))
         {
@@ -46,22 +47,30 @@ class CommandManager {
             return;
         }
 
-        if(!$this->hasPermission($command, $user))
+        if($command == 'help')
         {
-            $channel->message("You do not have the required permissions to use this command.");
+            controlLog("{$user->nick()} used '{$message}' in {$channel->getLocation()}");
+            $this->help($channel, $user, @$data[1]);
             return;
         }
 
 
-        event('command.use', [
-            'command'   => $command,
-            ''
-        ]);
+        if(!$this->hasPermission($command, $user))
+        {
+            controlLog("{$user->nick()} tried to use '{$message}'
+             in {$channel->getLocation()}");
+            $channel->message("You do not have the required permissions to use this command.");
+            return;
+        }
+
+        controlLog("{$user->nick()} used '{$message}' in {$channel->getLocation()}");
 
         $this->runCommand($command, 'use', $channel, $user, @$data[1]);
     }
 
     /**
+     * Runs a command.
+     *
      * @param $command
      * @param $entry
      * @param \Dan\Irc\Location\Channel $channel
@@ -76,15 +85,22 @@ class CommandManager {
     }
 
     /**
+     * Checks to see if a command exists.
+     *
      * @param $command
      * @return bool
      */
     public function exists($command)
     {
+        if($command == 'help')
+            return true;
+
         return filesystem()->exists(COMMAND_DIR . '/' . $command . '.php');
     }
 
     /**
+     * Gets all commands.
+     *
      * @return array
      */
     public function getCommands()
@@ -98,6 +114,8 @@ class CommandManager {
     }
 
     /**
+     * Checks to see if a user has permission to use a command.
+     *
      * @param $command
      * @param \Dan\Irc\Location\User $user
      * @return bool
@@ -120,6 +138,8 @@ class CommandManager {
     }
 
     /**
+     * Runs the help command.
+     *
      * @param \Dan\Irc\Location\Channel $channel
      * @param \Dan\Irc\Location\User $user
      * @param $message

@@ -1,5 +1,6 @@
 <?php namespace Dan\Core; 
 
+use Composer\Autoload\ClassLoader;
 use Dan\Commands\CommandManager;
 use Dan\Console\Console;
 use Dan\Helpers\Setup;
@@ -28,15 +29,20 @@ class Dan {
     /** @var Database */
     protected $database;
 
+    protected $composer;
+
+
     /**
      *
      */
-    public function __construct()
+    public function __construct(ClassLoader $composer)
     {
         static::$dan = $this;
 
         $this->filesystem   = new Filesystem();
         $this->database     = new Database('database');
+
+        $this->composer = $composer;
     }
 
     /**
@@ -121,6 +127,16 @@ class Dan {
     public static function connection()
     {
         return static::$dan->connection;
+    }
+
+    /**
+
+    /**
+     * @return \Composer\Autoload\ClassLoader
+     */
+    public static function composer()
+    {
+        return static::$dan->composer;
     }
 
     /**

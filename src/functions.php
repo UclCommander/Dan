@@ -225,4 +225,22 @@ namespace {
     {
         return str_replace(ROOT_DIR, '', $path);
     }
+
+    /**
+     * @param $message
+     */
+    function controlLog($message)
+    {
+        info($message);
+
+        $channel = config('dan.control_channel');
+        $channel = explode(':', $channel)[0];
+
+        if(empty($channel) || !connection()->inChannel($channel))
+            return;
+
+        connection()->message($channel, $message);
+    }
+
+
 }

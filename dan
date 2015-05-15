@@ -26,6 +26,6 @@ define('PLUGIN_DIR', ROOT_DIR . '/plugins');
 define('COMMAND_DIR', ROOT_DIR . '/commands');
 
 
-require(BASE_DIR . '/vendor/autoload.php');
+$loader = require(BASE_DIR . '/vendor/autoload.php');
 
-(new Dan\Core\Dan())->boot();
+(new Dan\Core\Dan($loader))->boot();
