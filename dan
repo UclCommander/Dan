@@ -30,7 +30,7 @@ $loader = require(BASE_DIR . '/vendor/autoload.php');
 set_error_handler(function($severity, $message, $filename, $lineno)
 {
     alert("-------------------------");
-    controlLog("{red}PHP ERROR: {$message} in " . relative($filename) . " on line {$lineno}");
+    controlLog("{red}[{$severity}] PHP ERROR: {$message} in " . relative($filename) . " on line {$lineno}");
     alert("-------------------------");
 });
 
