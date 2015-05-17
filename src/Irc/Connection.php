@@ -9,6 +9,7 @@ use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\Location;
 use Dan\Irc\Location\User;
 use Dan\Network\Socket;
+use Illuminate\Support\Collection;
 
 class Connection {
 
@@ -23,14 +24,44 @@ class Connection {
 
     protected $channels = [];
 
+    protected $numeric;
+
 
     public function __construct()
     {
         $this->self = user([config('irc.user.nick'), config('irc.user.name'), '']);
+
+        $this->numeric = new Collection();
     }
 
     /**
+     * Gets a self instance of the bot as user.
      *
+     * @return \Dan\Irc\Location\User
+     */
+    public function user()
+    {
+        return $this->self;
+    }
+
+    /**
+     * Sets a numeric.
+     *
+     * @param $number
+     * @param $data
+     */
+    public function setNumeric($number, $data)
+    {
+        $this->numeric->put($number, $data);
+    }
+
+    public function getNumeric($number)
+    {
+        return $this->numeric->get($number);
+    }
+
+    /**
+     * Starts the connection.
      */
     public function start()
     {
@@ -58,6 +89,8 @@ class Connection {
     }
 
     /**
+     * Sends a PRIVMSG
+     *
      * @param $location
      * @param $message
      */
@@ -73,6 +106,8 @@ class Connection {
     }
 
     /**
+     * Sends a NOTICE.
+     *
      * @param $location
      * @param $message
      */
@@ -163,6 +198,16 @@ class Connection {
     }
 
     /**
+     * Gets all channels
+     *
+     * @return Channel[]
+     */
+    public function channels()
+    {
+        return $this->channels;
+    }
+
+    /**
      * Adds a channel.
      *
      * @param $channel
@@ -237,15 +282,17 @@ class Connection {
             {
                 Console::exception($exception);
 
-                if($this->inChannel(explode(':', config('dan.control_channel'))[0]))
+                if($this->inChannel(config('dan.control_channel')))
                 {
-                    $this->message(explode(':', config('dan.control_channel'))[0], "Exception was thrown. {$exception->getMessage()} File: " . relative($exception->getTrace()[0]['file']) . "@{$exception->getLine()}");
+                    $this->message(config('dan.control_channel'), "Exception was thrown. {$exception->getMessage()} File: " . relative($exception->getTrace()[0]['file']) . "@{$exception->getLine()}");
                 }
             }
         }
     }
 
     /**
+     * Handles an IRC line.
+     *
      * @param $line
      */
     protected function handleLine($line)

@@ -7,6 +7,7 @@ use Dan\Helpers\Setup;
 use Dan\Database\Database;
 use Dan\Irc\Connection;
 use Dan\Irc\Location\User;
+use Dan\Plugins\PluginManager;
 use Illuminate\Filesystem\Filesystem;
 
 class Dan {
@@ -22,6 +23,8 @@ class Dan {
     protected $connection;
 
     protected $commandManager;
+
+    protected $pluginManager;
 
     /** @var static $dan  */
     protected static $dan;
@@ -91,6 +94,22 @@ class Dan {
         alert("Indexing commands...");
         $this->commandManager   = new CommandManager();
 
+        alert("Loading Plugins...");
+        $this->pluginManager    = new PluginManager();
+
+        foreach(config('dan.plugins') as $plugin)
+        {
+            try
+            {
+                info("Loading plugin {$plugin}");
+                $this->pluginManager->loadPlugin($plugin);
+            }
+            catch(\Exception $e)
+            {
+                Console::exception($e);
+            }
+        }
+
         event('dan.loaded');
 
         info("Bot loaded.");
@@ -118,6 +137,15 @@ class Dan {
     {
         return static::$dan->database;
     }
+    /**
+     * Gets the database driver.
+     *
+     * @return CommandManager
+     */
+    public static function commands()
+    {
+        return static::$dan->commandManager;
+    }
 
     /**
      * Gets the IRC connection.
@@ -130,6 +158,14 @@ class Dan {
     }
 
     /**
+     * Gets the Plugin Manager.
+     *
+     * @return PluginManager
+     */
+    public static function plugins()
+    {
+        return static::$dan->pluginManager;
+    }
 
     /**
      * @return \Composer\Autoload\ClassLoader
@@ -148,7 +184,7 @@ class Dan {
     public static function isOwner(User $user)
     {
         foreach(config('dan.owners') as $usr)
-            if (fnmatch($usr, "{$user->nick()}!{$user->user()}@{$user->host()}"))
+            if (fnmatch($usr, $user->string()))
                 return true;
 
         return false;
@@ -163,7 +199,7 @@ class Dan {
     public static function isAdmin(User $user)
     {
         foreach(config('dan.admins') as $usr)
-            if (fnmatch($usr, "{$user->nick()}!{$user->user()}@{$user->host()}"))
+            if (fnmatch($usr, $user->string()))
                 return true;
 
         return false;

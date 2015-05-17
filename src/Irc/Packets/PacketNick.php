@@ -11,6 +11,11 @@ class PacketNick implements PacketContract {
         $user = user($from);
         $nick = $data[0];
 
+        event('irc.packets.nick', [
+            'user'  => $from,
+            'nick'  => $data[0],
+        ]);
+
         database()->insertOrUpdate('users', ['nick' => $user->nick()], [
            'nick'   => $nick,
            'user'   => $user->user(),

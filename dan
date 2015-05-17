@@ -25,7 +25,13 @@ define('STORAGE_DIR', ROOT_DIR . '/storage');
 define('PLUGIN_DIR', ROOT_DIR . '/plugins');
 define('COMMAND_DIR', ROOT_DIR . '/commands');
 
-
 $loader = require(BASE_DIR . '/vendor/autoload.php');
+
+set_error_handler(function($severity, $message, $filename, $lineno)
+{
+    alert("-------------------------");
+    controlLog("{red}PHP ERROR: {$message} in " . relative($filename) . " on line {$lineno}");
+    alert("-------------------------");
+});
 
 (new Dan\Core\Dan($loader))->boot();

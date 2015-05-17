@@ -12,9 +12,16 @@ class PacketPart implements PacketContract {
 
         console("[{$data[0]}] {$user->nick()} left the channel");
 
+        if(!connection()->inChannel($data[0]))
+            return;
+
+        $channel = connection()->getChannel($data[0]);
+
+        $channel->removeUser($user);
+
         event('irc.packets.part', [
             'user'      => $user,
-            'channel'   => connection()->getChannel($data[0])
+            'channel'   => $channel
         ]);
     }
 }

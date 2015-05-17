@@ -12,8 +12,6 @@ class Packet376 implements PacketContract {
             raw(sprintf(config('irc.nickserv_auth_command'), config('irc.user.pass')));
 
         $channels   = config('irc.channels');
-        $channels[] = config('dan.control_channel');
-        $channels   = array_filter($channels);
 
         foreach($channels as $channel)
         {

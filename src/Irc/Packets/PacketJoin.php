@@ -20,6 +20,11 @@ class PacketJoin implements PacketContract {
 
         console("[{$data[0]}] {$user->nick()} joined the channel");
 
+        if(!connection()->inChannel($data[0]))
+            return;
+
+        connection()->getChannel($data[0])->setUsers($user->nick());
+
         event('irc.packets.join', [
             'user'      => $user,
             'channel'   => connection()->getChannel($data[0])

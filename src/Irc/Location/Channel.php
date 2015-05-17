@@ -1,17 +1,20 @@
 <?php namespace Dan\Irc\Location;
 
 
+use Illuminate\Support\Collection;
+
 class Channel extends Location {
 
-    protected $users = [];
+    /** @var User[]|Collection $users */
+    protected $users;
 
     public function __construct($name)
     {
         parent::__construct();
 
+        $this->users = new Collection();
         $this->name     = $name;
         $this->location = $name;
-
 
         database()->insertOrUpdate('channels', ['name' => $name], [
            'name'   => $name
@@ -19,19 +22,30 @@ class Channel extends Location {
     }
 
     /**
+     * Gets a user.
+     *
      * @param $user
      * @return \Dan\Irc\Location\User|null
      */
     public function getUser($user)
     {
-        if(!array_key_exists($user, $this->users))
+        if(!$this->users->has($user))
             return null;
 
-        $userinfo = database()->get('users', ['nick' => $user]);
+        return $this->users->get($user);
+    }
 
-        $userinfo['rank'] = $this->users[$user];
+    /**
+     * Removes a user.
+     *
+     * @param $user
+     */
+    public function removeUser($user)
+    {
+        if($user instanceof User)
+            $user = $user->nick();
 
-        return new User($userinfo);
+        $this->users->forget($user);
     }
 
     /**
@@ -53,7 +67,21 @@ class Channel extends Location {
                 $nick = substr($user, 1);
             }
 
-            $this->users[$nick] = $rank;
+            $info = database()->get('users', ['nick' => $nick]);
+
+            if(empty($info))
+            {
+                $info['nick'] = $nick;
+                $info['user'] = '';
+                $info['host'] = '';
+            }
+
+            $this->users->put($nick , user([
+                'nick'  => $info['nick'],
+                'user'  => $info['user'],
+                'host'  => $info['host'],
+                'rank'  => $rank,
+            ]));
         }
 
         $channel = database()->get('channels', ['name' => $this->name]);
@@ -61,10 +89,24 @@ class Channel extends Location {
         if($channel['max_users'] < count($this->users))
         {
             database()->update('channels', ['name' => $this->name], [
-                'max_users' => count($this->users)
+                'max_users' => $this->users->count()
             ]);
         }
 
-        return array_keys($this->users);
+        return array_keys($this->users->toArray());
+    }
+
+    /**
+     * @param array $data
+     */
+    public function updateUserModes(array $data)
+    {
+        foreach($data as $modes)
+        {
+            if(!$this->users->has($modes[0]))
+                continue;
+
+            $this->users[$modes[0]]->setMode($modes[1]);
+        }
     }
 }

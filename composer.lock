@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e2b21c86a1f6ec5f620e60cc568bd63a",
+    "hash": "3b20d5117b1cedf197658a9b27dfbf39",
     "packages": [
         {
             "name": "danielstjules/stringy",
@@ -354,6 +354,50 @@
                 "storage"
             ],
             "time": "2015-03-29 14:01:43"
+        },
+        {
+            "name": "rap2hpoutre/similar-text-finder",
+            "version": "v0.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rap2hpoutre/similar-text-finder.git",
+                "reference": "dda28ee042614a310e47e4665975c9dcb3850499"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rap2hpoutre/similar-text-finder/zipball/dda28ee042614a310e47e4665975c9dcb3850499",
+                "reference": "dda28ee042614a310e47e4665975c9dcb3850499",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SimilarText\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "rap2hpoutre",
+                    "email": "raphael@ornikar.com"
+                }
+            ],
+            "description": "Similar text finder: \"Did you mean `foo` ?\"",
+            "keywords": [
+                "find",
+                "laravel",
+                "levenshtein",
+                "search",
+                "similar_text",
+                "text"
+            ],
+            "time": "2015-05-08 13:27:02"
         },
         {
             "name": "symfony/finder",

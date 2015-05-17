@@ -189,7 +189,12 @@ namespace {
      */
     function user($data)
     {
-        return new User(['nick' => $data[0], 'user' => $data[1], 'host' => $data[2], 'rank' => @$data[3]]);
+        $info['nick'] = isset($data['nick']) ? $data['nick'] : $data[0];
+        $info['user'] = isset($data['user']) ? $data['user'] : $data[1];
+        $info['host'] = isset($data['host']) ? $data['host'] : $data[2];
+        $info['rank'] = isset($data['rank']) ? $data['rank'] : (isset($data[3]) ? $data[3] : null);
+
+        return new User($info);
     }
 
     /**
@@ -216,6 +221,34 @@ namespace {
     }
 
     /**
+     * Checks to see if the given user is the server.
+     *
+     * @param $user
+     * @return bool
+     */
+    function isServer($user)
+    {
+        if (is_array($user))
+            $user = reset($user);
+
+        if (!isUser($user))
+            return true;
+
+        return ($user == connection()->getNumeric('004')[1]);
+    }
+
+    /**
+     * Checks to see if it matches the user pattern.
+     *
+     * @param $pattern
+     * @return bool
+     */
+    function isUser($pattern)
+    {
+        return fnmatch($pattern, "*!*@*");
+    }
+
+    /**
      * Gets relative path from executable.
      *
      * @param $path
@@ -231,16 +264,29 @@ namespace {
      */
     function controlLog($message)
     {
-        info($message);
+        alert($message);
 
-        $channel = config('dan.control_channel');
-        $channel = explode(':', $channel)[0];
+        if(connection())
+        {
 
-        if(empty($channel) || !connection()->inChannel($channel))
-            return;
+            $channel = config('dan.control_channel');
 
-        connection()->message($channel, $message);
+            if (empty($channel) || !connection()->inChannel($channel))
+            {
+                return;
+            }
+
+            connection()->message($channel, $message);
+        }
     }
 
 
+
+    /**
+     * @return \Dan\Plugins\PluginManager
+     */
+    function plugins()
+    {
+        return Dan::plugins();
+    }
 }
