@@ -260,6 +260,8 @@ namespace {
     }
 
     /**
+     * Sends a message to the control channel.
+     *
      * @param $message
      */
     function controlLog($message)
@@ -268,25 +270,32 @@ namespace {
 
         if(connection())
         {
-
             $channel = config('dan.control_channel');
 
             if (empty($channel) || !connection()->inChannel($channel))
-            {
                 return;
-            }
 
             connection()->message($channel, $message);
         }
     }
 
-
-
     /**
+     * Returns the plugin manager.
+     *
      * @return \Dan\Plugins\PluginManager
      */
     function plugins()
     {
         return Dan::plugins();
+    }
+
+    /**
+     * Returns the command manager.
+     *
+     * @return \Dan\Commands\CommandManager
+     */
+    function commands()
+    {
+        return Dan::commands();
     }
 }
