@@ -36,7 +36,7 @@ class Dan {
 
 
     /**
-     *
+     * @param \Composer\Autoload\ClassLoader $composer
      */
     public function __construct(ClassLoader $composer)
     {
@@ -59,7 +59,15 @@ class Dan {
 
         info('Loading bot..');
 
-        Config::load();
+        try
+        {
+            Config::load();
+        }
+        catch(\Exception $exception)
+        {
+            Console::critical($exception->getMessage(), true);
+
+        }
 
         event('dan.loading');
 

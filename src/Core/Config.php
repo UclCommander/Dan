@@ -29,7 +29,7 @@ class Config extends DotCollection {
             $json = json_decode(filesystem()->get($this->file), true);
 
             if(!is_array($json))
-                throw new Exception("Error loading JSON for {$name}. Please check and correct the file.");
+                throw new Exception("Error loading JSON for '{$name}.json'. Please check and correct the file.");
 
             $this->items = $json;
         }
