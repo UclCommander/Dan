@@ -91,37 +91,37 @@ class Setup {
 
         if(!filesystem()->exists(PLUGIN_DIR))
         {
-            info("Directory '" . PLUGIN_DIR ."' not found, creating.");
+            info("Directory '" . relative(PLUGIN_DIR) ."' not found, creating.");
             filesystem()->makeDirectory(PLUGIN_DIR);
         }
 
         if(!filesystem()->exists(COMMAND_DIR))
         {
-            info("Directory '" . COMMAND_DIR ."' not found, creating.");
+            info("Directory '" . relative(COMMAND_DIR) ."' not found, creating.");
             filesystem()->makeDirectory(COMMAND_DIR);
         }
 
         if(!filesystem()->exists(CONFIG_DIR))
         {
-            info("Directory '" . CONFIG_DIR ."' not found, creating.");
+            info("Directory '" . relative(CONFIG_DIR) ."' not found, creating.");
             filesystem()->makeDirectory(CONFIG_DIR);
         }
 
         if(!filesystem()->exists(STORAGE_DIR))
         {
-            info("Directory '" . STORAGE_DIR ."' not found, creating.");
+            info("Directory '" . relative(STORAGE_DIR) ."' not found, creating.");
             filesystem()->makeDirectory(STORAGE_DIR);
         }
 
         if(!filesystem()->exists(STORAGE_DIR . '/plugins/'))
         {
-            info("Directory '" . STORAGE_DIR ."/plugins/' not found, creating.");
+            info("Directory '" . relative(STORAGE_DIR) ."/plugins/' not found, creating.");
             filesystem()->makeDirectory(STORAGE_DIR . '/plugins/');
         }
 
         if(!filesystem()->exists(ROOT_DIR . '/logs/'))
         {
-            info("Directory '" . STORAGE_DIR ."/logs/' not found, creating.");
+            info("Directory '" . relative(STORAGE_DIR) ."/logs/' not found, creating.");
             filesystem()->makeDirectory(ROOT_DIR . '/logs/');
         }
     }

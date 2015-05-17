@@ -152,10 +152,11 @@ namespace {
      * @param $name
      * @param $function
      * @param int $priority
+     * @return Event
      */
     function subscribe($name, $function, $priority = EventPriority::Normal)
     {
-        Event::subscribe($name, $function, $priority);
+        return Event::subscribe($name, $function, $priority);
     }
 
 

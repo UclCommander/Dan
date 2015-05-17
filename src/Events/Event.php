@@ -51,10 +51,11 @@ class Event {
      * @param $name
      * @param $function
      * @param int $priority
+     * @return static
      */
     public static function subscribe($name, $function, $priority = EventPriority::Normal)
     {
-        new static($name, $function, $priority);
+        return new static($name, $function, $priority);
     }
 
     /**
