@@ -11,37 +11,15 @@ use Dan\Irc\Location\User;
 
 if($entry == 'use')
 {
-    $data = Web::get("http://www.fmylife.com/random");
+    $data = Web::api("fml/random");
 
-    if($data == null)
+    if(empty($data))
+    {
+        message($channel, "{reset}[ {yellow}#21 {reset}| {cyan}Error fetching random FML. FML {reset}| {green}+9001{reset}/{red}-420 {reset}]");
         return;
+    }
 
-    $data = mb_convert_encoding($data, 'HTML-ENTITIES', "UTF-8");
-
-    $dom = new \DOMDocument();
-    $dom->strictErrorChecking = false;
-    @$dom->loadHTML($data);
-    $xpath = new \DOMXPath($dom);
-
-    $articles = $xpath->query("//div[contains(@class, 'article')]");
-
-    $rand = rand(0, $articles->length - 1);
-
-    $item = $articles->item($rand);
-
-    $fml    = $item->childNodes->item(0)->textContent;
-    $plus   = $item->childNodes->item(1)->childNodes->item(1)->childNodes->item(0)->childNodes->item(0)->textContent;
-    $minus  = $item->childNodes->item(1)->childNodes->item(1)->childNodes->item(0)->childNodes->item(2)->textContent;
-
-    $plus = explode('(', $plus)[1];
-    $plus = substr($plus, 0, strlen($plus) - 1);
-
-    $minus = explode('(', $minus)[1];
-    $minus = substr($minus, 0, strlen($minus) - 1);
-
-    message($channel, "{reset}[ {cyan}{$fml} {reset}| {green}+{$plus}{reset}/{red}-{$minus} {reset}]");
-
-    unset($dom, $xpath);
+    message($channel, "{reset}[ {yellow}{$data['id']} {reset}| {cyan}{$data['text']} {reset}| {green}+{$data['sucks']}{reset}/{red}-{$data['deserved']} {reset}]");
 }
 
 if($entry == 'help')
