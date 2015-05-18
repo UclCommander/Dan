@@ -12,7 +12,7 @@ use Illuminate\Filesystem\Filesystem;
 
 class Dan {
 
-    const VERSION = '4.0.12dev';
+    const VERSION = '4.0.13dev';
 
     /**
      * @var Filesystem $filesystem
@@ -68,18 +68,13 @@ class Dan {
             Console::critical($exception->getMessage(), true);
 
         }
-
-        event('dan.loading');
-
         if(!Setup::isSetup())
         {
-            event('dan.setup.start');
             alert("It appears this is a first time run, or there was an update. Setting defaults up.");
 
             $first = Setup::runSetup();
 
             alert("Setup complete.");
-            event('dan.setup.end');
 
             if($first)
             {
@@ -92,10 +87,7 @@ class Dan {
         define('DEBUG', (config('dan.debug') || (array_key_exists('--debug', $args) && $args['--debug'] == 'true')) || !PHAR);
 
         if(DEBUG)
-        {
-            event('dan.debug.activate');
             debug("!!!DEBUG MODE ACTIVATED!!!");
-        }
 
         $this->database->load();
 

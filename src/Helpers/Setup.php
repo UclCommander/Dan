@@ -58,7 +58,8 @@ class Setup {
 
         info('Updating commands.json...');
         $dan = new Config('commands');
-        $dan->putIfNull('command_starter', '.');
+        $dan->renameKey('command_starter', 'command_prefix');
+        $dan->putIfNull('command_prefix', '.');
         $dan->putIfNull('default_permissions', 'vhoaq');
         $dan->putIfNull('commands', []);
         $dan->putIfNull('commands.memory', 'AS');
@@ -66,6 +67,7 @@ class Setup {
         $dan->putIfNull('commands.raw', 'S');
         $dan->putIfNull('commands.join', 'AS');
         $dan->putIfNull('commands.part', 'AS');
+        $dan->putIfNull('commands.plugin', 'S');
         $dan->save();
 
         // ALWAYS update dan.json last incase of errors
