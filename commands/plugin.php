@@ -24,6 +24,10 @@ if($entry == 'use')
             case 'unload':
                 plugins()->unloadPlugin($data[1]);
                 break;
+
+            case 'loaded':
+                message($channel, implode(', ', plugins()->loaded()));
+                break;
         }
     }
     catch(Exception $e)
