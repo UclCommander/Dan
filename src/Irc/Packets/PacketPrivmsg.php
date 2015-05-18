@@ -30,7 +30,7 @@ class PacketPrivmsg implements PacketContract {
 
             $send = event('irc.packets.message.ctcp', [
                 'type'  => $ctcp[0],
-                'args'  => @$ctcp[1]
+                'args'  => (isset($ctcp[1]) ? $ctcp[1] : null)
             ]);
 
             if(is_array($send))
