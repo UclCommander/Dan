@@ -59,6 +59,6 @@ if($entry == 'use')
 if($entry == 'help')
 {
     return [
-        "{cp}roll [sides] - Rolls a dice with [sides] sides. Default is 6"
+        "{cp}8ball <question> - Ask the magical 8ball a question."
     ];
 }
