@@ -22,6 +22,11 @@ class Channel extends Location {
         ]);
     }
 
+    public function setTopic($topic)
+    {
+        send("TOPIC", $this->name, $topic);
+    }
+
     /**
      * Gets a user.
      *

@@ -307,4 +307,14 @@ namespace {
     {
         return Dan::commands();
     }
+
+    /**
+     * @param $cmd
+     * @return bool
+     */
+    function commandExists($cmd)
+    {
+        $returnVal = shell_exec("which $cmd");
+        return (empty($returnVal) ? false : true);
+    }
 }

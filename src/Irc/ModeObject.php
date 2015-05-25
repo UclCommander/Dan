@@ -37,6 +37,8 @@ class ModeObject {
     {
         if($m instanceof ModeObject)
             $data = $m->modes();
+        elseif ($m instanceof Collection)
+            $data = $m->toArray();
         else
             $data = str_split($m);
 

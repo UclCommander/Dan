@@ -64,12 +64,12 @@ class Config extends DotCollection {
      *
      * @param $name
      * @param $default
-     * @return null|static
+     * @return Config
      */
     public static function create($name, $default)
     {
         if(filesystem()->exists(CONFIG_DIR . '/' . $name . '.json'))
-            return null;
+            return static::$configs[$name];
 
         return new static($name, $default);
     }

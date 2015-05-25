@@ -47,6 +47,7 @@ class CommandManager {
      * Checks to see if the message is a command.
      *
      * @param \Dan\Events\EventArgs $eventArgs
+     * @return bool
      */
     public function checkForCommand(EventArgs $eventArgs)
     {
@@ -59,14 +60,14 @@ class CommandManager {
         $user       = $eventArgs->get('user');
 
         if(strpos($message, config('commands.command_prefix')) !== 0)
-            return;
+            return null;
 
         $data       = explode(' ', $message, 2);
         $command    = strtolower(substr($data[0], 1));
         $args       = isset($data[1]) ? $data[1] : null;
 
         if(empty($command) || !ctype_alnum($command))
-            return;
+            return null;
 
         // Hacky override to allow 'help' access from command.
         if($args == 'help')
@@ -95,26 +96,28 @@ class CommandManager {
             $channel->message("Command '{$command}' doesn't exist.{$suggest}");
 
             unset($finder);
-            return;
+            return false;
         }
 
         if($command == 'help')
         {
             controlLog("{$user->nick()} used '{$message}' in {$channel->getLocation()}");
             $this->help($channel, $user, $args);
-            return;
+            return false;
         }
 
         if(!$this->hasPermission($command, $user))
         {
             controlLog("{$user->string()} tried to use '{$message}' in {$channel->getLocation()}. Rank: " . $user->modes()->implode(''));
             $channel->message("You do not have the required permissions to use this command.");
-            return;
+            return false;
         }
 
         controlLog("{$user->nick()} used '{$message}' in {$channel->getLocation()}");
 
         $this->runCommand($command, 'use', $channel, $user, $args);
+
+        return false;
     }
 
     /**
@@ -146,6 +149,9 @@ class CommandManager {
 
         foreach(filesystem()->files(COMMAND_DIR) as $file)
             $commands[strtolower(basename($file, '.php'))] = basename($file);
+
+        foreach($this->commands->toArray() as $command => $class)
+            $commands[$command] = $command;
 
         return $commands;
     }
@@ -226,20 +232,20 @@ class CommandManager {
         if($command instanceof Command)
         {
             if($entry == 'use')
-                $command->run($channel, $user, $message);
+                return $command->run($channel, $user, $message);
 
             if($entry == 'help')
-                $command->help($user, $message);
+                return $command->help($user, $message);
         }
 
         if($command instanceof Closure)
         {
-            $command($entry, $channel, $user, $message);
+            return $command($entry, $channel, $user, $message);
         }
 
         if(is_array($command))
         {
-            call_user_func_array($command, [$entry, $channel, $user, $message]);
+            return call_user_func_array($command, [$entry, $channel, $user, $message]);
         }
 
         return null;
@@ -261,11 +267,29 @@ class CommandManager {
 
             sort($commands);
 
+            $event = event('command.help.messages', [
+                'channel'   => $channel,
+                'user'      => $user,
+                'messages'  => [implode(', ', $commands)]
+            ]);
+
+            if($event == false)
+                return;
+
             $user->notice(implode(', ', $commands));
             return;
         }
 
         $data = $this->runCommand($message, 'help', $channel, $user);
+
+        $event = event('command.help.messages', [
+            'channel'   => $channel,
+            'user'      => $user,
+            'messages'  => (array)$data
+        ]);
+
+        if($event == false)
+            return;
 
         foreach((array)$data as $line)
             notice($user, str_replace('{cp}', config('commands.command_prefix'), $line));

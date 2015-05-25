@@ -18,16 +18,16 @@ if($entry == 'use')
     if(isChannel($partFrom[0]))
     {
         $chan   = $partFrom[0];
-        $reason = $partFrom[1];
+        $reason = isset($partFrom[1]) ? $partFrom[1] : null;
     }
 
-    if(!Dan::connection()->inChannel($chan))
+    if(!connection()->inChannel($chan))
     {
         notice($user, "I'm not in this channel!");
         return;
     }
 
-    Dan::connection()->partChannel($chan, $reason);
+    connection()->partChannel($chan, $reason);
 }
 
 if ($entry == 'help')

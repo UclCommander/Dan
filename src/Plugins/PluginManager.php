@@ -32,7 +32,7 @@ class PluginManager {
      */
     public function plugins()
     {
-        return array_map(function($d) { return basename($d, '.phar'); }, glob(PLUGIN_DIR . '/*.phar'));
+        return array_map(function($d) { return basename($d, '.phar'); }, glob(PLUGIN_DIR . '/*'));
     }
 
     /**
@@ -59,16 +59,16 @@ class PluginManager {
         $hased      = "{$realname}{$hash}.phar";
         $phar       = PLUGIN_DIR . "/{$realname}.phar";
 
+        if(commandExists('box') && DEBUG)
+            $this->buildPlugin($realname);
+
         filesystem()->copy($phar, PLUGIN_STORAGE ."/{$realname}.phar");
 
         if(!Phar::loadPhar(PLUGIN_STORAGE ."/{$realname}.phar", $hased))
             throw new Exception("Error loading plugin {$realname}");
 
         $json       = file_get_contents("phar://{$hased}/config.json");
-
         $config     = json_decode($json, true);
-
-        vd($config, $hash, $hased, $phar, $realname, $plugin, $json);
 
         if($config == null)
             throw new Exception("Error loading config for {$realname}.");
@@ -76,8 +76,7 @@ class PluginManager {
         if(!version_compare(Dan::VERSION, $config['requires'], '>='))
             throw new Exception("Plugin {$realname} requires version {$config['requires']} or later.");
 
-        $loadDir    =  "phar://{$hased}/src/";
-
+        $loadDir    = "phar://{$hased}/src/";
         $namespace  = $config['namespace']."\\";
         $class      = $namespace.$config['class'];
 
@@ -144,5 +143,94 @@ class PluginManager {
             return false;
 
         return basename(reset($match));
+    }
+
+    /**
+     * Builds a plugin using Box2.
+     *
+     * @param $plugin
+     * @return bool|void
+     */
+    public function buildPlugin($plugin)
+    {
+        $dir = PLUGIN_DIR . "/{$plugin}";
+
+        if(!filesystem()->exists("{$dir}/box.json"))
+            return false;
+
+        controlLog("Building plugin {$plugin}..");
+
+        $output = shell_exec("cd {$dir} && box build");
+
+        controlLog(trim($output));
+
+        return ($output == 'Building...');
+    }
+
+    /**
+     * Creates a plugin.
+     *
+     * @param $plugin
+     * @param array $info
+     * @return bool
+     * @throws \Exception
+     */
+    public function create($plugin, $info = [])
+    {
+        $path = PLUGIN_DIR . "/{$plugin}";
+
+        if(filesystem()->exists($path))
+            throw new Exception("Plugin {$plugin} already exists");
+
+        filesystem()->makeDirectory("{$path}/src", 0775, true);
+        
+        filesystem()->put($path . '/config.json', json_encode([
+            "name"      => $plugin,
+            "version"   => "1.0",
+            "author"    => $info['user'],
+            "requires"  => Dan::VERSION,
+            "namespace" => $plugin,
+            "class"     => $plugin
+        ], JSON_PRETTY_PRINT));
+
+        filesystem()->put($path . '/box.json', json_encode([
+            "files" => ["config.json"],
+            "directories" => ["src"],
+            "output" => "../{$plugin}.phar",
+            "stub" => true
+        ], JSON_PRETTY_PRINT));
+
+        $php = <<<PHP
+<?php namespace {$plugin};
+
+use Dan\Plugins\Plugin;
+
+class {$plugin} extends Plugin {
+
+    /**
+     * Loading function, called when the plugin is loaded
+     */
+    public function load()
+    {
+        controlLog("{$plugin} loaded!");
+    }
+
+    /**
+     * Unloading function, called when the plugin is unloaded.
+     * Be sure parent::unload(); is always inside of this function,
+     * It removes all event bindings from the plugin.
+     */
+    public function unload()
+    {
+        parent::unload();
+
+        controlLog("{$plugin} unloaded!");
+    }
+}
+PHP;
+
+        filesystem()->put($path . "/src/{$plugin}.php", $php);
+
+        return true;
     }
 }

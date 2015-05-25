@@ -74,15 +74,23 @@ class Event {
 
         krsort($list);
 
+        $data = new EventArgs($data);
+
         foreach($list as $priority => $events)
         {
             foreach($events as $id => $event)
             {
                 /** @var static $event */
-                $return = $event->call(new EventArgs($data));
+                $return = $event->call($data);
 
                 if($return === false)
                     return null;
+
+                if($return instanceof EventArgs)
+                {
+                    $data = $return;
+                    continue;
+                }
 
                 if(!empty($return))
                     return $return;

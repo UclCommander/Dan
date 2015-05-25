@@ -18,16 +18,37 @@ if($entry == 'use')
         {
             case 'load':
                 if(plugins()->loadPlugin($data[1]))
-                    message($channel, "Plugin {$data[1]} loaded.");
+                    message($channel, "Plugin '{$data[1]}' loaded.");
                 break;
 
             case 'unload':
                 if(plugins()->unloadPlugin($data[1]))
-                    message($channel, "Plugin {$data[1]} unloaded.");
+                    message($channel, "Plugin '{$data[1]}' unloaded.");
+                break;
+
+            case 'reload':
+                if(plugins()->unloadPlugin($data[1]))
+                {
+                    if (plugins()->loadPlugin($data[1]))
+                    {
+                        message($channel, "Plugin '{$data[1]}' reloaded.");
+                        break;
+                    }
+
+                    message($channel, "Error loading plugin '{$data[1]}'.");
+                }
+
+                message($channel, "Error unloading plugin '{$data[1]}'.");
+
                 break;
 
             case 'list':
                 message($channel, implode(', ', plugins()->plugins()));
+                break;
+
+            case 'create':
+                if(plugins()->create($data[1], ['user' => $user->nick()]))
+                    message($channel, "Plugin created. Start coding!");
                 break;
 
             case 'loaded':
