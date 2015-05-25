@@ -18,11 +18,16 @@ if($entry == 'use')
         {
             case 'load':
                 if(plugins()->loadPlugin($data[1]))
-                    message($channel, "Plugin loaded.");
+                    message($channel, "Plugin {$data[1]} loaded.");
                 break;
 
             case 'unload':
-                plugins()->unloadPlugin($data[1]);
+                if(plugins()->unloadPlugin($data[1]))
+                    message($channel, "Plugin {$data[1]} unloaded.");
+                break;
+
+            case 'list':
+                message($channel, implode(', ', plugins()->plugins()));
                 break;
 
             case 'loaded':
@@ -32,13 +37,16 @@ if($entry == 'use')
     }
     catch(Exception $e)
     {
-        message($channel, $e->getMessage());
+        message($channel, relative($e->getMessage()));
     }
 }
 
 if($entry == 'help')
 {
     return [
-        "join <channel> - Joins <channel> "
+        "{cp}plugin load <name> - Loads <name>.",
+        "{cp}plugin unload <name> - unloads <name>.",
+        "{cp}plugin loaded - Gets loaded plugins.",
+        "{cp}plugin list - Gets all available plugins.",
     ];
 }

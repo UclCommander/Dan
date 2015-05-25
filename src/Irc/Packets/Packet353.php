@@ -13,15 +13,6 @@ class Packet353 implements PacketContract {
         if(!connection()->inChannel($channel))
             return;
 
-        $users = connection()->getChannel($channel)->setUsers($data[3]);
-
-
-        foreach($users as $user)
-        {
-            if(!database()->has('users', 'nick', $user))
-            {
-                send("WHO", $user);
-            }
-        }
+        connection()->getChannel($channel)->setUsers($data[3]);
     }
 }

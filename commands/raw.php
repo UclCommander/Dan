@@ -10,12 +10,12 @@ use Dan\Irc\Location\User;
 
 if($entry == 'use')
 {
-    connection()->joinChannel($message);
+    raw($message);
 }
 
 if($entry == 'help')
 {
     return [
-        "{cp}join <channel> - Joins <channel> "
+        "Sends a raw IRC line",
     ];
 }

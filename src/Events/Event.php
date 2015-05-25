@@ -15,9 +15,9 @@ class Event {
         $this->function = $function;
         $this->priority = $priority;
 
-        $id = md5(microtime().$this->name.$this->priority.serialize($this->function));
+        $this->id = md5(microtime().$this->name.$this->priority.serialize($this->function));
 
-        static::$events[$name][$priority][$id] = $this;
+        static::$events[$name][$priority][$this->id] = $this;
     }
 
     /**

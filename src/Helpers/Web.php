@@ -21,7 +21,6 @@ class Web {
             curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
         }
 
-
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
@@ -46,10 +45,11 @@ class Web {
      * @param $uri
      * @param array $params
      * @param array $headers
+     * @return mixed
      */
     public static function post($uri, $params = [], $headers = [])
     {
-
+        return static::curl('post', $uri, $params, $headers);
     }
 
     /**

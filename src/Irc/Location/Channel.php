@@ -1,6 +1,7 @@
 <?php namespace Dan\Irc\Location;
 
 
+use Dan\Irc\ModeObject;
 use Illuminate\Support\Collection;
 
 class Channel extends Location {
@@ -29,10 +30,19 @@ class Channel extends Location {
      */
     public function getUser($user)
     {
+        if($user instanceof User)
+            $user = $user->getLocation();
+
         if(!$this->users->has($user))
             return null;
 
-        return $this->users->get($user);
+        $info = $this->users->get($user);
+
+        $obj = user($info['nick']);
+
+        $obj->setMode($info['modes']);
+
+        return $obj;
     }
 
     /**
@@ -71,17 +81,19 @@ class Channel extends Location {
 
             if(empty($info))
             {
+                // Database has no info, request it from IRC.
+                send("WHO", $nick);
+
+                // Set default
                 $info['nick'] = $nick;
                 $info['user'] = '';
                 $info['host'] = '';
             }
 
-            $this->users->put($nick , user([
-                'nick'  => $info['nick'],
-                'user'  => $info['user'],
-                'host'  => $info['host'],
-                'rank'  => $rank,
-            ]));
+            $mode = new ModeObject();
+            $mode->setPrefix($rank);
+
+            $this->users->put($nick , ['nick' => $info['nick'], 'modes' => $mode]);
         }
 
         $channel = database()->get('channels', ['name' => $this->name]);
@@ -97,6 +109,8 @@ class Channel extends Location {
     }
 
     /**
+     * Updates user modes.
+     *
      * @param array $data
      */
     public function updateUserModes(array $data)
@@ -110,3 +124,4 @@ class Channel extends Location {
         }
     }
 }
+

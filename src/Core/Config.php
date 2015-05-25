@@ -60,6 +60,21 @@ class Config extends DotCollection {
     }
 
     /**
+     * Creates a new config
+     *
+     * @param $name
+     * @param $default
+     * @return null|static
+     */
+    public static function create($name, $default)
+    {
+        if(filesystem()->exists(CONFIG_DIR . '/' . $name . '.json'))
+            return null;
+
+        return new static($name, $default);
+    }
+
+    /**
      * Gets a config value by dot notation. Returns NULL if the config isn't found.
      *
      * @param mixed $name
@@ -78,5 +93,19 @@ class Config extends DotCollection {
         }
 
         return null;
+    }
+
+    /**
+     * @param $key
+     * @param $value
+     */
+    public static function set($key, $value)
+    {
+        $item = explode('.', $key, 2);
+
+        if(array_key_exists($item[0], static::$configs))
+            if(count($item) > 1)
+                static::$configs[$item[0]]->set($item[1], $value);
+
     }
 }

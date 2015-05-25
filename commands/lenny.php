@@ -35,7 +35,7 @@ if($entry == 'use')
 if($entry == 'help')
 {
     return [
-        "lenny [type] - The lenny faces",
+        "{cp}lenny [type] - The lenny faces",
         'Optional types: hugs, no, lenninati',
     ];
 }

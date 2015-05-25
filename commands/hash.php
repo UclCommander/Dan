@@ -28,7 +28,7 @@ if($entry == 'use')
 if($entry == 'help')
 {
     return [
-        "hash <algo> <text> - Hashes <text> with <algo>",
+        "{cp}hash <algo> <text> - Hashes <text> with <algo>",
         "See http://skycld.co/php-hash and http://skycld.co/php-algos for more information.",
         "bcrypt is also available as a type."
     ];

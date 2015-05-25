@@ -1,4 +1,4 @@
-<?php namespace Dan\Core; 
+<?php namespace Dan\Core;
 
 use Composer\Autoload\ClassLoader;
 use Dan\Commands\CommandManager;
@@ -12,7 +12,7 @@ use Illuminate\Filesystem\Filesystem;
 
 class Dan {
 
-    const VERSION = '4.0.13dev';
+    const VERSION = '4.0.14-dev';
 
     /**
      * @var Filesystem $filesystem

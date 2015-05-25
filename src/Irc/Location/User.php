@@ -26,6 +26,9 @@ class User extends Location implements Savable {
         $this->save();
     }
 
+    /**
+     * @return string
+     */
     public function string()
     {
         return "{$this->nick}!{$this->user}@{$this->host}";

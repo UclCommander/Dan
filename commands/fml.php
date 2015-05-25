@@ -25,6 +25,6 @@ if($entry == 'use')
 if($entry == 'help')
 {
     return [
-        "fml - gets a random fml"
+        "{cp}fml - gets a random fml"
     ];
 }

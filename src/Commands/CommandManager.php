@@ -1,18 +1,46 @@
 <?php namespace Dan\Commands; 
 
+use Closure;
 use Dan\Core\Dan;
 use Dan\Events\EventArgs;
+use Dan\Events\EventPriority;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
+use Illuminate\Support\Collection;
+use SimilarText\Finder;
 
 class CommandManager {
+
+    protected $commands = [];
+
 
     /**
      *
      */
     public function __construct()
     {
-        subscribe('irc.packets.message.public', [$this, 'checkForCommand']);
+        subscribe('irc.packets.message.public', [$this, 'checkForCommand'], EventPriority::VeryHigh);
+
+        $this->commands = new Collection();
+    }
+
+    /**
+     * @param $command
+     * @param $func
+     */
+    public function registerCommand($command, $func)
+    {
+        debug("Registering command {$command}");
+        $this->commands->put($command, $func);
+    }
+
+    /**
+     * @param $command
+     */
+    public function unregisterCommand($command)
+    {
+        debug("Unregistering command {$command}");
+        $this->commands->forget($command);
     }
 
     /**
@@ -30,58 +58,63 @@ class CommandManager {
         /** @var User $user */
         $user       = $eventArgs->get('user');
 
-        if(strpos($message, config('commands.command_starter')) !== 0)
+        if(strpos($message, config('commands.command_prefix')) !== 0)
             return;
 
         $data       = explode(' ', $message, 2);
         $command    = strtolower(substr($data[0], 1));
+        $args       = isset($data[1]) ? $data[1] : null;
+
+        if(empty($command) || !ctype_alnum($command))
+            return;
+
+        // Hacky override to allow 'help' access from command.
+        if($args == 'help')
+        {
+            $args = $command;
+            $command = 'help';
+        }
 
         event('command.use', [
             'command'   => $command,
-            ''
+            'user'      => $user,
+            'channel'   => $channel,
+            'args'      => $args,
         ]);
 
         if(!$this->exists($command))
         {
-            $channel->message("Command {$command} doesn't exist.");
+            $finder = new Finder($command, array_keys($this->getCommands()));
+
+            $possible   = $finder->first();
+            $suggest    = '';
+
+            if($this->exists($possible))
+                $suggest = " Did you mean '{$finder->first()}'?";
+
+            $channel->message("Command '{$command}' doesn't exist.{$suggest}");
+
+            unset($finder);
             return;
         }
 
         if($command == 'help')
         {
             controlLog("{$user->nick()} used '{$message}' in {$channel->getLocation()}");
-            $this->help($channel, $user, @$data[1]);
+            $this->help($channel, $user, $args);
             return;
         }
 
-
         if(!$this->hasPermission($command, $user))
         {
-            controlLog("{$user->nick()} tried to use '{$message}'
-             in {$channel->getLocation()}");
+            controlLog("{$user->string()} tried to use '{$message}' in {$channel->getLocation()}. Rank: " . $user->modes()->implode(''));
             $channel->message("You do not have the required permissions to use this command.");
             return;
         }
 
         controlLog("{$user->nick()} used '{$message}' in {$channel->getLocation()}");
 
-        $this->runCommand($command, 'use', $channel, $user, @$data[1]);
-    }
-
-    /**
-     * Runs a command.
-     *
-     * @param $command
-     * @param $entry
-     * @param \Dan\Irc\Location\Channel $channel
-     * @param \Dan\Irc\Location\User $user
-     * @param null $message
-     * @return mixed
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     */
-    public function runCommand($command, $entry, Channel $channel, User $user, $message = null)
-    {
-        return include(COMMAND_DIR . '/' . $command . '.php');
+        $this->runCommand($command, 'use', $channel, $user, $args);
     }
 
     /**
@@ -95,6 +128,9 @@ class CommandManager {
         if($command == 'help')
             return true;
 
+        if($this->commands->has($command))
+            return true;
+
         return filesystem()->exists(COMMAND_DIR . '/' . $command . '.php');
     }
 
@@ -106,6 +142,7 @@ class CommandManager {
     public function getCommands()
     {
         $commands = [];
+        $commands['help'] = 'help';
 
         foreach(filesystem()->files(COMMAND_DIR) as $file)
             $commands[strtolower(basename($file, '.php'))] = basename($file);
@@ -137,6 +174,78 @@ class CommandManager {
         return $user->hasOneOf($rank);
     }
 
+    //
+    //
+    //
+
+    /**
+     * Runs a command.
+     *
+     * @param $command
+     * @param $entry
+     * @param \Dan\Irc\Location\Channel $channel
+     * @param \Dan\Irc\Location\User $user
+     * @param null $message
+     * @return mixed
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    public function runCommand($command, $entry, Channel $channel, User $user, $message = null)
+    {
+        if($this->commands->has($command))
+            return $this->runPluginCommand($command, $entry, $channel, $user, $message);
+
+        return $this->runFileCommand($command, $entry, $channel, $user, $message);
+    }
+
+    /**
+     * @param $command
+     * @param $entry
+     * @param \Dan\Irc\Location\Channel $channel
+     * @param \Dan\Irc\Location\User $user
+     * @param null $message
+     * @return mixed
+     */
+    protected function runFileCommand($command, $entry, Channel $channel, User $user, $message = null)
+    {
+        return include(COMMAND_DIR . '/' . $command . '.php');
+    }
+
+
+    /**
+     * @param $command
+     * @param $entry
+     * @param \Dan\Irc\Location\Channel $channel
+     * @param \Dan\Irc\Location\User $user
+     * @param null $message
+     * @return null
+     */
+    protected function runPluginCommand($command, $entry, Channel $channel, User $user, $message = null)
+    {
+        $command = $this->commands->get($command);
+
+        if($command instanceof Command)
+        {
+            if($entry == 'use')
+                $command->run($channel, $user, $message);
+
+            if($entry == 'help')
+                $command->help($user, $message);
+        }
+
+        if($command instanceof Closure)
+        {
+            $command($entry, $channel, $user, $message);
+        }
+
+        if(is_array($command))
+        {
+            call_user_func_array($command, [$entry, $channel, $user, $message]);
+        }
+
+        return null;
+    }
+
+
     /**
      * Runs the help command.
      *
@@ -148,13 +257,18 @@ class CommandManager {
     {
         if(empty($message))
         {
-            $user->notice(implode(', ', array_keys($this->getCommands())));
+            $commands = array_keys($this->getCommands());
+
+            sort($commands);
+
+            $user->notice(implode(', ', $commands));
             return;
         }
 
         $data = $this->runCommand($message, 'help', $channel, $user);
 
         foreach((array)$data as $line)
-            notice($user, $line);
+            notice($user, str_replace('{cp}', config('commands.command_prefix'), $line));
     }
+
 }

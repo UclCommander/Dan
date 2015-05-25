@@ -183,7 +183,7 @@ class Connection {
      */
     public function inChannel($channel)
     {
-        return array_key_exists($channel, $this->channels);
+        return array_key_exists(strtolower($channel), $this->channels);
     }
 
     /**
@@ -194,7 +194,7 @@ class Connection {
      */
     public function getChannel($channel)
     {
-        return $this->channels[$channel];
+        return $this->channels[strtolower($channel)];
     }
 
     /**
@@ -214,7 +214,8 @@ class Connection {
      */
     public function addChannel($channel)
     {
-        $this->channels[$channel] = new Channel($channel);
+        $clean = strtolower($channel);
+        $this->channels[$clean] = new Channel($channel);
     }
 
     /**

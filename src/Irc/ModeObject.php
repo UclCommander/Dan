@@ -3,7 +3,7 @@
 
 use Illuminate\Support\Collection;
 
-abstract class ModeObject {
+class ModeObject {
 
     protected $modes;
 
@@ -21,11 +21,11 @@ abstract class ModeObject {
     }
 
     /**
-     * @return array
+     * @return Collection
      */
     public function modes()
     {
-        return $this->modes->toArray();
+        return $this->modes->values();
     }
 
     /**
@@ -35,8 +35,12 @@ abstract class ModeObject {
      */
     public function setMode($m)
     {
-        $data   = str_split($m);
-        $add    = true;
+        if($m instanceof ModeObject)
+            $data = $m->modes();
+        else
+            $data = str_split($m);
+
+        $add = true;
 
         for($i = 0; $i < count($data); $i++)
         {

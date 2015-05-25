@@ -33,7 +33,7 @@ if($entry == 'use')
 if ($entry == 'help')
 {
     return [
-        "part - Parts the current channel",
-        "part [channel] - Parts the given channel"
+        "{cp}part - Parts the current channel",
+        "{cp}part [channel] - Parts the given channel"
     ];
 }

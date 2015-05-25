@@ -39,7 +39,9 @@ if($entry == 'use')
 
     $pop = ($popular != '' ? "'{cyan}{$popular}{reset}' is the most popular with {cyan}{$servPlayer} players{reset} out of {cyan}{$servSlots} slots{reset}." : '');
 
-    $channel->message("{reset}There are {cyan}{$active} out of {$serverCount} servers{reset} active. {$players} players are playing out of {$slots} available slots. {$pop}");
+    $areis = $active == 1 ? 'is' : 'are';
+
+    $channel->message("{reset}There {$areis} {cyan}{$active} out of {$serverCount} servers{reset} active. {$players} players are playing out of {$slots} available slots. {$pop}");
 }
 
 if($entry == 'help')

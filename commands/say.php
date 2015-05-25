@@ -24,7 +24,7 @@ if($entry == 'use')
 if($entry == 'help')
 {
     return [
-        "say <message> - Sends <message> to the current channel",
-        "say <channel> <message> - Sends <message> to <channel>"
+        "{cp}say <message> - Sends <message> to the current channel",
+        "{cp}say <channel> <message> - Sends <message> to <channel>"
     ];
 }

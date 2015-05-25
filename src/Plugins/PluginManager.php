@@ -25,7 +25,15 @@ class PluginManager {
         return $this->plugins->keys()->toArray();
     }
 
-
+    /**
+     * Gets all avalible plugins.
+     *
+     * @return array
+     */
+    public function plugins()
+    {
+        return array_map(function($d) { return basename($d, '.phar'); }, glob(PLUGIN_DIR . '/*.phar'));
+    }
 
     /**
      * Loads a plugin.
@@ -36,21 +44,28 @@ class PluginManager {
      */
     public function loadPlugin($plugin)
     {
-        $plugin = $this->getPluginName($plugin);
+        $realname = $this->getPluginName($plugin);
 
-        if(event("dan.plugins.loading", ['plugin' => $plugin]) === false)
+        if($realname === false)
+            throw new Exception("Plugin {$plugin} doesn't exist.");
+
+        if(event("dan.plugins.loading", ['plugin' => $realname]) === false)
             return false;
 
-        if($this->plugins->has($plugin))
-            throw new Exception("Plugin '{$plugin}' already loaded.");
+        if($this->plugins->has($realname))
+            throw new Exception("Plugin '{$realname}' already loaded.");
 
-        $hash       = md5(microtime() . $plugin);
-        $phar       = "{$plugin}{$hash}.phar";
+        $hash       = md5(microtime() . $realname);
+        $phar       = "{$realname}{$hash}.phar";
 
-        if(!Phar::loadPhar(PLUGIN_DIR . "/{$plugin}.phar", $phar))
-            throw new Exception("Error loading plugin {$plugin}");
+        if(!Phar::loadPhar(PLUGIN_DIR . "/{$realname}.phar", $phar))
+            throw new Exception("Error loading plugin {$realname}");
 
-        $config     = json_decode(file_get_contents("phar://{$plugin}{$hash}.phar/config.json"), true);
+        $config     = json_decode(file_get_contents("phar://{$realname}{$hash}.phar/config.json"), true);
+
+        if(!version_compare(Dan::VERSION, $config['requires'], '>='))
+            throw new Exception("Plugin {$realname} requires version {$config['requires']} or later.");
+
         $loadDir    =  "phar://{$phar}/src/";
 
         $namespace  = $config['namespace']."\\";
@@ -59,17 +74,17 @@ class PluginManager {
         Dan::composer()->addPsr4($namespace, $loadDir);
 
         if(!class_exists($class, true))
-            throw new Exception("Error loading '{$plugin}' - class '{$class}' doesn't exist.");
+            throw new Exception("Error loading '{$realname}' - class '{$class}' doesn't exist.");
 
         /** @var Plugin $object */
         $object = new $class();
 
         $object->load();
 
-        $this->plugins->put($plugin, $object);
+        $this->plugins->put($realname, $object);
 
-        event('dan.plugins.loaded', ['plugin' => $plugin]);
-        controlLog("Plugin {$plugin} has been loaded.");
+        event('dan.plugins.loaded', ['plugin' => $realname]);
+        controlLog("Plugin {$realname} has been loaded.");
 
         return true;
     }
@@ -78,6 +93,7 @@ class PluginManager {
      * Unloads a plugin.
      *
      * @param $plugin
+     * @return bool
      * @throws \Exception
      */
     public function unloadPlugin($plugin)
@@ -85,7 +101,7 @@ class PluginManager {
         $plugin = $this->getPluginName($plugin);
 
         if(event("dan.plugins.unloading", ['plugin' => $plugin]) === false)
-            return;
+            return false;
 
         if(!$this->plugins->has($plugin))
             throw new Exception("Plugin '{$plugin}' is not loaded.");
@@ -94,6 +110,8 @@ class PluginManager {
         $this->plugins->forget($plugin);
 
         event('dan.plugins.unloaded', ['plugin' => $plugin]);
+
+        return true;
     }
 
 
@@ -108,9 +126,10 @@ class PluginManager {
         $match  = [];
         $safe   = preg_quote($name);
 
-        $map = array_map(function($d) { return basename($d); }, glob(PLUGIN_DIR . '/*.phar'));
+        $map = $this->plugins();
 
-        preg_match("/{$safe}/i", implode(' ', $map), $match);
+        if(preg_match("/{$safe}/i", implode(' ', $map), $match) === false)
+            return false;
 
         return basename(reset($match));
     }

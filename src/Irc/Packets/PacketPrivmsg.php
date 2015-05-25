@@ -19,14 +19,24 @@ class PacketPrivmsg implements PacketContract {
         {
             $ctcp = explode(' ', trim($message, " \t\n\r\0\x0B\001"), 2);
 
-            /*if($ctcp[0] == 'ACTION')
+            if($ctcp[0] == 'ACTION')
             {
-                event('irc.packets.action.public', [
-                    'user'      => $channel->getUser($user->nick()),
-                    'channel'   => $channel,
-                    'message'   => $message
-                ]);
-            }*/
+                if(isChannel($to))
+                {
+                    $channel = connection()->getChannel($to);
+
+                    if($channel == null)
+                        return;
+
+                    event('irc.packets.action.public', [
+                        'user'      => $channel->getUser($user),
+                        'channel'   => $channel,
+                        'message'   => $ctcp[1],
+                    ]);
+                }
+
+                return;
+            }
 
             $send = event('irc.packets.message.ctcp', [
                 'type'  => $ctcp[0],
@@ -71,7 +81,7 @@ class PacketPrivmsg implements PacketContract {
         console("[{$channel->getLocation()}] {$user->nick()}: {$message}");
 
         event('irc.packets.message.public', [
-            'user'      => $channel->getUser($user->nick()),
+            'user'      => $channel->getUser($user),
             'channel'   => $channel,
             'message'   => $message
         ]);
