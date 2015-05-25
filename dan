@@ -24,6 +24,7 @@ define('CONFIG_DIR', ROOT_DIR . '/config');
 define('STORAGE_DIR', ROOT_DIR . '/storage');
 define('PLUGIN_DIR', ROOT_DIR . '/plugins');
 define('COMMAND_DIR', ROOT_DIR . '/commands');
+define('PLUGIN_STORAGE', STORAGE_DIR . '/plugins');
 
 $loader = require(BASE_DIR . '/vendor/autoload.php');
 

@@ -56,17 +56,27 @@ class PluginManager {
             throw new Exception("Plugin '{$realname}' already loaded.");
 
         $hash       = md5(microtime() . $realname);
-        $phar       = "{$realname}{$hash}.phar";
+        $hased      = "{$realname}{$hash}.phar";
+        $phar       = PLUGIN_DIR . "/{$realname}.phar";
 
-        if(!Phar::loadPhar(PLUGIN_DIR . "/{$realname}.phar", $phar))
+        filesystem()->copy($phar, PLUGIN_STORAGE ."/{$realname}.phar");
+
+        if(!Phar::loadPhar(PLUGIN_STORAGE ."/{$realname}.phar", $hased))
             throw new Exception("Error loading plugin {$realname}");
 
-        $config     = json_decode(file_get_contents("phar://{$realname}{$hash}.phar/config.json"), true);
+        $json       = file_get_contents("phar://{$hased}/config.json");
+
+        $config     = json_decode($json, true);
+
+        vd($config, $hash, $hased, $phar, $realname, $plugin, $json);
+
+        if($config == null)
+            throw new Exception("Error loading config for {$realname}.");
 
         if(!version_compare(Dan::VERSION, $config['requires'], '>='))
             throw new Exception("Plugin {$realname} requires version {$config['requires']} or later.");
 
-        $loadDir    =  "phar://{$phar}/src/";
+        $loadDir    =  "phar://{$hased}/src/";
 
         $namespace  = $config['namespace']."\\";
         $class      = $namespace.$config['class'];
@@ -108,6 +118,8 @@ class PluginManager {
 
         $this->plugins->get($plugin)->unload();
         $this->plugins->forget($plugin);
+
+        Phar::unlinkArchive(PLUGIN_STORAGE . "/{$plugin}.phar");
 
         event('dan.plugins.unloaded', ['plugin' => $plugin]);
 
