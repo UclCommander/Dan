@@ -1,93 +1,59 @@
 <?php namespace Dan\Network;
 
-class Socket
-{
-    private $socket = null;
+class Socket {
+
+    /** @var resource $socket  */
+    protected $socket;
 
     /**
-     * Gets the last error number
+     * Gets the socket resource.
      *
-     * @return int
+     * @return resource
      */
-    public function getLastErrorNum() { return socket_last_error($this->socket); }
-
-    /**
-     * Gets the last error with a message
-     *
-     * @return string
-     */
-    public function getLastErrorStr() { return socket_strerror($this->getLastErrorNum()); }
-
-    /***
-     * Create the socket and initialize it
-     *
-     * @param int $domain
-     * @param int $type
-     * @param int $protocol
-     */
-    public function __construct($domain = AF_INET, $type = SOCK_RAW, $protocol = SOL_TCP)
+    public function getSocket()
     {
-        $socket = socket_create($domain, $type, $protocol);
-
-        if($socket === false)
-            $this->throwError();
-
-        $this->socket = $socket;
+        return $this->socket;
     }
 
     /**
-     * Connect to the address
+     * Connects to the given server.
      *
-     * @param $address
-     * @param $port
-     * @return bool
+     * @param string $server
+     * @param int $port
+     * @throws \Exception
      */
-    public function connect($address, $port)
+    public function connect($server, $port)
     {
-        return socket_connect($this->socket, $address, (int)$port);
+        $this->socket = fsockopen($server, $port, $errno, $errstr);
+
+        if($this->socket == false)
+            throw new \Exception($errstr);
     }
 
-    /**
-     * Closes the socket connection
-     */
-    public function close()
-    {
-        socket_close($this->socket);
-    }
-
-    /**
-     * Reads from the socket
-     *
-     * @param int $limit
-     * @return string
-     */
-    public function read($limit = 512)
-    {
-        $read = socket_read($this->socket, $limit, PHP_NORMAL_READ);
-
-        if($read === false)
-            $this->throwError();
-
-        return trim($read);
-    }
 
     /**
      * Writes to the socket.
      *
-     * @param $data
-     * @param int $limit
+     * @param $line
      */
-    public function write($data, $limit = 512)
+    public function write($line)
     {
-        socket_write($this->socket, $data, $limit);
+        fwrite($this->socket, $line);
     }
 
+
     /**
-     * Throws last error.
+     * Reads from the socket.
+     *
+     * @return array
      */
-    protected function throwError()
+    public function read()
     {
-        $error = socket_last_error($this->socket);
-        die(socket_strerror($error));
+        $lines = fread($this->socket, 4096);
+
+        if($lines === false)
+            critical("Failed reading from socket.", true);
+
+        return explode("\n", $lines);
     }
 }

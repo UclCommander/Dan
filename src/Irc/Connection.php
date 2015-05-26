@@ -26,6 +26,8 @@ class Connection {
 
     protected $numeric;
 
+    protected $attached = '';
+
 
     public function __construct()
     {
@@ -78,8 +80,9 @@ class Connection {
 
         info("Connecting to {$server}:{$port}...");
 
-        if(($cnt = $this->socket->connect($server, $port)) === false)
-            critical($this->socket->getLastErrorStr(), true);
+        $this->socket->connect($server, $port);
+
+        //$this->socket->nonBlocking();
 
         info("Connected.");
 
@@ -251,27 +254,61 @@ class Connection {
     //
 
     /**
+     * Sends USER and NICK.
+     */
+    protected function login()
+    {
+        $this->send('USER', config('irc.user.name'), config('irc.user.name'), '*', config('irc.user.real'));
+        $this->nick(config('irc.user.nick'));
+    }
+
+
+    /**
      * Reads the connection.
      */
     protected function read()
     {
         $this->login();
 
+        $stdin = fopen('php://stdin', 'r');
+
+        stream_set_blocking($stdin, 0);
+
         while ($this->running)
         {
-            $line = $this->socket->read();
+            $input = [$stdin, $this->socket->getSocket()];
+            $write = null;
+            $except = null;
+
+            if(stream_select($input, $write, $except, 0) > 0)
+            {
+                foreach ($input as $resource)
+                {
+                    if ($resource == $stdin)
+                    {
+                        $this->handleConsole($resource);
+                    }
+                    else
+                    {
+                        $this->handleIRC($resource);
+                    }
+                }
+            }
+        }
+    }
+
+    protected function handleIRC($resource)
+    {
+        $lines = $this->socket->read();
+
+        foreach($lines as $line)
+        {
+            $line = trim($line);
 
             if (empty($line))
-            {
                 continue;
-            }
 
             $line = event('connection.line', $line);
-
-            if (empty($line))
-            {
-                continue;
-            }
 
             debug("{cyan}<< {$line}");
 
@@ -283,7 +320,7 @@ class Connection {
             {
                 Console::exception($exception);
 
-                if($this->inChannel(config('dan.control_channel')))
+                if ($this->inChannel(config('dan.control_channel')))
                 {
                     $this->message(config('dan.control_channel'), "Exception was thrown. {$exception->getMessage()} File: " . relative($exception->getTrace()[0]['file']) . "@{$exception->getLine()}");
                 }
@@ -325,13 +362,30 @@ class Connection {
 
     }
 
-    /**
-     * Sends USER and NICK.
-     */
-    protected function login()
-    {
-        $this->send('USER', config('irc.user.name'), config('irc.user.name'), '*', config('irc.user.real'));
-        $this->nick(config('irc.user.nick'));
-    }
 
+    /**
+     * @param $resource
+     */
+    protected function handleConsole($resource)
+    {
+        $message = trim(fgets($resource));
+
+        $data = explode(' ', $message, 2);
+
+        switch($data[0])
+        {
+            case '/attach':
+                $this->attached = $data[1];
+                break;
+
+            case '/raw':
+                $this->raw($data[1]);
+                break;
+
+            default:
+                if($this->attached != '')
+                    $this->send('PRIVMSG', $this->attached, $message);
+
+        }
+    }
 }
