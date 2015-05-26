@@ -2,8 +2,9 @@
 
 
 use Dan\Database\Savable;
+use Illuminate\Contracts\Support\Arrayable;
 
-class User extends Location implements Savable {
+class User extends Location implements Savable, Arrayable {
 
     protected $nick;
     protected $user;
@@ -57,6 +58,7 @@ class User extends Location implements Savable {
     {
         return $this->host;
     }
+
     /**
      *
      */
@@ -67,5 +69,20 @@ class User extends Location implements Savable {
            'user' => $this->user,
            'host' => $this->host,
         ]);
+    }
+
+    /**
+     * Get the instance as an array.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return [
+            'nick'  => $this->nick,
+            'user'  => $this->user,
+            'host'  => $this->host,
+            'rank'  => $this->modes->implode(''),
+        ];
     }
 }

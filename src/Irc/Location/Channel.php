@@ -22,6 +22,9 @@ class Channel extends Location {
         ]);
     }
 
+    /**
+     * @param $topic
+     */
     public function setTopic($topic)
     {
         send("TOPIC", $this->name, $topic);
@@ -48,6 +51,38 @@ class Channel extends Location {
         $obj->setMode($info['modes']);
 
         return $obj;
+    }
+
+    /**
+     * @param $user
+     * @return bool
+     */
+    public function hasUser($user)
+    {
+        if($user instanceof User)
+            $user = $user->getLocation();
+
+        return $this->users->has($user);
+    }
+
+    /**
+     * @param $user
+     * @param $new
+     * @return null
+     */
+    public function renameUser($user, $new)
+    {
+        if($user instanceof User)
+            $user = $user->getLocation();
+
+        if(!$this->users->has($user))
+            return null;
+
+        $old = $this->users->get($user);
+
+        $old['nick'] = $new;
+
+        $this->users->put($new, $old);
     }
 
     /**

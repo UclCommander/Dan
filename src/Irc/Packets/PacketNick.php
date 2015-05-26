@@ -21,5 +21,9 @@ class PacketNick implements PacketContract {
            'user'   => $user->user(),
            'host'   => $user->host(),
         ]);
+
+        foreach(connection()->channels() as $channel)
+            if($channel->hasUser($user) != null)
+                $channel->renameUser($user, $nick);
     }
 }
