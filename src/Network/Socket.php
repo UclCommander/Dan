@@ -49,7 +49,7 @@ class Socket {
      */
     public function read()
     {
-        $lines = fread($this->socket, 4096);
+        $lines = fread($this->socket, 8192);
 
         if($lines === false)
             critical("Failed reading from socket.", true);
