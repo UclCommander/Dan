@@ -57,6 +57,12 @@ class Connection {
         $this->numeric->put($number, $data);
     }
 
+    /**
+     * Gets a numeric.
+     *
+     * @param $number
+     * @return mixed
+     */
     public function getNumeric($number)
     {
         return $this->numeric->get($number);
@@ -276,6 +282,8 @@ class Connection {
 
         while ($this->running)
         {
+            usleep(200000);
+
             $input = [$stdin, $this->socket->getSocket()];
             $write = null;
             $except = null;
@@ -297,6 +305,11 @@ class Connection {
         }
     }
 
+    /**
+     * Handles an IRC stream.
+     *
+     * @param $resource
+     */
     protected function handleIRC($resource)
     {
         $lines = $this->socket->read();
@@ -364,6 +377,8 @@ class Connection {
 
 
     /**
+     * Handles a console stream.
+     * 
      * @param $resource
      */
     protected function handleConsole($resource)
