@@ -53,6 +53,7 @@ class Setup {
         $dan->putIfNull('nickserv_auth_command', 'PRIVMSG NickServ IDENTIFY %s');
         $dan->putIfNull('autorun_commands', ['MODE {NICK} +B']);
         $dan->putIfNull('show_motd', false);
+        $dan->putIfNull('join_on_invite', false);
 
         $dan->save();
 
