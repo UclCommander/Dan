@@ -6,7 +6,7 @@ use Illuminate\Support\Collection;
 
 class Channel extends Location {
 
-    /** @var User[]|Collection $users */
+    /** @var Collection $users */
     protected $users;
 
     public function __construct($name)
@@ -23,6 +23,18 @@ class Channel extends Location {
     }
 
     /**
+     * Gets all users in the channel.
+     *
+     * @return array
+     */
+    public function getUsers()
+    {
+        return $this->users->toArray();
+    }
+
+    /**
+     * Sets the channel topic.
+     *
      * @param $topic
      */
     public function setTopic($topic)
@@ -54,6 +66,8 @@ class Channel extends Location {
     }
 
     /**
+     * Checks to see if the channel has a user.
+     *
      * @param $user
      * @return bool
      */
@@ -66,6 +80,8 @@ class Channel extends Location {
     }
 
     /**
+     * Renames a user (used when a user uses NICK).
+     *
      * @param $user
      * @param $new
      * @return null
@@ -99,6 +115,8 @@ class Channel extends Location {
     }
 
     /**
+     * Sets users from 353.
+     *
      * @param $users
      * @return array
      */
@@ -160,7 +178,7 @@ class Channel extends Location {
             if(!$this->users->has($modes[0]))
                 continue;
 
-            $this->users[$modes[0]]->setMode($modes[1]);
+            $this->users[$modes[0]]['modes']->setMode($modes[1]);
         }
     }
 }

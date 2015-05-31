@@ -234,10 +234,14 @@ namespace {
      */
     function isServer($user)
     {
-        if (is_array($user))
+        if(is_array($user))
             $user = reset($user);
 
-        if (!isUser($user))
+        if(isUser($user))
+            return false;
+
+        // If this is null, then assume this is actually the server since we have no information yet.
+        if(connection()->getNumeric('004') == null)
             return true;
 
         return ($user == connection()->getNumeric('004')[1]);
