@@ -7,12 +7,17 @@ use \Phar;
 
 class PluginManager {
 
-    /** @var array $plugins */
+    /** @var Collection $plugins */
     protected $plugins = [];
+
+    protected $map = [];
+
 
     public function __construct()
     {
         $this->plugins = new Collection();
+
+        filesystem()->cleanDirectory(PLUGIN_STORAGE);
     }
 
     /**
@@ -62,9 +67,9 @@ class PluginManager {
         if(commandExists('box') && DEBUG)
             $this->buildPlugin($realname);
 
-        filesystem()->copy($phar, PLUGIN_STORAGE ."/{$realname}.phar");
+        filesystem()->copy($phar, PLUGIN_STORAGE ."/{$hased}");
 
-        if(!Phar::loadPhar(PLUGIN_STORAGE ."/{$realname}.phar", $hased))
+        if(!Phar::loadPhar(PLUGIN_STORAGE ."/{$hased}", $hased))
             throw new Exception("Error loading plugin {$realname}");
 
         $json       = file_get_contents("phar://{$hased}/config.json");
@@ -92,6 +97,8 @@ class PluginManager {
 
         $this->plugins->put($realname, $object);
 
+        $this->map[$realname] = $hased;
+
         event('dan.plugins.loaded', ['plugin' => $realname]);
         controlLog("Plugin {$realname} has been loaded.");
 
@@ -118,7 +125,11 @@ class PluginManager {
         $this->plugins->get($plugin)->unload();
         $this->plugins->forget($plugin);
 
-        Phar::unlinkArchive(PLUGIN_STORAGE . "/{$plugin}.phar");
+        $hashed = $this->map[$plugin];
+
+        Phar::unlinkArchive(PLUGIN_STORAGE . "/{$hashed}");
+
+        unset($this->map[$plugin]);
 
         event('dan.plugins.unloaded', ['plugin' => $plugin]);
 
