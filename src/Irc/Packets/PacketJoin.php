@@ -2,6 +2,7 @@
 
 
 use Dan\Contracts\PacketContract;
+use Dan\Core\Dan;
 
 class PacketJoin implements PacketContract {
 
@@ -23,11 +24,23 @@ class PacketJoin implements PacketContract {
         if(!connection()->inChannel($data[0]))
             return;
 
-        connection()->getChannel($data[0])->setUsers($user->nick());
+        $channel = connection()->getChannel($data[0]);
+
+
+        if($channel->getLocation() == config('dan.control_channel'))
+        {
+            if (!Dan::isAdmin($user) && !Dan::isOwner($user) && $user->nick() != config('irc.user.nick'))
+            {
+                connection()->send("KICK", config('dan.control_channel'), $user->nick());
+                return;
+            }
+        }
+
+        $channel->setUsers($user->nick());
 
         event('irc.packets.join', [
             'user'      => $user,
-            'channel'   => connection()->getChannel($data[0])
+            'channel'   => $channel
         ]);
     }
 }
