@@ -11,7 +11,9 @@ class User extends Location implements Savable, Arrayable {
     protected $host;
     protected $rank;
 
-    public function __construct(array $data)
+    protected $save = true;
+
+    public function __construct(array $data, $save = true)
     {
         parent::__construct();
 
@@ -21,6 +23,8 @@ class User extends Location implements Savable, Arrayable {
         $this->location = $data['nick'];
         $this->rank     = isset($data['rank']) ? $data['rank'] : null;
 
+        $this->save     = $save;
+
         if($this->rank != null)
             $this->setPrefix($this->rank);
 
@@ -28,6 +32,8 @@ class User extends Location implements Savable, Arrayable {
     }
 
     /**
+     * Gets the user as a Nick!User@Host string.
+     *
      * @return string
      */
     public function string()
@@ -36,6 +42,8 @@ class User extends Location implements Savable, Arrayable {
     }
 
     /**
+     * Gets the users nickname.
+     *
      * @return string
      */
     public function nick()
@@ -44,6 +52,8 @@ class User extends Location implements Savable, Arrayable {
     }
 
     /**
+     * Gets the users username.
+     *
      * @return string
      */
     public function user()
@@ -52,6 +62,8 @@ class User extends Location implements Savable, Arrayable {
     }
 
     /**
+     * Gets the users host.
+     *
      * @return string
      */
     public function host()
@@ -60,10 +72,13 @@ class User extends Location implements Savable, Arrayable {
     }
 
     /**
-     *
+     * Saves the user to the database.
      */
     public function save()
     {
+        if(!$this->save)
+            return;
+
         database()->insertOrUpdate('users', ['nick' => $this->nick], [
            'nick' => $this->nick,
            'user' => $this->user,

@@ -186,9 +186,10 @@ namespace {
      * Returns a new user.
      *
      * @param $data
+     * @param bool $save
      * @return \Dan\Irc\Location\User
      */
-    function user($data)
+    function user($data, $save = true)
     {
         if(is_array($data))
         {
@@ -200,7 +201,7 @@ namespace {
         else
             $info = database()->get('users', ['nick' => $data]);
 
-        return new User($info);
+        return new User($info, $save);
     }
 
     /**
