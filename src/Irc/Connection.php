@@ -6,6 +6,7 @@ use Dan\Contracts\PacketContract;
 use Dan\Helpers\IrcColor;
 use Dan\Helpers\Parser;
 use Dan\Irc\Location\Channel;
+use Dan\Irc\Location\Console as ConsoleLocation;
 use Dan\Irc\Location\Location;
 use Dan\Irc\Location\User;
 use Dan\Network\Socket;
@@ -102,14 +103,24 @@ class Connection {
      *
      * @param $location
      * @param $message
+     * @param bool $color
      */
     public function message($location, $message, $color = true)
     {
         if($location instanceof Location)
             $location = $location->getLocation();
 
+        if($location == 'CONSOLE')
+        {
+            console($message, false);
+            return;
+        }
+
+        console("[{$location}] {$this->user()->nick()}: {$message}");
+
         if($color)
             $message = IrcColor::parse($message);
+
 
         $this->send("PRIVMSG", $location, $message);
     }
@@ -370,9 +381,8 @@ class Connection {
 
         /** @var PacketContract $handler */
         $handler = new $class();
-
         $handler->handle($from, $data);
-
+        unset($handler);
     }
 
 
@@ -387,20 +397,37 @@ class Connection {
 
         $data = explode(' ', $message, 2);
 
-        switch($data[0])
+        if(strpos($data[0], '/') === 0)
         {
-            case '/attach':
-                $this->attached = $data[1];
-                break;
+            $command = substr($data[0], 1);
 
-            case '/raw':
-                $this->raw($data[1]);
-                break;
+            switch($command)
+            {
+                case 'a':
+                case 'attach':
+                    if(isset($data[1]))
+                        $this->attached = $data[1];
 
-            default:
-                if($this->attached != '')
-                    $this->send('PRIVMSG', $this->attached, $message);
+                    console("Attached to {$this->attached}");
+                    break;
 
+                default:
+                    commands()->runCommand($data[0], 'console', new ConsoleLocation(), user(["CONSOLE", "CONSOLE", "CONSOLE"], false), isset($data[1]) ? $data[1] : '');
+            }
+        }
+        else
+        {
+            if($this->attached != '')
+            {
+                console("[{$this->attached}] {$this->user()->nick()}: {$message}");
+                $this->send('PRIVMSG', $this->attached, $message);
+            }
+            else
+            {
+                console("You are not attached to any location. Use /attach or /a to attach to a channel or user.");
+                console("Available Channels: " . implode(', ', array_keys($this->channels)));
+                console("You can also join a channel using /join #channel");
+            }
         }
     }
 }

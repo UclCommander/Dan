@@ -1,14 +1,14 @@
 <?php
 
-use Dan\Irc\Location\Channel;
+use Dan\Irc\Location\Location;
 use Dan\Irc\Location\User;
 
 /** @var User $user */
-/** @var Channel $channel */
+/** @var Location $location */
 /** @var string $message */
 /** @var string $entry */
 
-if($entry == 'use')
+if($entry == 'use' || $entry == 'console')
 {
     $data = explode(' ', $message);
 
@@ -18,12 +18,12 @@ if($entry == 'use')
         {
             case 'load':
                 if(plugins()->loadPlugin($data[1]))
-                    message($channel, "Plugin '{$data[1]}' loaded.");
+                    message($location, "Plugin '{$data[1]}' loaded.");
                 break;
 
             case 'unload':
                 if(plugins()->unloadPlugin($data[1]))
-                    message($channel, "Plugin '{$data[1]}' unloaded.");
+                    message($location, "Plugin '{$data[1]}' unloaded.");
                 break;
 
             case 'reload':
@@ -31,34 +31,34 @@ if($entry == 'use')
                 {
                     if (plugins()->loadPlugin($data[1]))
                     {
-                        message($channel, "Plugin '{$data[1]}' reloaded.");
+                        message($location, "Plugin '{$data[1]}' reloaded.");
                         break;
                     }
 
-                    message($channel, "Error loading plugin '{$data[1]}'.");
+                    message($location, "Error loading plugin '{$data[1]}'.");
                 }
 
-                message($channel, "Error unloading plugin '{$data[1]}'.");
+                message($location, "Error unloading plugin '{$data[1]}'.");
 
                 break;
 
             case 'list':
-                message($channel, implode(', ', plugins()->plugins()));
+                message($location, implode(', ', plugins()->plugins()));
                 break;
 
             case 'create':
                 if(plugins()->create($data[1], ['user' => $user->nick()]))
-                    message($channel, "Plugin created. Start coding!");
+                    message($location, "Plugin created. Start coding!");
                 break;
 
             case 'loaded':
-                message($channel, implode(', ', plugins()->loaded()));
+                message($location, implode(', ', plugins()->loaded()));
                 break;
         }
     }
     catch(Exception $e)
     {
-        message($channel, relative($e->getMessage()));
+        message($location, relative($e->getMessage()));
     }
 }
 

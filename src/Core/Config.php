@@ -3,6 +3,7 @@
 
 use Dan\Helpers\DotCollection;
 use Exception;
+use Illuminate\Support\Arr;
 
 class Config extends DotCollection {
 
@@ -43,6 +44,15 @@ class Config extends DotCollection {
     public function save()
     {
         filesystem()->put(CONFIG_DIR . '/' . $this->name . '.json', json_encode($this->items, JSON_PRETTY_PRINT));
+    }
+
+    /**
+     * Saves all configs.
+     */
+    public static function saveAll()
+    {
+        foreach(static::$configs as $config)
+            $config->save();
     }
 
     /**
@@ -107,5 +117,41 @@ class Config extends DotCollection {
             if(count($item) > 1)
                 static::$configs[$item[0]]->set($item[1], $value);
 
+    }
+
+    /**
+     * @param $key
+     * @param $value
+     */
+    public static function add($key, $value)
+    {
+        $configs = explode('.', $key, 2);
+
+        $config = static::$configs[$configs[0]];
+
+        $items = Arr::get($config, $configs[1], []);
+
+        $items[] = $value;
+
+        Arr::set(static::$configs[$configs[0]], $configs[1], $items);
+    }
+
+    /**
+     * @param $key
+     * @param $value
+     */
+    public static function remove($key, $value)
+    {
+        $configs = explode('.', $key, 2);
+
+        $config = static::$configs[$configs[0]];
+
+        $items = Arr::get($config, $configs[1], []);
+
+        foreach($items as $i => $item)
+            if($item == $value)
+                unset($items[$i]);
+
+        Arr::set(static::$configs[$configs[0]], $configs[1], array_values($items));
     }
 }

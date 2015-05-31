@@ -9,7 +9,7 @@ use Dan\Irc\Location\User;
 /** @var string $message */
 /** @var string $entry */
 
-if($entry == 'use')
+if($entry == 'use' || $entry == 'console')
 {
     $partFrom   = explode(' ', $message);
     $chan       = $channel->getLocation();

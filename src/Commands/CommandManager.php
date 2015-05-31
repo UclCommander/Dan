@@ -5,6 +5,7 @@ use Dan\Core\Dan;
 use Dan\Events\EventArgs;
 use Dan\Events\EventPriority;
 use Dan\Irc\Location\Channel;
+use Dan\Irc\Location\Location;
 use Dan\Irc\Location\User;
 use Illuminate\Support\Collection;
 use SimilarText\Finder;
@@ -189,13 +190,13 @@ class CommandManager {
      *
      * @param $command
      * @param $entry
-     * @param \Dan\Irc\Location\Channel $channel
+     * @param \Dan\Irc\Location\Location $channel
      * @param \Dan\Irc\Location\User $user
      * @param null $message
      * @return mixed
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function runCommand($command, $entry, Channel $channel, User $user, $message = null)
+    public function runCommand($command, $entry, Location $channel, User $user, $message = null)
     {
         if($this->commands->has($command))
             return $this->runPluginCommand($command, $entry, $channel, $user, $message);
@@ -206,13 +207,15 @@ class CommandManager {
     /**
      * @param $command
      * @param $entry
-     * @param \Dan\Irc\Location\Channel $channel
+     * @param \Dan\Irc\Location\Location $channel
      * @param \Dan\Irc\Location\User $user
      * @param null $message
      * @return mixed
      */
-    protected function runFileCommand($command, $entry, Channel $channel, User $user, $message = null)
+    protected function runFileCommand($command, $entry, Location $channel, User $user, $message = null)
     {
+        $location = $channel;
+
         return include(COMMAND_DIR . '/' . $command . '.php');
     }
 
@@ -220,12 +223,12 @@ class CommandManager {
     /**
      * @param $command
      * @param $entry
-     * @param \Dan\Irc\Location\Channel $channel
+     * @param \Dan\Irc\Location\Location $channel
      * @param \Dan\Irc\Location\User $user
      * @param null $message
      * @return null
      */
-    protected function runPluginCommand($command, $entry, Channel $channel, User $user, $message = null)
+    protected function runPluginCommand($command, $entry, Location $channel, User $user, $message = null)
     {
         $command = $this->commands->get($command);
 
@@ -273,7 +276,7 @@ class CommandManager {
                 'messages'  => [implode(', ', $commands)]
             ]);
 
-            if($event == false)
+            if($event === false)
                 return;
 
             $user->notice(implode(', ', $commands));
@@ -288,7 +291,7 @@ class CommandManager {
             'messages'  => (array)$data
         ]);
 
-        if($event == false)
+        if($event === false)
             return;
 
         foreach((array)$data as $line)

@@ -37,7 +37,7 @@ class PluginManager {
      */
     public function plugins()
     {
-        return array_map(function($d) { return basename($d, '.phar'); }, glob(PLUGIN_DIR . '/*'));
+        return array_unique(array_map(function($d) { return basename($d, '.phar'); }, glob(PLUGIN_DIR . '/*')));
     }
 
     /**

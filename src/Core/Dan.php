@@ -12,7 +12,7 @@ use Illuminate\Filesystem\Filesystem;
 
 class Dan {
 
-    const VERSION = '4.0.14-dev';
+    const VERSION = '4.0.15-dev';
 
     /**
      * @var Filesystem $filesystem
