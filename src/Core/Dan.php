@@ -22,8 +22,10 @@ class Dan {
     /** @var Connection $connection */
     protected $connection;
 
+    /** @var CommandManager $commandManager */
     protected $commandManager;
 
+    /** @var PluginManager $pluginManager */
     protected $pluginManager;
 
     /** @var static $dan  */
@@ -116,6 +118,24 @@ class Dan {
 
         $this->connection = new Connection();
         $this->connection->start();
+    }
+
+    public static function quit()
+    {
+        if(event('dan.quitting') === false)
+            return false;
+
+        controlLog('Shutting down...');
+
+        static::plugins()->unloadAll();
+
+        Config::saveAll();
+
+        controlLog('Bye!');
+
+        static::connection()->send("QUIT", "Bot shutting down");
+
+        return true;
     }
 
     /**

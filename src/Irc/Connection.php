@@ -165,6 +165,9 @@ class Connection {
             if($add == null)
                 continue;
 
+            if($add instanceof Location)
+                $add = $add->getLocation();
+
             // If it contains spaces, automatically add :
             if(strpos($add, ' ') !== false)
                 $add = ":{$add}";
@@ -332,8 +335,6 @@ class Connection {
             if (empty($line))
                 continue;
 
-            $line = event('connection.line', $line);
-
             debug("{cyan}<< {$line}");
 
             try
@@ -363,6 +364,15 @@ class Connection {
 
         $cmd    = $data['command'];
         $from   = $data['from'];
+
+
+        $continue = event('connection.line', [
+            'cmd'   => $cmd,
+            'from'  => $from
+        ]);
+
+        if($continue === false)
+            return;
 
         $data = $cmd;
 

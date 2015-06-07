@@ -16,7 +16,7 @@ $protectedValues = ['irc.user.pass', 'irc.channels'];
 if($entry == 'use' || $entry == 'console')
 {
     $data   = explode(' ', $message, 3);
-    $key    = $data[1];
+    $key    = isset($data[1]) ? $data[1] : null;
     $value  = isset($data[2]) ? $data[2] : null;
 
     switch($data[0])

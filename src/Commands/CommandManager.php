@@ -77,12 +77,15 @@ class CommandManager {
             $command = 'help';
         }
 
-        event('command.use', [
+        $continue = event('command.use', [
             'command'   => $command,
             'user'      => $user,
             'channel'   => $channel,
             'args'      => $args,
         ]);
+
+        if($continue === false)
+            return false;
 
         if(!$this->exists($command))
         {

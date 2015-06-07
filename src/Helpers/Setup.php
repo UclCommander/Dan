@@ -63,12 +63,14 @@ class Setup {
         $dan->putIfNull('command_prefix', '.');
         $dan->putIfNull('default_permissions', 'vhoaq');
         $dan->putIfNull('commands', []);
-        $dan->putIfNull('commands.memory', 'AS');
-        $dan->putIfNull('commands.say', 'AS');
-        $dan->putIfNull('commands.raw', 'S');
+        $dan->putIfNull('commands.config', 'S');
         $dan->putIfNull('commands.join', 'AS');
+        $dan->putIfNull('commands.memory', 'AS');
         $dan->putIfNull('commands.part', 'AS');
         $dan->putIfNull('commands.plugin', 'S');
+        $dan->putIfNull('commands.quit', 'S');
+        $dan->putIfNull('commands.raw', 'S');
+        $dan->putIfNull('commands.say', 'AS');
         $dan->save();
 
         // ALWAYS update dan.json last incase of errors

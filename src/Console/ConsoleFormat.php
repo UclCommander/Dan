@@ -16,16 +16,6 @@ class ConsoleFormat extends ColorParser {
         'purple'        => "[35m",
         'cyan'          => "[36m",
         'white'         => "[37m",
-
-        'backBlack'     => "[40m",
-        'backRed'       => "[41m",
-        'backGreen'     => "[42m",
-        'backYellow'    => "[43m",
-        'backBlue'      => "[44m",
-        'backMagenta'   => "[45m",
-        'backCyan'      => "[46m",
-        'backLightGray' => "[47m",
-        'backDefault'   => "[49m",
     ];
 
     protected static $char = "\x1B";

@@ -130,7 +130,7 @@ class Database {
      * @param $table
      * @param array $where
      * @return null
-     * @throws \League\Flysystem\Exception
+     * @throws \Exception
      */
     public function get($table, array $where)
     {
@@ -164,7 +164,7 @@ class Database {
 
         foreach($data as $column => $settings)
         {
-            $this->config[$table]['columns'][$column] = $settings;
+            $this->tableCreateColumn($table, $column, $settings);
         }
 
         $this->save();
@@ -204,9 +204,49 @@ class Database {
         return true;
     }
 
+    /**
+     * Checks to see if a column exists.
+     *
+     * @param $table
+     * @param $column
+     * @return bool
+     * @throws \Exception
+     */
+    public function columnExists($table, $column)
+    {
+        if(!$this->exists($table))
+            throw new Exception("Table {$table} doesn't exist.");
+
+        return array_key_exists($column, $this->config[$table]['columns']);
+    }
+
+    /**
+     * Adds a column to the given table.
+     *
+     * @param $table
+     * @param $column
+     * @param null $default
+     * @throws \Exception
+     */
+    public function addColumn($table, $column, $default = null)
+    {
+        $this->tableCreateColumn($table, $column, $default);
+    }
+
     //------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------
+
+    protected function tableCreateColumn($table, $column, $default = null)
+    {
+        if(!$this->exists($table))
+            throw new Exception("Table {$table} doesn't exist.");
+
+        if($this->columnExists($table, $column))
+            throw new Exception("Column {$column} already exists.");
+
+        $this->config[$table]['columns'][$column] = $default;
+    }
 
 
     /**
@@ -230,22 +270,6 @@ class Database {
                 return $id;
 
         return 0;
-    }
-
-    /**
-     * Checks to see if a column exists.
-     *
-     * @param $table
-     * @param $column
-     * @return bool
-     * @throws \Exception
-     */
-    protected function columnExists($table, $column)
-    {
-        if(!$this->exists($table))
-            throw new Exception("Table {$table} doesn't exist.");
-
-        return array_key_exists($column, $this->config[$table]['columns']);
     }
 
     /**

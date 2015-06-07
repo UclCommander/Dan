@@ -84,7 +84,7 @@ class Event {
                 $return = $event->call($data);
 
                 if($return === false)
-                    return null;
+                    return false;
 
                 if($return instanceof EventArgs)
                 {
