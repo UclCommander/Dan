@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: aaronash
- * Date: 6/4/15
- * Time: 9:44 PM
- */
 
 namespace Dan\Plugins;
 
@@ -18,6 +12,13 @@ class PluginAutoloader {
         spl_autoload_register([$this, 'loader']);
     }
 
+    /**
+     * Registers a plugin for autoloading.
+     *
+     * @param string $plugin
+     * @param string $path
+     * @param string $hash
+     */
     public function registerPlugin($plugin, $path, $hash)
     {
         $this->map[$plugin.$hash] = [
@@ -27,12 +28,22 @@ class PluginAutoloader {
         ];
     }
 
+    /**
+     * Unregisters a plugin from autoloading.
+     *
+     * @param string $plugin
+     */
     public function unregisterPlugin($plugin)
     {
         unset($this->map[$plugin]);
     }
 
-
+    /**
+     * Loads a plugin class.
+     *
+     * @param string $class
+     * @throws \Exception
+     */
     public function loader($class)
     {
         $data = explode('\\', $class, 2);

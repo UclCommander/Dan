@@ -10,7 +10,7 @@ use Phar;
 
 class PluginManager {
 
-    /** @var Collection %plugins */
+    /** @var Collection $plugins */
     protected $plugins;
 
     protected $autoLoader;
