@@ -2,6 +2,7 @@
 
 
 use Dan\Contracts\PacketContract;
+use Dan\Helpers\Logger;
 
 class PacketQuit implements PacketContract {
 

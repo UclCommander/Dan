@@ -12,7 +12,14 @@ if($entry == 'use')
 {
     if($message && $user->hasOneOf('hoaq'))
     {
-        send('KICK', $message, "http://skycld.co/whoopass");
+        $data = explode(' ', $message);
+
+        /*if(isset($data[1]) && $data[1] == '-b')
+        {
+            send('MODE', $channel, "+b", "@{$ban->host()}");
+        }
+*/
+        send('KICK', $channel, $data[0], "http://skycld.co/whoopass");
         return;
     }
 

@@ -30,9 +30,9 @@ $loader = require(BASE_DIR . '/vendor/autoload.php');
 
 set_error_handler(function($severity, $message, $filename, $lineno)
 {
-    alert("-------------------------");
-    controlLog("{red}[{$severity}] PHP ERROR: {$message} in " . relative($filename) . " on line {$lineno}");
-    alert("-------------------------");
+    debug("-------------------------");
+    controlLog("{red}[{$severity}] PHP ERROR: {$message} in " . relative($filename) . " on line {$lineno}", true);
+    debug("-------------------------");
 });
 
 (new Dan\Core\Dan($loader))->boot();

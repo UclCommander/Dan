@@ -55,17 +55,6 @@ class PluginManager {
 
         filesystem()->copy($pharPath, PLUGIN_STORAGE ."/{$hashed}");
 
-        if($plugin === false)
-            throw new Exception("Plugin {$name} doesn't exist.");
-
-        if($this->plugins->has($plugin))
-            throw new Exception("Plugin '{$plugin}' already loaded.");
-
-        if(event("dan.plugins.loading", ['plugin' => $plugin]) === false)
-            return false;
-
-        filesystem()->copy($pharPath, PLUGIN_STORAGE ."/{$hashed}");
-
         if(!Phar::loadPhar(PLUGIN_STORAGE ."/{$hashed}", $hashed))
             throw new Exception("Error loading plugin {$plugin}");
 
@@ -94,6 +83,8 @@ class PluginManager {
 
         $this->plugins->put($plugin, $object);
         $this->map[$plugin] = $hashed;
+
+        event("dan.plugins.loaded", ['plugin' => $plugin]);
 
         return true;
     }

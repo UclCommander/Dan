@@ -124,10 +124,10 @@ class Setup {
             filesystem()->makeDirectory(STORAGE_DIR . '/plugins/');
         }
 
-        if(!filesystem()->exists(ROOT_DIR . '/logs/'))
+        if(!filesystem()->exists(STORAGE_DIR . '/logs/'))
         {
             info("Directory '" . relative(STORAGE_DIR) ."/logs/' not found, creating.");
-            filesystem()->makeDirectory(ROOT_DIR . '/logs/');
+            filesystem()->makeDirectory(STORAGE_DIR . '/logs/');
         }
     }
 

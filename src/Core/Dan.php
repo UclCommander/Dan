@@ -3,6 +3,7 @@
 use Composer\Autoload\ClassLoader;
 use Dan\Commands\CommandManager;
 use Dan\Console\Console;
+use Dan\Helpers\Logger;
 use Dan\Helpers\Setup;
 use Dan\Database\Database;
 use Dan\Irc\Connection;
@@ -58,6 +59,8 @@ class Dan {
         global $argv;
 
         $args = Console::parseArgs($argv);
+
+        Logger::defineSession();
 
         info('Loading bot..');
 

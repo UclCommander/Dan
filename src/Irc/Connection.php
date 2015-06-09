@@ -133,9 +133,6 @@ class Connection {
      */
     public function notice($location, $message)
     {
-        if($location instanceof Location)
-            $location = $location->getLocation();
-
         $this->send("NOTICE", $location, $message);
     }
 
@@ -167,6 +164,9 @@ class Connection {
 
             if($add instanceof Location)
                 $add = $add->getLocation();
+
+            if(is_array($add))
+                $add = json_encode($add);
 
             // If it contains spaces, automatically add :
             if(strpos($add, ' ') !== false)
@@ -249,6 +249,7 @@ class Connection {
      */
     public function joinChannel($channel, $key = null)
     {
+        controlLog("Joining channel {$channel}");
         $this->send("JOIN", $channel, $key);
     }
 

@@ -12,13 +12,18 @@ if($entry == 'use')
 {
     $data = explode(' ', $message, 2);
 
+    $chan = $channel;
+
     if(connection()->inChannel($data[0]))
     {
-        message($data[0], $data[1]);
-        return;
+        $chan   = $data[0];
+        $message = $data[1];
     }
 
-    message($channel, $message);
+    if(strpos($message, "!") === 0)
+        $message = " {$message}";
+
+    message($chan, $message);
 }
 
 if($entry == 'help')

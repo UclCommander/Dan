@@ -235,17 +235,16 @@ namespace {
      */
     function isServer($user)
     {
-        if(is_array($user))
-            $user = reset($user);
-
         if(isUser($user))
             return false;
 
-        // If this is null, then assume this is actually the server since we have no information yet.
-        if(connection()->getNumeric('004') == null)
+        if(is_array($user))
+            $user = reset($user);
+
+        if($user == 'AUTH')
             return true;
 
-        return ($user == connection()->getNumeric('004')[1]);
+        return true;
     }
 
     /**
@@ -259,7 +258,16 @@ namespace {
         if($pattern instanceof User)
             return true;
 
-        return fnmatch($pattern, "*!*@*");
+        if(is_array($pattern) && count($pattern) == 3)
+            return true;
+
+        if(is_array($pattern))
+            $pattern = reset($pattern);
+
+        if(fnmatch("*!*@*", $pattern))
+            return true;
+
+        return database()->has('users', 'nick', $pattern);
     }
 
     /**
@@ -277,10 +285,14 @@ namespace {
      * Sends a message to the control channel.
      *
      * @param $message
+     * @param bool $debug
      */
-    function controlLog($message)
+    function controlLog($message, $debug = false)
     {
-        alert($message);
+        if($debug)
+            debug($message);
+        else
+            alert($message);
 
         if(connection())
         {

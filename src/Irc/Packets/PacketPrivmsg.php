@@ -3,6 +3,7 @@
 
 use Dan\Contracts\PacketContract;
 use Dan\Core\Dan;
+use Dan\Helpers\Logger;
 
 class PacketPrivmsg implements PacketContract {
 

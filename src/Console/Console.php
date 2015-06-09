@@ -1,5 +1,7 @@
 <?php namespace Dan\Console;
 
+use Dan\Helpers\ColorParser;
+use Dan\Helpers\Logger;
 use \Exception;
 
 class Console {
@@ -29,10 +31,14 @@ class Console {
      *
      * @param string $message
      * @param bool $color
+     * @param bool $debug
      * @return string
      */
-    public static function send($message, $color = true)
+    public static function send($message, $color = true, $debug = false)
     {
+        if(!$debug)
+            Logger::logChat(ColorParser::strip($message));
+
         if($color)
             $message = ConsoleFormat::parse($message . "{reset}");
 
@@ -77,7 +83,10 @@ class Console {
     public static function debug($message)
     {
         if(defined("DEBUG") && DEBUG)
-            static::send("{purple}[DEBUG] {$message}");
+        {
+            Logger::logDebug($message);
+            static::send("{purple}[DEBUG] {$message}", true, true);
+        }
     }
 
     /**

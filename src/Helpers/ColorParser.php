@@ -124,4 +124,13 @@ class ColorParser {
 
         return $build;
     }
+
+    /**
+     * @param $message
+     * @return mixed
+     */
+    public static function strip($message)
+    {
+        return preg_replace("/\{([a-z\:]+)\}/", '', $message);
+    }
 }
