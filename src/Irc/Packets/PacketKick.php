@@ -8,18 +8,19 @@ class PacketKick implements PacketContract {
     {
         $user = user($from);
 
-        console("[{$data[0]}] {$user->nick()} was kicked from the channel");
+        console("[{$data[0]}] {$data[1]} was kicked from the channel");
 
         if(!connection()->inChannel($data[0]))
             return;
 
         $channel = connection()->getChannel($data[0]);
 
-        $channel->removeUser($user);
+        $channel->removeUser($data[1]);
 
         event('irc.packets.kick', [
             'user'      => $user,
-            'channel'   => $channel
+            'channel'   => $channel,
+            'kicked'    => $data[1],
         ]);
     }
 }
