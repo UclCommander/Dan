@@ -181,6 +181,9 @@ class CommandManager {
             if(Dan::isAdmin($user))
                 return true;
 
+        if($this->commands->has($command))
+            $rank = $this->commands->get($command)->getPermissions();
+
         return $user->hasOneOf($rank);
     }
 

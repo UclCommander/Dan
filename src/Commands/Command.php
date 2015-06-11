@@ -9,4 +9,9 @@ abstract class Command {
 
     public abstract function run(Channel $channel, User $user, $message);
     public abstract function help(User $user, $message);
+
+    public function getPermissions()
+    {
+        return $this->permissions;
+    }
 }

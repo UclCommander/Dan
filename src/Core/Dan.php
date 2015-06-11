@@ -227,4 +227,15 @@ class Dan {
 
         return false;
     }
+
+    /**
+     * Checks to see if a user is an admin or owner.
+     *
+     * @param \Dan\Irc\Location\User $user
+     * @return bool
+     */
+    public static function isAdminOrOwner(User $user)
+    {
+        return (static::isOwner($user) || static::isAdmin($user));
+    }
 }

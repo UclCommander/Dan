@@ -112,6 +112,26 @@ class Database {
     }
 
     /**
+     * Deletes a row in a table.
+     *
+     * @param $table
+     * @param array $where
+     * @return bool
+     * @throws \Exception
+     */
+    public function delete($table, array $where)
+    {
+        $id = $this->rowOffsetWhere($table, key($where), current($where));
+
+        if($id === 0)
+            return false;
+
+        unset($this->data[$id]);
+
+        return true;
+    }
+
+    /**
      * Checks to see if something exists in the database by column and value.
      *
      * @param $table
@@ -132,8 +152,11 @@ class Database {
      * @return null
      * @throws \Exception
      */
-    public function get($table, array $where)
+    public function get($table, array $where = [])
     {
+        if(empty($where))
+            return $this->data[$table];
+
         $id = $this->rowOffsetWhere($table, key($where), current($where));
 
         if($id === 0)

@@ -11,8 +11,16 @@ use Dan\Irc\Location\User;
 
 if($entry == 'use')
 {
-   // $data = explode(' ', $message, )
-    $msg = urlencode($message);
+    $index = 0;
+    $data = explode(' ', $message);
+
+    if(is_numeric(last($data)))
+    {
+        $index = abs(last($data) - 1);
+        array_pop($data);
+    }
+
+    $msg = urlencode(implode(' ', $data));
 
     $json = Web::json("http://api.urbandictionary.com/v0/define?term={$msg}");
 
@@ -29,7 +37,8 @@ if($entry == 'use')
     }
 
     $list       = $json['list'];
-    $item       = $list[0];
+    $item       = ($index > count($list) ?  $list[0] : $list[$index]);
+
     $cleanDef   = str_replace('  ', ' ', str_replace(["\n", "\r"], ' ', $item['definition']));
 
     $split = substr($cleanDef, 0, 350);
