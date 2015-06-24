@@ -65,7 +65,7 @@ hook(['regex' => $regex], function(array $eventData, array $matches) use($format
             $img    = getimagesize($match);
             $rez    = (count($img) > 1 ? "{$img[0]}x{$img[1]}" : '-');
 
-            return parseFormat($imageFormat, [
+            $items[] = parseFormat($imageFormat, [
                 'type'          => $type,
                 'file_type'     => last(explode('/', $type)),
                 'size'          => $size,
