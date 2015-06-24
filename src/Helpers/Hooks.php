@@ -32,14 +32,16 @@ class Hooks {
 
             if(isset($data['regex']))
             {
-                if(preg_match($data['regex'], $eventData['message'], $matches))
+                if(preg_match_all($data['regex'], $eventData['message'], $matches))
                 {
                     $callback = $hook['callback'];
-                    $return = $callback($eventData, $matches);
+                    $return = $callback($eventData, $matches[0]);
 
                     if(!empty($return))
                     {
-                        message($eventData['channel'], $return);
+                        foreach((array)$return as $line)
+                            message($eventData['channel'], $line);
+
                         return true;
                     }
                 }

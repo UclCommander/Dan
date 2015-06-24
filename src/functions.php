@@ -358,5 +358,20 @@ namespace {
         return (empty($returnVal) ? false : true);
     }
 
+    /**
+     * Parses a string and replaces by key.
+     *
+     * @param $format
+     * @param array $data
+     * @return mixed
+     */
+   function parseFormat($format, array $data)
+   {
+        foreach($data as $key => $value)
+            $format = str_replace("{" . strtoupper($key) . "}", $value, $format);
+
+        return $format;
+    }
+
     #endregion
 }
