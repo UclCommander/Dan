@@ -7,46 +7,53 @@ $format = "{reset}[{cyan} {VIDEO_TITLE}{reset} |{yellow} {CHANNEL_TITLE}{reset} 
 
 hook(['regex' => $regex], function(array $eventData, array $matches) use($format) {
 
-    $json = Web::api('youtube/get', ['video' => $matches[1]]);
+    $items = [];
 
-    if(!is_array($json))
-        return null;
+    foreach($matches[1] as $match)
+    {
+        $json = Web::api('youtube/get', ['video' => $match]);
 
-    $videoTitle     = $json['snippet']['title'];
-    $channelTitle   = $json['snippet']['channelTitle'];
-    $published      = $json['snippet']['publishedAt'];
-    $thumbnail      = $json['snippet']['thumbnails']['default']['url'];
+        if (!is_array($json))
+            return null;
 
-    $definition     = $json['contentDetails']['definition'];
-    $caption        = $json['contentDetails']['caption'];
-    $dimension      = $json['contentDetails']['dimension'];
-    $duration       = $json['contentDetails']['duration'];
+        $videoTitle     = $json['snippet']['title'];
+        $channelTitle   = $json['snippet']['channelTitle'];
+        $published      = $json['snippet']['publishedAt'];
+        $thumbnail      = $json['snippet']['thumbnails']['default']['url'];
 
-    $viewCount      = number_format($json['statistics']['viewCount']);
-    $likeCount      = number_format($json['statistics']['likeCount']);
-    $dislikeCount   = number_format($json['statistics']['dislikeCount']);
-    $commentCount   = number_format($json['statistics']['commentCount']);
-    $favoriteCount  = number_format($json['statistics']['favoriteCount']);
+        $definition = $json['contentDetails']['definition'];
+        $caption    = $json['contentDetails']['caption'];
+        $dimension  = $json['contentDetails']['dimension'];
+        $duration   = $json['contentDetails']['duration'];
 
-    $d          = new DateInterval($duration);
-    $duration   = $d->format('%H:%I:%S');
+        $viewCount      = number_format($json['statistics']['viewCount']);
+        $likeCount      = number_format($json['statistics']['likeCount']);
+        $dislikeCount   = number_format($json['statistics']['dislikeCount']);
+        $commentCount   = number_format($json['statistics']['commentCount']);
+        $favoriteCount  = number_format($json['statistics']['favoriteCount']);
 
-    $d          = new DateTime($published);
-    $published   = $d->format('F j, Y');
+        $d = new DateInterval($duration);
+        $duration = $d->format('%H:%I:%S');
 
-    return parseFormat($format, [
-        'thumbnail'     => $thumbnail,
-        'video_title'   => $videoTitle,
-        'channel_title' => $channelTitle,
-        'likes'         => $likeCount,
-        'dislikes'      => $dislikeCount,
-        'views'         => $viewCount,
-        'published'     => $published,
-        'definition'    => $definition,
-        'caption'       => $caption,
-        'dimension'     => $dimension,
-        'duration'      => $duration,
-        'comments'      => $commentCount,
-        'favorites'     => $favoriteCount,
-    ]);
+        $d = new DateTime($published);
+        $published = $d->format('F j, Y');
+
+        $items[] =  parseFormat($format, [
+            'thumbnail'     => $thumbnail,
+            'video_title'   => $videoTitle,
+            'channel_title' => $channelTitle,
+            'likes'         => $likeCount,
+            'dislikes'      => $dislikeCount,
+            'views'         => $viewCount,
+            'published'     => $published,
+            'definition'    => $definition,
+            'caption'       => $caption,
+            'dimension'     => $dimension,
+            'duration'      => $duration,
+            'comments'      => $commentCount,
+            'favorites'     => $favoriteCount,
+        ]);
+    }
+
+    return $items;
 });

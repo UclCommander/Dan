@@ -40,7 +40,6 @@ hook(['regex' => $regex], function(array $eventData, array $matches) {
         if ($json['FreeShippingFlag'])
             $data[] = "{green}Free Shipping";
 
-
         if ($json['IsShellShockerItem'])
             $data[] = "{orange}Shell Shocker";
 
