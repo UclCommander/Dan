@@ -35,7 +35,7 @@ class Hooks {
                 if(preg_match_all($data['regex'], $eventData['message'], $matches))
                 {
                     $callback = $hook['callback'];
-                    $return = $callback($eventData, $matches[0]);
+                    $return = $callback($eventData, $matches);
 
                     if(!empty($return))
                     {

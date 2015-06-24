@@ -22,7 +22,7 @@ hook(['regex' => $regex], function(array $eventData, array $matches) use($format
 
     $items = [];
 
-    foreach($matches as $match)
+    foreach($matches[0] as $match)
     {
         $url = parse_url($match);
 
@@ -33,8 +33,6 @@ hook(['regex' => $regex], function(array $eventData, array $matches) use($format
         $headers    = get_headers($match, true);
         $type       = is_array($headers['Content-Type']) ? reset($headers['Content-Type']) : $headers['Content-Type'];
         $mimeType   = explode(';', $type)[0];
-
-        var_dump($headers);
 
         if(!in_array($mimeType, $mime))
             continue;

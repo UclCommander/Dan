@@ -11,37 +11,41 @@ hook(['regex' => $regex], function(array $eventData, array $matches) {
         'Referer'       => 'http://www.newegg.com/'
     ];
 
-    $json = Web::json("http://www.ows.newegg.com/Products.egg/{$matches[1]}/ProductDetails", [], $headers, false);
+    foreach ($matches[1] as $match)
+    {
+        $json = Web::json("http://www.ows.newegg.com/Products.egg/{$match}/ProductDetails", [], $headers, false);
 
-    $data = [];
+        $data = [];
 
-    $data[] = "{cyan}" . (strlen($json['Title']) > 50 ? substr($json['Title'], 0, 50) . '...' : $json['Title']);
-    $data[] = "{yellow}{$json['OriginalPrice']}";
-    $data[] = "{yellow}{$json['FinalPrice']}";
+        $data[] = "{cyan}" . (strlen($json['Title']) > 50 ? substr($json['Title'], 0, 50) . '...' : $json['Title']);
+        $data[] = "{yellow}{$json['OriginalPrice']}";
+        $data[] = "{yellow}{$json['FinalPrice']}";
 
-    $reviews    = substr($json['ReviewSummary']['TotalReviews'], 1, -1);
-    $rating     = $json['ReviewSummary']['Rating'];
+        $reviews = substr($json['ReviewSummary']['TotalReviews'], 1, -1);
+        $rating = $json['ReviewSummary']['Rating'];
 
-    if($reviews == '')
-        $reviews = 0;
+        if ($reviews == '')
+            $reviews = 0;
 
-    $data[] = "{green}{$rating}/5 eggs from {$reviews} reviews";
+        $data[] = "{green}{$rating}/5 eggs from {$reviews} reviews";
 
-    if($json['IsFeaturedItem'])
-        $data[] = "{blue}Featured";
+        if ($json['IsFeaturedItem'])
+            $data[] = "{blue}Featured";
 
-    if($json['Instock'])
-        $data[] = "{green}In Stock";
-    else
-        $data[] = "{maroon}Out Of Stock";
+        if ($json['Instock'])
+            $data[] = "{green}In Stock";
+        else
+            $data[] = "{maroon}Out Of Stock";
 
-    if($json['FreeShippingFlag'])
-        $data[] = "{green}Free Shipping";
+        if ($json['FreeShippingFlag'])
+            $data[] = "{green}Free Shipping";
 
-    if($json['IsShellShockerItem'])
-        $data[] = "{orange}Shell Shocker";
 
-    $data = implode(" {reset}| ", $data);
+        if ($json['IsShellShockerItem'])
+            $data[] = "{orange}Shell Shocker";
 
-    return "{reset}[ {$data} {reset}]";
+        $data = implode(" {reset}| ", $data);
+
+        return "{reset}[ {$data} {reset}]";
+    }
 });

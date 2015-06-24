@@ -17,7 +17,7 @@ if($entry == 'use')
 
     $data = database()->get('channels', ['name' => $channel]);
 
-    message($location, "Messages sent: {$data['messages']} | Max Users: {$data['max_users']}");
+    message($location, "{reset}[{cyan} Messages sent: {yellow}{$data['messages']} {reset}|{cyan} Max Users: {yellow}{$data['max_users']} {reset}]");
 }
 
 if($entry == 'help')
