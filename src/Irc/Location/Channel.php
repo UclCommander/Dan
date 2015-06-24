@@ -99,6 +99,7 @@ class Channel extends Location {
         $old['nick'] = $new;
 
         $this->users->put($new, $old);
+        $this->removeUser($user);
     }
 
     /**

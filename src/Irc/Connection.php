@@ -23,19 +23,20 @@ class Connection {
     /** @var User $self */
     protected $self;
 
+    /** @var array $channels */
     protected $channels = [];
 
     protected $numeric;
 
     protected $attached = '';
 
-
     public function __construct()
     {
-        $this->self = user([config('irc.user.nick'), config('irc.user.name'), '']);
-
-        $this->numeric = new Collection();
+        $this->self     = user([config('irc.user.nick'), config('irc.user.name'), '']);
+        $this->numeric  = new Collection();
     }
+
+    #region Getters / Setters
 
     /**
      * Gets a self instance of the bot as user.
@@ -46,6 +47,17 @@ class Connection {
     {
         return $this->self;
     }
+
+    /**
+     * Gets all channels
+     *
+     * @return Channel[]
+     */
+    public function channels()
+    {
+        return $this->channels;
+    }
+
 
     /**
      * Sets a numeric.
@@ -69,33 +81,17 @@ class Connection {
         return $this->numeric->get($number);
     }
 
+    #endregion
+
+    #region irc message functions
+
     /**
-     * Starts the connection.
+     * Sends USER and NICK.
      */
-    public function start()
+    public function login()
     {
-        // this should never happen...
-        if($this->running)
-            return;
-
-        debug("Starting the Socket connection...");
-
-        $this->socket = new Socket(AF_INET, SOCK_STREAM, 0);
-
-        $server = config('irc.server');
-        $port   = config('irc.port');
-
-        info("Connecting to {$server}:{$port}...");
-
-        $this->socket->connect($server, $port);
-
-        //$this->socket->nonBlocking();
-
-        info("Connected.");
-
-        $this->running = true;
-
-        $this->read();
+        $this->send('USER', config('irc.user.name'), config('irc.user.name'), '*', config('irc.user.real'));
+        $this->nick(config('irc.user.nick'));
     }
 
     /**
@@ -198,6 +194,10 @@ class Connection {
         $this->socket->write("{$raw}\r\n");
     }
 
+    #endregion
+
+    #region channel functions
+
     /**
      * Am I in the channel?
      *
@@ -218,16 +218,6 @@ class Connection {
     public function getChannel($channel)
     {
         return $this->channels[strtolower($channel)];
-    }
-
-    /**
-     * Gets all channels
-     *
-     * @return Channel[]
-     */
-    public function channels()
-    {
-        return $this->channels;
     }
 
     /**
@@ -270,19 +260,38 @@ class Connection {
         return true;
     }
 
-    //
-    //
-    //
+    #endregion
+
+    #region socket functions
 
     /**
-     * Sends USER and NICK.
+     * Starts the connection.
      */
-    protected function login()
+    public function start()
     {
-        $this->send('USER', config('irc.user.name'), config('irc.user.name'), '*', config('irc.user.real'));
-        $this->nick(config('irc.user.nick'));
-    }
+        // this should never happen...
+        if($this->running)
+            return;
 
+        debug("Starting the Socket connection...");
+
+        $this->socket = new Socket();
+
+        $server = config('irc.server');
+        $port   = config('irc.port');
+
+        info("Connecting to {$server}:{$port}...");
+
+        $this->socket->connect($server, $port);
+
+        //$this->socket->nonBlocking();
+
+        info("Connected.");
+
+        $this->running = true;
+
+        $this->read();
+    }
 
     /**
      * Reads the connection.
@@ -319,6 +328,10 @@ class Connection {
             }
         }
     }
+
+    #endregion
+
+    #region handler functions
 
     /**
      * Handles an IRC stream.
@@ -441,4 +454,7 @@ class Connection {
             }
         }
     }
+
+
+    #endregion
 }

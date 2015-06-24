@@ -289,7 +289,7 @@ class Database {
         $tableData = $this->data[$table];
 
         foreach ($tableData as $id => $data)
-            if($data[$column] == $value)
+            if(strtolower($data[$column]) == strtolower($value))
                 return $id;
 
         return 0;

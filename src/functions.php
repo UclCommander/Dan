@@ -7,7 +7,10 @@ namespace {
     use Dan\Core\Dan;
     use Dan\Events\Event;
     use Dan\Events\EventPriority;
+    use Dan\Helpers\Hooks;
     use Dan\Irc\Location\User;
+
+    #region class fetchers
 
     /**
      * Gets the filesystem class.
@@ -33,12 +36,36 @@ namespace {
      * Gets a config item.
      *
      * @param $name
-     * @return \Dan\Core\Config|mixed
+     * @return \Dan\Core\Config|array|string|mixed
      */
     function config($name)
     {
         return Config::fetchByKey($name);
     }
+
+    /**
+     * Returns the plugin manager.
+     *
+     * @return \Dan\Plugins\PluginManager
+     */
+    function plugins()
+    {
+        return Dan::plugins();
+    }
+
+    /**
+     * Returns the command manager.
+     *
+     * @return \Dan\Commands\CommandManager
+     */
+    function commands()
+    {
+        return Dan::commands();
+    }
+
+    #endregion
+
+    #region console
 
     /**
      * Sends a DEBUG message to console.
@@ -105,6 +132,34 @@ namespace {
     }
 
     /**
+     * Sends a message to the control channel.
+     *
+     * @param $message
+     * @param bool $debug
+     */
+    function controlLog($message, $debug = false)
+    {
+        if($debug)
+            debug($message);
+        else
+            alert($message);
+
+        if(connection())
+        {
+            $channel = config('dan.control_channel');
+
+            if (empty($channel) || !connection()->inChannel($channel))
+                return;
+
+            connection()->message($channel, $message);
+        }
+    }
+
+    #endregion
+
+    #region irc
+
+    /**
      * Sends am IRC line using the message builder.
      *
      * @param ...$params
@@ -133,32 +188,6 @@ namespace {
     {
         return Dan::connection();
     }
-
-    /**
-     * Fires an event.
-     *
-     * @param $name
-     * @param $data
-     * @return mixed
-     */
-    function event($name, $data = null)
-    {
-        return Event::fire($name, $data);
-    }
-
-    /**
-     * Subscribes to an event.
-     *
-     * @param $name
-     * @param $function
-     * @param int $priority
-     * @return Event
-     */
-    function subscribe($name, $function, $priority = EventPriority::Normal)
-    {
-        return Event::subscribe($name, $function, $priority);
-    }
-
 
     /**
      * Sends a message.
@@ -205,18 +234,6 @@ namespace {
     }
 
     /**
-     * Coverts a number to a human readable size.
-     *
-     * @param $size
-     * @return string
-     */
-    function convert($size)
-    {
-        $unit=['b','kb','mb','gb','tb','pb'];
-        return @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
-    }
-
-    /**
      * Checks to see if the string is a channel.
      *
      * @param $channel
@@ -235,14 +252,14 @@ namespace {
      */
     function isServer($user)
     {
-        if(isUser($user))
-            return false;
-
         if(is_array($user))
             $user = reset($user);
 
         if($user == 'AUTH')
             return true;
+
+        if(isUser($user))
+            return false;
 
         return true;
     }
@@ -270,6 +287,56 @@ namespace {
         return database()->has('users', 'nick', $pattern);
     }
 
+    #endregion
+
+    #region events
+
+    /**
+     * Fires an event.
+     *
+     * @param $name
+     * @param $data
+     * @return mixed
+     */
+    function event($name, $data = null)
+    {
+        return Event::fire($name, $data);
+    }
+
+    /**
+     * Subscribes to an event.
+     *
+     * @param $name
+     * @param $function
+     * @param int $priority
+     * @return Event
+     */
+    function subscribe($name, $function, $priority = EventPriority::Normal)
+    {
+        return Event::subscribe($name, $function, $priority);
+    }
+
+    function hook($data, $callback)
+    {
+        Hooks::defineHook($data, $callback);
+    }
+
+    #endregion
+
+    #region utility
+
+    /**
+     * Coverts a number to a human readable size.
+     *
+     * @param $size
+     * @return string
+     */
+    function convert($size)
+    {
+        $unit=['b','kb','mb','gb','tb','pb'];
+        return @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
+    }
+
     /**
      * Gets relative path from executable.
      *
@@ -282,50 +349,6 @@ namespace {
     }
 
     /**
-     * Sends a message to the control channel.
-     *
-     * @param $message
-     * @param bool $debug
-     */
-    function controlLog($message, $debug = false)
-    {
-        if($debug)
-            debug($message);
-        else
-            alert($message);
-
-        if(connection())
-        {
-            $channel = config('dan.control_channel');
-
-            if (empty($channel) || !connection()->inChannel($channel))
-                return;
-
-            connection()->message($channel, $message);
-        }
-    }
-
-    /**
-     * Returns the plugin manager.
-     *
-     * @return \Dan\Plugins\PluginManager
-     */
-    function plugins()
-    {
-        return Dan::plugins();
-    }
-
-    /**
-     * Returns the command manager.
-     *
-     * @return \Dan\Commands\CommandManager
-     */
-    function commands()
-    {
-        return Dan::commands();
-    }
-
-    /**
      * @param $cmd
      * @return bool
      */
@@ -334,4 +357,6 @@ namespace {
         $returnVal = shell_exec("which $cmd");
         return (empty($returnVal) ? false : true);
     }
+
+    #endregion
 }

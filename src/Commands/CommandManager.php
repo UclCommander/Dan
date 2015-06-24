@@ -67,7 +67,7 @@ class CommandManager {
         $command    = strtolower(substr($data[0], 1));
         $args       = isset($data[1]) ? $data[1] : null;
 
-        if(empty($command) || !ctype_alnum($command))
+        if(empty($command) || !ctype_alnum($command) || is_numeric($command))
             return null;
 
         // Hacky override to allow 'help' access from command.

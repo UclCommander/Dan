@@ -7,8 +7,6 @@ class Web {
 
     public static function curl($type, $url, $params = [], $headers = [])
     {
-        $headers = array_merge(['X-Requested-With: XMLHttpRequest'], (array)$headers);
-
         $curl = curl_init();
 
         if($type == 'get')
@@ -21,9 +19,16 @@ class Web {
             curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
         }
 
+        if(isset($headers['User-Agent']))
+        {
+            curl_setopt($curl, CURLOPT_USERAGENT, $headers['User-Agent']);
+            unset($headers['User-Agent']);
+        }
+
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+
         $result = curl_exec($curl);
         curl_close($curl);
 
@@ -56,11 +61,13 @@ class Web {
      * @param $uri
      * @param array $params
      * @param array $headers
+     * @param bool $xmlRequest
      * @return mixed
      */
-    public static function json($uri, $params = [], $headers = [])
+    public static function json($uri, $params = [], $headers = ['X-Requested-With: XMLHttpRequest'], $xmlRequest = true)
     {
-        $headers = array_merge(['X-Requested-With: XMLHttpRequest'], (array)$headers);
+        if($xmlRequest)
+            $headers = array_merge(['X-Requested-With: XMLHttpRequest'], (array)$headers);
 
         return json_decode(static::get($uri, $params, $headers), true);
     }

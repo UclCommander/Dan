@@ -3,6 +3,8 @@
 
 use Dan\Contracts\PacketContract;
 use Dan\Core\Dan;
+use Dan\Events\EventArgs;
+use Dan\Helpers\Hooks;
 use Dan\Helpers\Logger;
 
 class PacketPrivmsg implements PacketContract {
@@ -81,10 +83,15 @@ class PacketPrivmsg implements PacketContract {
 
         console("[{$channel->getLocation()}] {$user->nick()}: {$message}");
 
-        event('irc.packets.message.public', [
+        $eventData = [
             'user'      => $channel->getUser($user),
             'channel'   => $channel,
             'message'   => $message
-        ]);
+        ];
+
+        if(Hooks::callHooks($eventData))
+            return;
+
+        event('irc.packets.message.public', $eventData);
     }
 }

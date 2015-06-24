@@ -48,7 +48,7 @@ class ModeObject {
         {
             if($data[$i] == '+' || $data[$i] == '-')
             {
-                $add = ($add == '+');
+                $add = ($data[$i] == '+');
                 continue;
             }
 

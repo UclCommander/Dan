@@ -13,7 +13,16 @@ if($entry == 'use')
     $msg = explode(' ', $message, 2);
 
     if(count($msg) != 2)
+    {
+        if(in_array($msg[0], array_merge(hash_algos(), ['bcrypt'])))
+        {
+            message($channel, "Please specify text to hash.");
+            return;
+        }
+
+        message($channel, "Please specify a valid algorithm.");
         return;
+    }
 
     if($msg[0] == 'bcrypt')
     {
@@ -22,7 +31,12 @@ if($entry == 'use')
     }
 
     if(in_array($msg[0], hash_algos()))
+    {
         message($channel, hash($msg[0], $msg[1]));
+        return;
+    }
+
+    message($channel, "Please specify a valid algorithm.");
 }
 
 if($entry == 'help')

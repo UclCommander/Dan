@@ -3,6 +3,7 @@
 use Composer\Autoload\ClassLoader;
 use Dan\Commands\CommandManager;
 use Dan\Console\Console;
+use Dan\Helpers\Hooks;
 use Dan\Helpers\Logger;
 use Dan\Helpers\Setup;
 use Dan\Database\Database;
@@ -115,8 +116,9 @@ class Dan {
             }
         }
 
-        event('dan.loaded');
+        Hooks::registerHooks();
 
+        event('dan.loaded');
         info("Bot loaded.");
 
         $this->connection = new Connection();

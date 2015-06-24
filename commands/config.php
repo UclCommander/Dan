@@ -66,7 +66,11 @@ if($entry == 'use' || $entry == 'console')
             break;
 
         case 'remove':
-
+            if(is_array(config($key)))
+            {
+                Config::remove($key, $value);
+                message($location, "Value added.");
+            }
             break;
     }
 }
@@ -78,6 +82,6 @@ if($entry == 'help')
         "{cp}config get <key> - Gets a config value",
         "{cp}config set <key> <value> - Sets a config value",
         "{cp}config add <key> <value> - Adds an item to an array",
-        "{cp}config remove <key> <index> - Removes an item from an array",
+        "{cp}config remove <key> <value> - Removes an item from an array",
     ];
 }
