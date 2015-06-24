@@ -7,7 +7,7 @@ $format = "{reset}[{cyan} {VIDEO_TITLE}{reset} |{yellow} {CHANNEL_TITLE}{reset} 
 
 hook(['regex' => $regex], function(array $eventData, array $matches) use($format) {
 
-    $json = Web::api('youtube/get', ['video' => $matches[1]]);
+    $json = Web::api('youtube/get', ['video' => $matches[0]]);
 
     if(!is_array($json))
         return null;
