@@ -260,6 +260,14 @@ class Database {
     //------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------
 
+    /**
+     * Creates a column in the given table.
+     *
+     * @param $table
+     * @param $column
+     * @param null $default
+     * @throws \Exception
+     */
     protected function tableCreateColumn($table, $column, $default = null)
     {
         if(!$this->exists($table))
