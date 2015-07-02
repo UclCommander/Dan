@@ -49,7 +49,7 @@ hook(['regex' => $regex], function(array $eventData, array $matches) use($format
             $title = preg_replace('([ ]+)', ' ', $title);
 
             $items[] = parseFormat($format, [
-                'title' => urldecode($title),
+                'title' => htmlspecialchars_decode($title),
             ]);
         }
         else // assume image

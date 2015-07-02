@@ -40,8 +40,8 @@ hook(['regex' => $regex], function(array $eventData, array $matches) use($format
 
         $items[] =  parseFormat($format, [
             'thumbnail'     => $thumbnail,
-            'video_title'   => urldecode($videoTitle),
-            'channel_title' => urldecode($channelTitle),
+            'video_title'   => htmlspecialchars_decode($videoTitle),
+            'channel_title' => htmlspecialchars_decode($channelTitle),
             'likes'         => $likeCount,
             'dislikes'      => $dislikeCount,
             'views'         => $viewCount,
