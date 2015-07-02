@@ -30,8 +30,8 @@ hook(['regex' => $regex], function(array $eventData, array $matches) use($format
             if (fnmatch($ignore, $url['host']))
                 continue 2;
 
-        $headers    = get_headers($match, true);
-        $type       = is_array($headers['Content-Type']) ? reset($headers['Content-Type']) : $headers['Content-Type'];
+        $headers    = getHeaders($match);
+        $type       = is_array($headers['content-type']) ? reset($headers['content-type']) : $headers['content-type'];
         $mimeType   = explode(';', $type)[0];
 
         if(!in_array($mimeType, $mime))
@@ -54,12 +54,12 @@ hook(['regex' => $regex], function(array $eventData, array $matches) use($format
         }
         else // assume image
         {
-            $type = $headers['Content-Type'];
+            $type = $headers['content-type'];
 
             if(is_array($type))
                 $type = reset($type);
 
-            $size   = isset($headers['Content-Length']) ? convert($headers['Content-Length']) : '-';
+            $size   = isset($headers['content-length']) ? convert($headers['content-length']) : '-';
             $img    = getimagesize($match);
             $rez    = (count($img) > 1 ? "{$img[0]}x{$img[1]}" : '-');
 

@@ -365,12 +365,30 @@ namespace {
      * @param array $data
      * @return mixed
      */
-   function parseFormat($format, array $data)
-   {
-        foreach($data as $key => $value)
+    function parseFormat($format, array $data)
+    {
+        foreach ($data as $key => $value)
             $format = str_replace("{" . strtoupper($key) . "}", $value, $format);
 
         return $format;
+    }
+
+    /**
+     * Gets webpage headers and normalizes the keys.
+     * 
+     * @param $url
+     * @return array
+     */
+    function getHeaders($url)
+    {
+        $headers = get_headers($url, true);
+
+        $new = [];
+
+        foreach($headers as $key => $value)
+            $new[strtolower($key)] = $value;
+
+        return $new;
     }
 
     #endregion
