@@ -392,10 +392,15 @@ class Connection {
 
         array_shift($data);
 
+        if($cmd[0] == "ERROR")
+        {
+            $this->running = false;
+            alert("Disconnected from IRC");
+            return;
+        }
+
         $normal = ucfirst(strtolower($cmd[0]));
-
-        $class = "Dan\\Irc\\Packets\\Packet{$normal}";
-
+        $class  = "Dan\\Irc\\Packets\\Packet{$normal}";
 
         if(!class_exists($class))
         {

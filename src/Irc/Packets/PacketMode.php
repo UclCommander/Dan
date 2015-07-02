@@ -7,7 +7,7 @@ class PacketMode implements PacketContract {
 
     public function handle($from, $data)
     {
-        if(config('irc.user.nick') == $from[0] || isServer($from))
+        if((config('irc.user.nick') == $from[0] || isServer($from)) && !isChannel($data[0]))
         {
             if($data[0] == config('irc.user.nick'))
                 connection()->user()->setMode($data[1]);
