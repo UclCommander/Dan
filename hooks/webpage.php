@@ -18,16 +18,21 @@ $mime = [
     'image/gif',
 ];
 
-hook(['regex' => $regex], function(array $eventData, array $matches) use($format, $imageFormat, $ignored, $mime) {
+hook(['regex' => $regex, 'name' => 'webpage'], function(array $eventData, array $matches) use($format, $imageFormat, $ignored, $mime) {
 
     $items = [];
 
     foreach($matches[0] as $match)
     {
-        $url = parse_url($match);
+        $new = get_final_url($match);
 
-        foreach ($ignored as $ignore)
-            if (fnmatch($ignore, $url['host']))
+        $url = parse_url($new);
+
+        if(fnmatch("*youtu*", $url['host']))
+            return callHook('youtube', array_merge($eventData, ['message' => $new]));
+
+        foreach($ignored as $ignore)
+            if(fnmatch($ignore, $url['host']))
                 continue 2;
 
         $headers    = getHeaders($match);
@@ -36,6 +41,8 @@ hook(['regex' => $regex], function(array $eventData, array $matches) use($format
 
         if(!in_array($mimeType, $mime))
             continue;
+
+        debug($mimeType);
 
         if($mimeType == 'text/html')
         {

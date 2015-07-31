@@ -4,7 +4,7 @@ use Dan\Helpers\Web;
 
 $regex = "/(?:.*)(?:www.newegg.com|newegg.com)\/Product\/Product\.aspx\?.*?Item=([-_a-zA-Z0-9]+)(?:.*)/";
 
-hook(['regex' => $regex], function(array $eventData, array $matches) {
+hook(['regex' => $regex, 'name' => 'newegg'], function(array $eventData, array $matches) {
 
     $headers = [
         'User-Agent'    => 'Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3',

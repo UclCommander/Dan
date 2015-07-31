@@ -5,7 +5,7 @@ use Dan\Helpers\Web;
 $regex  = "/(?:.*)(?:www\.)?youtu(?:be\.com|\.be)\/(?:(?:watch\?v=)?([a-zA-Z0-9\-_]+)(?:[a-zA-Z0-9\&\=\?]+)?)(?:.*)/";
 $format = "{reset}[{cyan} {VIDEO_TITLE}{reset} |{yellow} {CHANNEL_TITLE}{reset} | {green}+{LIKES}{reset}/{red}-{DISLIKES} {reset}|{cyan} {VIEWS} views{reset} |{cyan} {PUBLISHED}{reset} |{light_cyan} {DURATION}{reset} ]";
 
-hook(['regex' => $regex], function(array $eventData, array $matches) use($format) {
+hook(['regex' => $regex, 'name' => 'youtube'], function(array $eventData, array $matches) use($format) {
 
     $items = [];
 
