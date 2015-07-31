@@ -46,10 +46,13 @@ hook(['regex' => $regex], function(array $eventData, array $matches) use($format
 
             $title = $title[1];
             $title = str_replace("\n", '', str_replace("\r", '', $title));
-            $title = preg_replace('([ ]+)', ' ', $title);
+            $title = preg_replace('([ ]+)', ' ', trim($title));
+
+            if(empty($title))
+                continue;
 
             $items[] = parseFormat($format, [
-                'title' => htmlspecialchars_decode($title),
+                'title' => htmlspecialchars_decode(html_entity_decode($title)),
             ]);
         }
         else // assume image
@@ -59,14 +62,17 @@ hook(['regex' => $regex], function(array $eventData, array $matches) use($format
             if(is_array($type))
                 $type = reset($type);
 
-            $size   = isset($headers['content-length']) ? convert($headers['content-length']) : '-';
+            $size   = isset($headers['content-length']) ? $headers['content-length'] : '-';
             $img    = getimagesize($match);
             $rez    = (count($img) > 1 ? "{$img[0]}x{$img[1]}" : '-');
+
+            if(is_array($size))
+                $size = reset($size);
 
             $items[] = parseFormat($imageFormat, [
                 'type'          => $type,
                 'file_type'     => last(explode('/', $type)),
-                'size'          => $size,
+                'size'          => convert($size),
                 'resolution'    => $rez,
             ]);
         }
