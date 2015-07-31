@@ -73,6 +73,8 @@ if($entry == 'use' || $entry == 'console')
             }
             break;
     }
+
+    Config::saveAll();
 }
 
 if($entry == 'help')
