@@ -24,6 +24,11 @@ if($entry == 'use')
             $lenny = "( ͡∆ ͜ʖ ͡∆)";
             break;
 
+        case "backward":
+        case "backwards":
+            $lenny = "( °͡ ʖ͜ °͡  )";
+            break;
+
         default:
             $lenny = "( ͡° ͜ʖ ͡°)";
             break;
@@ -36,6 +41,6 @@ if($entry == 'help')
 {
     return [
         "{cp}lenny [type] - The lenny faces",
-        'Optional types: hugs, no, lenninati',
+        'Optional types: hugs, no, lenninati, backwards',
     ];
 }
