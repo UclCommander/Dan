@@ -255,7 +255,7 @@ namespace {
         if(is_array($user))
             $user = reset($user);
 
-        if($user == 'AUTH')
+        if($user == 'AUTH' || $user == '*')
             return true;
 
         if(isUser($user))
@@ -375,7 +375,7 @@ namespace {
 
     /**
      * Gets webpage headers and normalizes the keys.
-     * 
+     *
      * @param $url
      * @return array
      */

@@ -7,7 +7,7 @@ class PacketNotice implements PacketContract {
 
     public function handle($from, $data)
     {
-        if(isServer($from))
+        if(isServer($from) || $data[0] == 'AUTH' || $data[0] == '*')
         {
             event('irc.packets.notice.server', [
                 'type'      => $data[0],
