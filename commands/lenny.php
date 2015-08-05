@@ -29,6 +29,10 @@ if($entry == 'use')
             $lenny = "( °͡ ʖ͜ °͡  )";
             break;
 
+        case "pumped":
+            $lenny = "(ง ͠° ͟ل͜ ͡°)ง";
+            break;
+
         default:
             $lenny = "( ͡° ͜ʖ ͡°)";
             break;
