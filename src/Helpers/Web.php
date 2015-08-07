@@ -36,6 +36,23 @@ class Web {
         return $result;
     }
 
+
+    /**
+     * @param $uri
+     * @param array $params
+     * @param array $headers
+     * @return \DOMDocument
+     */
+    public static function dom($uri, $params = [], $headers = [])
+    {
+        $data = static::curl('get', $uri, $params, $headers);
+
+        $dom = new \DOMDocument();
+        $dom->strictErrorChecking = false;
+        $dom->loadHTML($data);
+        return $dom;
+    }
+
     /**
      * @param $uri
      * @param array $params

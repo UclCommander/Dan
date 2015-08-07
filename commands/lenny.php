@@ -45,6 +45,6 @@ if($entry == 'help')
 {
     return [
         "{cp}lenny [type] - The lenny faces",
-        'Optional types: hugs, no, lenninati, backwards',
+        'Optional types: hugs, no, lenninati, backwards, pumped',
     ];
 }
