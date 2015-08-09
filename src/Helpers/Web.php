@@ -1,10 +1,19 @@
 <?php namespace Dan\Helpers; 
 
 
+use SimpleXMLElement;
+
 class Web {
 
     protected static $api = "http://api.uclcommander.net/";
 
+    /**
+     * @param $type
+     * @param $url
+     * @param array $params
+     * @param array $headers
+     * @return mixed
+     */
     public static function curl($type, $url, $params = [], $headers = [])
     {
         $curl = curl_init();
@@ -36,6 +45,21 @@ class Web {
         return $result;
     }
 
+
+    /**
+     * Gets an rss feed
+     *
+     * @param $uri
+     * @return SimpleXmlElement[]
+     */
+    public static function rss($uri)
+    {
+        $rss = static::get($uri);
+
+        $xml = new SimpleXmlElement($rss);
+
+        return xmlToArray($xml->channel);
+    }
 
     /**
      * @param $uri

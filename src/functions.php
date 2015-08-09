@@ -411,6 +411,11 @@ namespace {
 
     #endregion
 
+    function xmlToArray($data)
+    {
+        return json_decode(json_encode($data), true);
+    }
+
 
     // ALL code below found here because im lazy: http://stackoverflow.com/a/4102293
 
@@ -505,4 +510,5 @@ namespace {
 
         return $url;
     }
+
 }

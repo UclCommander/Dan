@@ -87,7 +87,14 @@ class Database {
             if(!$this->columnExists($table, $column))
                 throw new Exception("Column {$column} doesn't exist in {$table}");
 
-            $this->data[$table][$id][$column] = $value;
+            $columnData = $this->data[$table][$id][$column];
+
+            $save = $value;
+
+            if(is_array($columnData))
+                $save = array_merge($columnData, $value);
+
+            $this->data[$table][$id][$column] = $save;
         }
 
         $this->save();
@@ -254,6 +261,8 @@ class Database {
     public function addColumn($table, $column, $default = null)
     {
         $this->tableCreateColumn($table, $column, $default);
+
+        $this->save();
     }
 
     //------------------------------------------------------------------------------------------------------------------
