@@ -3,7 +3,6 @@
 use Dan\Core\Dan;
 use Dan\Irc\Location\Location;
 use Dan\Irc\Location\User;
-use Dan\Helpers\Web;
 
 /** @var User $user */
 /** @var Location $location */
@@ -12,7 +11,15 @@ use Dan\Helpers\Web;
 
 if($entry == 'use' || $entry == 'console')
 {
-    message($channel, "Dan the IRC bot v" . Dan::VERSION . " by UclCommander. http://skycld.co/dan - See " . config('commands.command_prefix') . 'help for a list of commands.');
+    $version = Dan::VERSION;
+
+    if(!PHAR)
+    {
+        $v = Dan::getCurrentGitVersion();
+        $version .= " ({$v['id']})";
+    }
+
+    message($channel, "Dan the IRC bot v{$version} by UclCommander. http://skycld.co/dan - See " . config('commands.command_prefix') . 'help for a list of commands.');
 }
 
 if($entry == 'help')

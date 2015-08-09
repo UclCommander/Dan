@@ -2,7 +2,6 @@
 
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
-use Illuminate\Support\Arr;
 
 /** @var User $user */
 /** @var Channel $channel */

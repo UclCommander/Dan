@@ -1,6 +1,5 @@
 <?php
 
-use Dan\Core\Dan;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 

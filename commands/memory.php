@@ -21,5 +21,7 @@ if($entry == 'console')
 
 if($entry == 'help')
 {
-    return "Gets memory usage";
+    return [
+        "Gets memory usage"
+    ];
 }

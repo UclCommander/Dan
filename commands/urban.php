@@ -52,6 +52,6 @@ if($entry == 'use')
 if($entry == 'help')
 {
     return [
-        "urban <text> - Searches the only dictionary known to man."
+        "{cp}urban <text> - Searches the only dictionary known to man."
     ];
 }

@@ -17,5 +17,7 @@ if($entry == 'use' || $entry == 'console')
 
 if($entry == 'help')
 {
-    return ["Shuts down the bot."];
+    return [
+        "Shuts down the bot."
+    ];
 }

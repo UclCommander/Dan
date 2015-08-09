@@ -1,5 +1,6 @@
 <?php
 
+use Dan\Helpers\Hooks;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
@@ -10,12 +11,14 @@ use Dan\Irc\Location\User;
 
 if($entry == 'use')
 {
-    \Dan\Helpers\Hooks::registerHooks();
+    Hooks::registerHooks();
 
     message($channel, "Reloaded");
 }
 
 if($entry == 'help')
 {
-    return ["Reloads hooks"];
+    return [
+        "Reloads hooks"
+    ];
 }

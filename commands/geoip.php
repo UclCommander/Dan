@@ -1,6 +1,6 @@
 <?php
 
-use Dan\Irc\Location\Channel;
+use Dan\Irc\Location\Location;
 use Dan\Irc\Location\User;
 
 /** @var User $user */
@@ -39,5 +39,7 @@ if($entry == 'use')
 
 if($entry == 'help')
 {
-    return [];
+    return [
+        "Gets Geo IP information for the given IP."
+    ];
 }

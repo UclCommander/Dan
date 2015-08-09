@@ -14,11 +14,11 @@ if($entry == 'use' || $entry == 'console')
     if(!PHAR)
     {
         $v = Dan::getCurrentGitVersion();
-       $version = "{yellow}{$v['id']}{reset} | {cyan}{$v['message']}";
+        $version = "{yellow}{$v['id']}{reset} | {cyan}{$v['message']}";
     }
     else
         $version = "{cyan} PHAR " . Dan::VERSION;
-    
+
     message($location, "{reset}[ {$version} {reset}]");
 }
 

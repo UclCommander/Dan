@@ -14,11 +14,6 @@ if($entry == 'use')
     {
         $data = explode(' ', $message);
 
-        /*if(isset($data[1]) && $data[1] == '-b')
-        {
-            send('MODE', $channel, "+b", "@{$ban->host()}");
-        }
-*/
         send('KICK', $channel, $data[0], "http://skycld.co/whoopass");
         return;
     }
@@ -28,5 +23,7 @@ if($entry == 'use')
 
 if($entry == 'help')
 {
-    return ["When a normal beating just won't do!"];
+    return [
+        "When a normal beating just won't do!"
+    ];
 }
