@@ -3,18 +3,21 @@
 use Composer\Autoload\ClassLoader;
 use Dan\Commands\CommandManager;
 use Dan\Console\Console;
+use Dan\Events\EventArgs;
 use Dan\Helpers\Hooks;
 use Dan\Helpers\Logger;
-use Dan\Helpers\Setup;
 use Dan\Database\Database;
 use Dan\Irc\Connection;
 use Dan\Irc\Location\User;
 use Dan\Plugins\PluginManager;
+use Dan\Setup\Migrate;
 use Illuminate\Filesystem\Filesystem;
 
 class Dan {
 
-    const VERSION = '4.0.15-dev';
+    const VERSION = '4.0.16-dev';
+
+    protected static $args = [];
 
     /**
      * @var Filesystem $filesystem
@@ -61,9 +64,18 @@ class Dan {
 
         $args = Console::parseArgs($argv);
 
+        static::$args = $args;
+
         Logger::defineSession();
 
+
         info('Loading bot..');
+
+        // If dan.debug is true, --debug is true, or we're running outside the PHAR file, turn on debug.
+        define('DEBUG', (config('dan.debug') || (array_key_exists('--debug', $args) && $args['--debug'] == 'true')) || !PHAR);
+
+        if(DEBUG)
+            debug("!!!DEBUG MODE ACTIVATED!!!");
 
         try
         {
@@ -72,28 +84,9 @@ class Dan {
         catch(\Exception $exception)
         {
             Console::critical($exception->getMessage(), true);
-
-        }
-        if(!Setup::isSetup())
-        {
-            alert("It appears this is a first time run, or there was an update. Setting defaults up.");
-
-            $first = Setup::runSetup();
-
-            alert("Setup complete.");
-
-            if($first)
-            {
-                alert("This was a first time setup. You can now configure the bot in the config directory.");
-                die;
-            }
         }
 
-        // If dan.debug is true, --debug is true, or we're running outside the PHAR file, turn on debug.
-        define('DEBUG', (config('dan.debug') || (array_key_exists('--debug', $args) && $args['--debug'] == 'true')) || !PHAR);
-
-        if(DEBUG)
-            debug("!!!DEBUG MODE ACTIVATED!!!");
+        Migrate::checkAndDo();
 
         $this->database->load();
 
@@ -121,11 +114,30 @@ class Dan {
         event('dan.loaded');
         info("Bot loaded.");
 
+        if(static::args('--from') == 'update')
+        {
+            subscribe('irc.packets.join', function(EventArgs $eventArgs) {
+
+                if($eventArgs->get('channel')->getLocation() != static::args('--channel'))
+                    return;
+
+                $v = static::getCurrentGitVersion();
+                message(static::args('--channel'), "{reset}[ {green}Up to date {reset}| Currently on {yellow}{$v['id']}{reset} | {cyan}{$v['message']} {reset}]");
+                $eventArgs->get('event')->destroy();
+            });
+        }
+
         $this->connection = new Connection();
         $this->connection->start();
     }
 
-    public static function quit()
+    /**
+     * Safely closes the bot.
+     *
+     * @param string $reason
+     * @return bool
+     */
+    public static function quit($reason = "Bot shutting down")
     {
         if(event('dan.quitting') === false)
             return false;
@@ -136,9 +148,11 @@ class Dan {
 
         Config::saveAll();
 
+        database()->save();
+
         controlLog('Bye!');
 
-        static::connection()->send("QUIT", "Bot shutting down");
+        static::connection()->send("QUIT", $reason);
 
         return true;
     }
@@ -239,5 +253,37 @@ class Dan {
     public static function isAdminOrOwner(User $user)
     {
         return (static::isOwner($user) || static::isAdmin($user));
+    }
+
+    /**
+     * Get program arguments
+     *
+     * @param null $arg
+     * @return array|null
+     */
+    public static function args($arg = null)
+    {
+        if($arg == null)
+            return static::$args;
+
+        if(isset(static::$args[$arg]))
+            return static::$args[$arg];
+
+        return null;
+    }
+
+    /**
+     * Gets the current git version.
+     *
+     * @return array
+     */
+    public static function getCurrentGitVersion()
+    {
+        $commitId       = trim(shell_exec('git rev-parse --short HEAD'));
+        $data           = shell_exec('git log -1');
+        $messages       = array_filter(explode(PHP_EOL, $data));
+        $commitMessage  = trim(last($messages));
+
+        return ['id' => $commitId, 'message' => $commitMessage];
     }
 }

@@ -8,5 +8,8 @@ class PacketPing implements PacketContract {
     {
         event('irc.packets.ping');
         send("PONG", $data[0]);
+
+        //save database every ping
+        database()->save();
     }
 }

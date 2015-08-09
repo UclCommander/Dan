@@ -41,4 +41,12 @@ class Location extends ModeObject {
     {
         return $this->location;
     }
+
+    /**
+     * @return mixed
+     */
+    public function __toString()
+    {
+        return $this->location;
+    }
 }

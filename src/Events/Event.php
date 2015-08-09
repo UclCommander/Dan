@@ -1,6 +1,8 @@
 <?php namespace Dan\Events;
 
 
+use Closure;
+
 class Event {
 
     protected static $events = [];
@@ -15,7 +17,7 @@ class Event {
         $this->function = $function;
         $this->priority = $priority;
 
-        $this->id = md5(microtime().$this->name.$this->priority.serialize($this->function));
+        $this->id = md5(microtime().$this->name.$this->priority.($function instanceof Closure ? md5($function) : serialize($this->function)));
 
         static::$events[$name][$priority][$this->id] = $this;
     }
@@ -80,6 +82,7 @@ class Event {
         {
             foreach($events as $id => $event)
             {
+                $data->put('event', $event);
                 /** @var static $event */
                 $return = $event->call($data);
 
