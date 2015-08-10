@@ -69,7 +69,7 @@ hook(['regex' => $regex, 'name' => 'webpage'], function(array $eventData, array 
             if(is_array($type))
                 $type = reset($type);
 
-            $size   = isset($headers['content-length']) ? $headers['content-length'] : '-';
+            $size   = isset($headers['content-length']) ? $headers['content-length'] : 0;
             $img    = getimagesize($match);
             $rez    = (count($img) > 1 ? "{$img[0]}x{$img[1]}" : '-');
 
@@ -79,7 +79,7 @@ hook(['regex' => $regex, 'name' => 'webpage'], function(array $eventData, array 
             $items[] = parseFormat($imageFormat, [
                 'type'          => $type,
                 'file_type'     => last(explode('/', $type)),
-                'size'          => convert($size),
+                'size'          => (!$size ? 'unknown' : convert($size)),
                 'resolution'    => $rez,
             ]);
         }
