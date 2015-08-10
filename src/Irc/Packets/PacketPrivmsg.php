@@ -49,10 +49,13 @@ class PacketPrivmsg implements PacketContract {
             if(is_array($send))
             {
                 if($ctcp[0] == 'VERSION')
-                    $send = "Dan the PHP Bot " . Dan::VERSION . " by UclCommander - http://derpy.me/dan3 - PHP " . phpversion() . " \001";
+                {
+                    $v = Dan::getCurrentGitVersion();
+                    $send = "Dan the PHP Bot v" . Dan::VERSION . (PHAR ? '' : " ({$v})") . " by UclCommander, running on PHP " . phpversion() . " - http://skycld.co/dan \001";
+                }
 
                 if($ctcp[0] == 'TIME')
-                    $send =  date('r');
+                    $send = date('r');
 
                 if($ctcp[0] == 'PING')
                     $send = time();

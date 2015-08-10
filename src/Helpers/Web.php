@@ -20,7 +20,8 @@ class Web {
 
         if($type == 'get')
         {
-            $url = $url . "?" . http_build_query($params);
+            if(count($params))
+                $url = $url . "?" . http_build_query($params);
         }
         else if ($type == 'post')
         {
