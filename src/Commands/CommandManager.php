@@ -274,6 +274,10 @@ class CommandManager {
         {
             $commands = array_keys($this->getCommands());
 
+            foreach($commands as $i => $cmd)
+                if(!$this->hasPermission($cmd, $user))
+                    unset($commands[$i]);
+
             sort($commands);
 
             $event = event('command.help.messages', [
