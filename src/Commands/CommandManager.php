@@ -172,7 +172,7 @@ class CommandManager {
         if(Dan::isOwner($user))
             return true;
 
-        $rank = config("commands.commands.{$command}");
+        $rank = config("commands.permission.{$command}");
 
         if($rank == null)
             $rank = config('commands.default_permissions');
