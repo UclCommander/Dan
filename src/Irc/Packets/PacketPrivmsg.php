@@ -86,6 +86,11 @@ class PacketPrivmsg implements PacketContract {
 
         console("[{$channel->getLocation()}] {$user->nick()}: {$message}");
 
+        if(!Dan::isAdminOrOwner($user))
+            foreach(config('ignore.masks') as $mask)
+                if(fnmatch($mask, $user->string()))
+                    return;
+
         $eventData = [
             'user'      => $channel->getUser($user),
             'channel'   => $channel,

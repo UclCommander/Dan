@@ -15,7 +15,7 @@ use Illuminate\Filesystem\Filesystem;
 
 class Dan {
 
-    const VERSION = '4.0.16-dev';
+    const VERSION = '4.0.17-dev';
 
     protected static $args = [];
 

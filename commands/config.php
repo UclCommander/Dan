@@ -69,7 +69,7 @@ if($entry == 'use' || $entry == 'console')
             if(is_array(config($key)))
             {
                 Config::remove($key, $value);
-                message($location, "Value added.");
+                message($location, "Value removed.");
             }
             break;
     }
