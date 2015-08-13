@@ -8,7 +8,7 @@ class Packet352 implements PacketContract {
 
     public function handle($from, $data)
     {
-        database()->insertOrUpdate('users', ['nick' => $data[5]], [
+        database()->table('users')->insertOrUpdate(['nick', $data[5]], [
             'nick' => $data[5],
             'user' => $data[2],
             'host' => $data[3],

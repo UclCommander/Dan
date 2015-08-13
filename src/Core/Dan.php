@@ -3,6 +3,7 @@
 use Composer\Autoload\ClassLoader;
 use Dan\Commands\CommandManager;
 use Dan\Console\Console;
+use Dan\Database\DatabaseManager;
 use Dan\Events\EventArgs;
 use Dan\Helpers\Hooks;
 use Dan\Helpers\Logger;
@@ -36,23 +37,18 @@ class Dan {
     /** @var static $dan  */
     protected static $dan;
 
-    /** @var Database */
-    protected $database;
-
-    protected $composer;
+    /** @var DatabaseManager */
+    protected $databaseManager;
 
 
     /**
-     * @param \Composer\Autoload\ClassLoader $composer
      */
-    public function __construct(ClassLoader $composer)
+    public function __construct()
     {
         static::$dan = $this;
 
-        $this->filesystem   = new Filesystem();
-        $this->database     = new Database('database');
-
-        $this->composer = $composer;
+        $this->filesystem       = new Filesystem();
+        $this->databaseManager  = new DatabaseManager();
     }
 
     /**
@@ -88,7 +84,8 @@ class Dan {
 
         Migrate::checkAndDo();
 
-        $this->database->load();
+        if(!$this->databaseManager->loaded('database'))
+            $this->databaseManager->loadDatabase('database');
 
         alert("Indexing commands...");
         $this->commandManager   = new CommandManager();
@@ -170,12 +167,26 @@ class Dan {
     /**
      * Gets the database driver.
      *
-     * @return Database
+     * @param string $name
+     * @return \Dan\Database\Database
+     * @throws \Exception
      */
-    public static function database()
+    public static function database($name = 'database')
     {
-        return static::$dan->database;
+        return static::$dan->databaseManager->get($name);
     }
+
+    /**
+     * Gets the database manager.
+     *
+     * @return \Dan\Database\DatabaseManager
+     * @throws \Exception
+     */
+    public static function databaseManager()
+    {
+        return static::$dan->databaseManager;
+    }
+
     /**
      * Gets the database driver.
      *
@@ -204,14 +215,6 @@ class Dan {
     public static function plugins()
     {
         return static::$dan->pluginManager;
-    }
-
-    /**
-     * @return \Composer\Autoload\ClassLoader
-     */
-    public static function composer()
-    {
-        return static::$dan->composer;
     }
 
     /**

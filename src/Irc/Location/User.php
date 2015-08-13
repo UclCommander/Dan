@@ -79,7 +79,7 @@ class User extends Location implements Savable, Arrayable {
         if(!$this->save)
             return;
 
-        database()->insertOrUpdate('users', ['nick' => $this->nick], [
+        database()->table('users')->insertOrUpdate(['nick', $this->nick], [
            'nick' => $this->nick,
            'user' => $this->user,
            'host' => $this->host,

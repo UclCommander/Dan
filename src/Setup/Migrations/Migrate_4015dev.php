@@ -35,11 +35,11 @@ class Migrate_4015dev implements MigrationContract {
      */
     public function migrateDatabase()
     {
-        if(!database()->exists('users'))
+        if(!database()->tableExists('users'))
         {
             alert("Creating table users...");
 
-            database()->create('users', [
+            database()->schema('users')->create([
                 'nick'      => '',
                 'user'      => '',
                 'host'      => '',
@@ -47,11 +47,11 @@ class Migrate_4015dev implements MigrationContract {
             ]);
         }
 
-        if(!database()->exists('channels'))
+        if(!database()->tableExists('channels'))
         {
             alert("Creating table channels...");
 
-            database()->create('channels', [
+            database()->schema('channels')->create([
                 'name'      => '',
                 'max_users' => 0,
                 'messages'  => 0

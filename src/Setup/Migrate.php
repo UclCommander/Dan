@@ -65,7 +65,10 @@ class Migrate {
             $this->first = $all = true;
 
         if(!filesystem()->exists(STORAGE_DIR . '/database.json'))
+        {
             $all = true;
+            databaseManager()->create('database');
+        }
         else
             database()->load();
 

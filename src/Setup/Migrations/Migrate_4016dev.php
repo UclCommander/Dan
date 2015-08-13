@@ -20,6 +20,6 @@ class Migrate_4016dev implements MigrationContract {
     public function migrateDatabase()
     {
         alert('Adding new column to users table');
-        database()->addColumn('users', 'info', []);
+        database()->schema('users')->addColumn('info', []);
     }
 }

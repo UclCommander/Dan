@@ -17,7 +17,7 @@ class Channel extends Location {
         $this->name     = $name;
         $this->location = $name;
 
-        database()->insertOrUpdate('channels', ['name' => $name], [
+        database()->table('channels')->insertOrUpdate(['name', $name], [
            'name'   => $name
         ]);
     }
@@ -136,7 +136,7 @@ class Channel extends Location {
                 $nick = substr($user, 1);
             }
 
-            $info = database()->get('users', ['nick' => $nick]);
+            $info = database()->table('users')->where('nick', $nick)->first();
 
             if(empty($info))
             {
@@ -155,13 +155,16 @@ class Channel extends Location {
             $this->users->put($nick , ['nick' => $info['nick'], 'modes' => $mode]);
         }
 
-        $channel = database()->get('channels', ['name' => $this->name]);
+        $channel = database()->table('channels')->where('name', $this->name)->first();
 
         if($channel['max_users'] < count($this->users))
         {
-            database()->update('channels', ['name' => $this->name], [
-                'max_users' => $this->users->count()
-            ]);
+            database()
+                ->table('channels')
+                ->where('name', $this->name)
+                ->update([
+                    'max_users' => $this->users->count()
+                ]);
         }
 
         return array_keys($this->users->toArray());

@@ -10,7 +10,7 @@ class Packet396 implements PacketContract {
     {
         if($data[0] == config('irc.user.nick'))
         {
-            database()->update('users', ['nick' => $data[0]], [
+            database()->table('users')->where('nick', $data[0])->update([
                 'host'  => $data[1]
             ]);
         }

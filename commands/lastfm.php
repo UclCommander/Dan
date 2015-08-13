@@ -15,9 +15,8 @@ if($entry == 'use')
 
     if($data[0] == 'save')
     {
-        database()->update('users', ['nick' => $user->nick()], ['info' => ['lastfm' => $data[1]]]);
+        database()->table('users')->where('nick', $user->nick())->update(['info' => ['lastfm' => $data[1]]]);
         message($channel, "{reset}[ {yellow}{$data[1]} {reset}is now saved to your nickname. ]");
-
     }
     else
     {
@@ -27,7 +26,7 @@ if($entry == 'use')
         {
             $fmUser = $user->nick();
 
-            $data = database()->get('users', ['nick' => $user->nick()]);
+            $data = database()->table('users')->where('nick', $user->nick())->first();
 
             if(!isset($data['info']))
                 return;

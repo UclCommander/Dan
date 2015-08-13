@@ -16,7 +16,7 @@ class PacketNick implements PacketContract {
             'nick'  => $data[0],
         ]);
 
-        database()->insertOrUpdate('users', ['nick' => $user->nick()], [
+        database()->table('users')->insertOrUpdate(['nick', $user->nick()], [
            'nick'   => $nick,
            'user'   => $user->user(),
            'host'   => $user->host(),

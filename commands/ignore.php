@@ -16,7 +16,7 @@ if($entry == 'use')
     $ignore = $data[0];
 
     if(isUser($ignore) && strpos($ignore, '@') === false)
-        $ignore = "*@" . database()->get('users', ['nick' => $ignore])['host'];
+        $ignore = "*@" . database()->table('users')->where('nick', $ignore)->first()->get('host');
 
     if(in_array($ignore, config('ignore.masks')))
     {

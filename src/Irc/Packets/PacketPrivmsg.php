@@ -81,8 +81,8 @@ class PacketPrivmsg implements PacketContract {
         if($channel == null)
             return;
 
-        database()->increment('users',      ['nick' => $user->nick()],              'messages');
-        database()->increment('channels',   ['name' => $channel->getLocation()],    'messages');
+        database()->table('users')->where('nick', $user->nick())->increment('messages');
+        database()->table('channels')->where('name', $channel->getLocation())->increment('messages');
 
         console("[{$channel->getLocation()}] {$user->nick()}: {$message}");
 

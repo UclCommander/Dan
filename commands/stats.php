@@ -15,7 +15,7 @@ if($entry == 'use')
     if($message && isChannel($message))
         $channel = $message;
 
-    $data = database()->get('channels', ['name' => $channel]);
+    $data = database()->table('channels')->where('name', $channel)->first();
 
     message($location, "{reset}[{cyan} Messages sent: {yellow}{$data['messages']} {reset}|{cyan} Max Users: {yellow}{$data['max_users']} {reset}]");
 }

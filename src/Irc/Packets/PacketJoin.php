@@ -29,7 +29,7 @@ class PacketJoin implements PacketContract {
 
         if($channel->getLocation() == config('dan.control_channel'))
         {
-            if (!Dan::isAdmin($user) && !Dan::isOwner($user) && $user->nick() != config('irc.user.nick'))
+            if (!Dan::isAdminOrOwner($user) && $user->nick() != config('irc.user.nick') && $user->host() != connection()->user()->host())
             {
                 connection()->send("KICK", config('dan.control_channel'), $user->nick());
                 return;

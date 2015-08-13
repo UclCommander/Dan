@@ -33,6 +33,16 @@ namespace {
     }
 
     /**
+     * Returns the database manager instance.
+     *
+     * @return \Dan\Database\DatabaseManager
+     */
+    function databaseManager()
+    {
+        return Dan::databaseManager();
+    }
+
+    /**
      * Gets a config item.
      *
      * @param $name
@@ -228,7 +238,7 @@ namespace {
             $info['rank'] = isset($data['rank']) ? $data['rank'] : (isset($data[3]) ? $data[3] : null);
         }
         else
-            $info = database()->get('users', ['nick' => $data]);
+            $info = database()->table('users')->where('nick', $data)->first()->toArray();
 
         return new User($info, $save);
     }
@@ -284,7 +294,7 @@ namespace {
         if(fnmatch("*!*@*", $pattern))
             return true;
 
-        return database()->has('users', 'nick', $pattern);
+        return database()->table('users')->where('nick', $pattern)->count() != 0;
     }
 
     #endregion
