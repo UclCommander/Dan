@@ -28,7 +28,7 @@ if($entry == 'use')
     $after = array_random([
         'into a wall', 'into space', 'to death', 'out of the channel',
         'into a pancake', 'into a bacon pancake',
-        'info a cupcake'
+        'into a cupcake'
     ]);
 
     action($location, "{$verb} {$data[0]} {$after}");
