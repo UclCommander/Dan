@@ -46,7 +46,7 @@ if($entry == 'use' || $entry == 'console')
                 message($location, "Core files changed, restarting bot.");
 
                 Dan::quit("Updating bot.");
-                pcntl_exec(ROOT_DIR . '/dan', ["--location={$location}", '--from=update']);
+                pcntl_exec(ROOT_DIR . '/dan', ["--channel={$location}", '--from=update']);
                 return;
             }
 
