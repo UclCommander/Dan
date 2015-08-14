@@ -122,6 +122,33 @@ class Connection {
     }
 
     /**
+     * Sends a PRIVMSG ACTION
+     *
+     * @param $location
+     * @param $message
+     * @param bool $color
+     */
+    public function action($location, $message, $color = true)
+    {
+        if($location instanceof Location)
+            $location = $location->getLocation();
+
+        if($location == 'CONSOLE')
+        {
+            console($message, false);
+            return;
+        }
+
+        console("[{$location}] *{$this->user()->nick()} {$message}");
+
+        if($color)
+            $message = IrcColor::parse($message);
+
+        $this->send("PRIVMSG", $location, "\001ACTION {$message}\001");
+    }
+
+
+    /**
      * Sends a NOTICE.
      *
      * @param $location
@@ -151,11 +178,11 @@ class Connection {
     {
         $compiled = [];
 
-        foreach($params as $param)
+        for($i = 0; $i < count($params);$i++)
         {
-            $add = $param;
+            $add = $params[$i];
 
-            if($add == null)
+            if(is_null($add))
                 continue;
 
             if($add instanceof Location)
@@ -164,7 +191,6 @@ class Connection {
             if(is_array($add))
                 $add = json_encode($add);
 
-            // If it contains spaces, automatically add :
             if(strpos($add, ' ') !== false)
                 $add = ":{$add}";
 

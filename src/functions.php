@@ -211,6 +211,17 @@ namespace {
     }
 
     /**
+     * Sends an action.
+     *
+     * @param $location
+     * @param $message
+     */
+    function action($location, $message)
+    {
+        Dan::connection()->action($location, $message);
+    }
+
+    /**
      * Sends a notice.
      *
      * @param $location
@@ -417,6 +428,17 @@ namespace {
             $new[strtolower($key)] = $value;
 
         return $new;
+    }
+
+    /**
+     * Because array_rand doesn't do what's expected of it.
+     *
+     * @param $array
+     * @return mixed
+     */
+    function array_random($array)
+    {
+        return $array[array_rand($array)];
     }
 
     #endregion
