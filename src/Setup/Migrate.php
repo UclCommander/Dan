@@ -22,7 +22,7 @@ class Migrate {
 
             alert("Setup complete.");
 
-            if($migrate->wasFirst())
+            if($migrate->wasFirst() && !Dan::args('--skip-setup', false))
             {
                 alert("This was a first time setup. You can now configure the bot in the config directory.");
                 die;

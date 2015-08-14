@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+#NUKE IT ALL
+php7 dan --debug --clear-storage --clear-config --skip-setup

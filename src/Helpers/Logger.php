@@ -12,7 +12,7 @@ class Logger {
     {
         $date = date('Ymd');
 
-        $path = STORAGE_DIR . "/logs/{$date}/";
+        $path = LOGS_DIR . "/{$date}/";
 
         if(!filesystem()->exists($path))
             filesystem()->makeDirectory($path, 0755, true);

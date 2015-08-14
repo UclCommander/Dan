@@ -215,7 +215,7 @@ class Connection {
 
         $console = str_replace(config('irc.user.pass'), '[PASSWORD]', $raw);
 
-        debug("{brown}>> {$console}");
+        debug("{brown}<< {$console}");
 
         $this->socket->write("{$raw}\r\n");
     }
@@ -310,8 +310,6 @@ class Connection {
 
         $this->socket->connect($server, $port);
 
-        //$this->socket->nonBlocking();
-
         info("Connected.");
 
         $this->running = true;
@@ -375,7 +373,7 @@ class Connection {
             if (empty($line))
                 continue;
 
-            debug("{cyan}<< {$line}");
+            debug("{cyan}>> {$line}");
 
             try
             {

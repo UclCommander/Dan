@@ -1,22 +1,18 @@
 <?php namespace Dan\Core;
 
-use Composer\Autoload\ClassLoader;
-use Dan\Commands\CommandManager;
 use Dan\Console\Console;
+use Dan\Database\Database;
 use Dan\Database\DatabaseManager;
 use Dan\Events\EventArgs;
-use Dan\Helpers\Hooks;
 use Dan\Helpers\Logger;
-use Dan\Database\Database;
 use Dan\Irc\Connection;
 use Dan\Irc\Location\User;
-use Dan\Plugins\PluginManager;
 use Dan\Setup\Migrate;
 use Illuminate\Filesystem\Filesystem;
 
 class Dan {
 
-    const VERSION = '4.0.17-dev';
+    const VERSION = '5.0.0-dev';
 
     protected static $args = [];
 
@@ -28,20 +24,14 @@ class Dan {
     /** @var Connection $connection */
     protected $connection;
 
-    /** @var CommandManager $commandManager */
-    protected $commandManager;
-
-    /** @var PluginManager $pluginManager */
-    protected $pluginManager;
-
     /** @var static $dan  */
     protected static $dan;
 
     /** @var DatabaseManager */
     protected $databaseManager;
 
-
     /**
+     *
      */
     public function __construct()
     {
@@ -58,20 +48,22 @@ class Dan {
     {
         global $argv;
 
-        $args = Console::parseArgs($argv);
+        static::$args = Console::parseArgs($argv);
 
-        static::$args = $args;
+        if(array_key_exists('--clear-config', static::$args))
+            filesystem()->deleteDirectory(CONFIG_DIR, true);
 
-        Logger::defineSession();
+        if(array_key_exists('--clear-storage', static::$args))
+            filesystem()->deleteDirectory(STORAGE_DIR, true);
 
-
-        info('Loading bot..');
-
-        // If dan.debug is true, --debug is true, or we're running outside the PHAR file, turn on debug.
-        define('DEBUG', (config('dan.debug') || (array_key_exists('--debug', $args) && $args['--debug'] == 'true')) || !PHAR);
+        define('DEBUG', (config('dan.debug') || (array_key_exists('--debug', static::$args) && static::$args['--debug'] == 'true')));
 
         if(DEBUG)
             debug("!!!DEBUG MODE ACTIVATED!!!");
+
+        Logger::defineSession();
+
+        info('Loading bot..');
 
         try
         {
@@ -87,28 +79,6 @@ class Dan {
         if(!$this->databaseManager->loaded('database'))
             $this->databaseManager->loadDatabase('database');
 
-        alert("Indexing commands...");
-        $this->commandManager   = new CommandManager();
-
-        alert("Loading Plugins...");
-        $this->pluginManager    = new PluginManager();
-
-        foreach(config('dan.plugins') as $plugin)
-        {
-            try
-            {
-                info("Loading plugin {$plugin}");
-                $this->pluginManager->loadPlugin($plugin);
-            }
-            catch(\Exception $e)
-            {
-                Console::exception($e);
-            }
-        }
-
-        Hooks::registerHooks();
-
-        event('dan.loaded');
         info("Bot loaded.");
 
         if(static::args('--from') == 'update')
@@ -134,14 +104,12 @@ class Dan {
      * @param string $reason
      * @return bool
      */
-    public static function quit($reason = "Bot shutting down")
+    public static function quit($reason = "Bot shutting down") : bool
     {
         if(event('dan.quitting') === false)
             return false;
 
         controlLog('Shutting down...');
-
-        static::plugins()->unloadAll();
 
         Config::saveAll();
 
@@ -159,7 +127,7 @@ class Dan {
      *
      * @return Filesystem
      */
-    public static function filesystem()
+    public static function filesystem() : Filesystem
     {
         return static::$dan->filesystem;
     }
@@ -171,7 +139,7 @@ class Dan {
      * @return \Dan\Database\Database
      * @throws \Exception
      */
-    public static function database($name = 'database')
+    public static function database($name = 'database') : Database
     {
         return static::$dan->databaseManager->get($name);
     }
@@ -182,19 +150,9 @@ class Dan {
      * @return \Dan\Database\DatabaseManager
      * @throws \Exception
      */
-    public static function databaseManager()
+    public static function databaseManager() : DatabaseManager
     {
         return static::$dan->databaseManager;
-    }
-
-    /**
-     * Gets the database driver.
-     *
-     * @return CommandManager
-     */
-    public static function commands()
-    {
-        return static::$dan->commandManager;
     }
 
     /**
@@ -202,19 +160,9 @@ class Dan {
      *
      * @return Connection
      */
-    public static function connection()
+    public static function connection() : Connection
     {
         return static::$dan->connection;
-    }
-
-    /**
-     * Gets the Plugin Manager.
-     *
-     * @return PluginManager
-     */
-    public static function plugins()
-    {
-        return static::$dan->pluginManager;
     }
 
     /**
@@ -223,7 +171,7 @@ class Dan {
      * @param \Dan\Irc\Location\User $user
      * @return bool
      */
-    public static function isOwner(User $user)
+    public static function isOwner(User $user) : bool
     {
         foreach(config('dan.owners') as $usr)
             if (fnmatch($usr, $user->string()))
@@ -238,7 +186,7 @@ class Dan {
      * @param \Dan\Irc\Location\User $user
      * @return bool
      */
-    public static function isAdmin(User $user)
+    public static function isAdmin(User $user) : bool
     {
         foreach(config('dan.admins') as $usr)
             if (fnmatch($usr, $user->string()))
@@ -253,7 +201,7 @@ class Dan {
      * @param \Dan\Irc\Location\User $user
      * @return bool
      */
-    public static function isAdminOrOwner(User $user)
+    public static function isAdminOrOwner(User $user) : bool
     {
         return (static::isOwner($user) || static::isAdmin($user));
     }
@@ -262,9 +210,10 @@ class Dan {
      * Get program arguments
      *
      * @param null $arg
+     * @param null $default
      * @return array|null
      */
-    public static function args($arg = null)
+    public static function args($arg = null, $default = null)
     {
         if($arg == null)
             return static::$args;
@@ -272,7 +221,7 @@ class Dan {
         if(isset(static::$args[$arg]))
             return static::$args[$arg];
 
-        return null;
+        return $default;
     }
 
     /**
@@ -280,7 +229,7 @@ class Dan {
      *
      * @return array
      */
-    public static function getCurrentGitVersion()
+    public static function getCurrentGitVersion() : array
     {
         $commitId       = trim(shell_exec('git rev-parse --short HEAD'));
         $data           = shell_exec('git log -1');

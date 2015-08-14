@@ -7,7 +7,6 @@ namespace {
     use Dan\Core\Dan;
     use Dan\Events\Event;
     use Dan\Events\EventPriority;
-    use Dan\Helpers\Hooks;
     use Dan\Irc\Location\User;
 
     #region class fetchers
@@ -51,26 +50,6 @@ namespace {
     function config($name)
     {
         return Config::fetchByKey($name);
-    }
-
-    /**
-     * Returns the plugin manager.
-     *
-     * @return \Dan\Plugins\PluginManager
-     */
-    function plugins()
-    {
-        return Dan::plugins();
-    }
-
-    /**
-     * Returns the command manager.
-     *
-     * @return \Dan\Commands\CommandManager
-     */
-    function commands()
-    {
-        return Dan::commands();
     }
 
     #endregion
@@ -441,13 +420,14 @@ namespace {
         return $array[array_rand($array)];
     }
 
-    #endregion
-
     function xmlToArray($data)
     {
         return json_decode(json_encode($data), true);
     }
 
+    #endregion
+
+    #region url
 
     // ALL code below found here because im lazy: http://stackoverflow.com/a/4102293
 
@@ -543,4 +523,5 @@ namespace {
         return $url;
     }
 
+    #endregion
 }

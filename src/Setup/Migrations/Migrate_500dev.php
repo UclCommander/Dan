@@ -1,33 +1,21 @@
 <?php namespace Dan\Setup\Migrations;
 
-
 use Dan\Contracts\MigrationContract;
 use Dan\Core\Config;
+use Dan\Core\Dan;
 
-class Migrate_4015dev implements MigrationContract {
+class Migrate_500dev implements MigrationContract {
 
     /**
      *
      */
     public function migrate()
     {
-        if(!filesystem()->exists(PLUGIN_DIR))
-            filesystem()->makeDirectory(PLUGIN_DIR);
-
-        if(!filesystem()->exists(COMMAND_DIR))
-            filesystem()->makeDirectory(COMMAND_DIR);
-
         if(!filesystem()->exists(CONFIG_DIR))
             filesystem()->makeDirectory(CONFIG_DIR);
 
         if(!filesystem()->exists(STORAGE_DIR))
             filesystem()->makeDirectory(STORAGE_DIR);
-
-        if(!filesystem()->exists(STORAGE_DIR . '/plugins/'))
-            filesystem()->makeDirectory(STORAGE_DIR . '/plugins/');
-
-        if(!filesystem()->exists(STORAGE_DIR . '/logs/'))
-            filesystem()->makeDirectory(STORAGE_DIR . '/logs/');
     }
 
     /**
@@ -43,7 +31,8 @@ class Migrate_4015dev implements MigrationContract {
                 'nick'      => '',
                 'user'      => '',
                 'host'      => '',
-                'messages'  => 0
+                'messages'  => 0,
+                'info'      => [],
             ]);
         }
 
@@ -65,8 +54,8 @@ class Migrate_4015dev implements MigrationContract {
     public function migrateConfig()
     {
         $irc = new Config('irc');
-        $irc->putIfNull('server', "irc.byteirc.org");
-        $irc->putIfNull('port', 6667);
+        $irc->putIfNull('server', Dan::args('--irc-server', "irc.byteirc.org"));
+        $irc->putIfNull('port', Dan::args('--irc-port', 6667));
         $irc->putIfNull('user.nick', "Example");
         $irc->putIfNull('user.name', "Example");
         $irc->putIfNull('user.real', "Example Real Name");
@@ -79,21 +68,29 @@ class Migrate_4015dev implements MigrationContract {
         $irc->save();
 
         $commands = new Config('commands');
+        $commands->renameKey('commands', 'permissions');
+        $commands->renameKey('permission', 'permissions');
         $commands->renameKey('command_starter', 'command_prefix');
         $commands->putIfNull('command_prefix', '.');
         $commands->putIfNull('default_permissions', 'vhoaq');
-        $commands->putIfNull('commands', []);
-        $commands->putIfNull('commands.config', 'S');
-        $commands->putIfNull('commands.join', 'AS');
-        $commands->putIfNull('commands.kick', 'AS');
-        $commands->putIfNull('commands.memory', 'AS');
-        $commands->putIfNull('commands.part', 'AS');
-        $commands->putIfNull('commands.plugin', 'S');
-        $commands->putIfNull('commands.quit', 'S');
-        $commands->putIfNull('commands.raw', 'S');
-        $commands->putIfNull('commands.reloadhooks', 'S');
-        $commands->putIfNull('commands.say', 'AS');
+        $commands->putIfNull('permissions', []);
+        $commands->putIfNull('permissions.config', 'S');
+        $commands->putIfNull('permissions.ignore', 'AS');
+        $commands->putIfNull('permissions.join', 'AS');
+        $commands->putIfNull('permissions.kick', 'AS');
+        $commands->putIfNull('permissions.memory', 'AS');
+        $commands->putIfNull('permissions.part', 'AS');
+        $commands->putIfNull('permissions.plugin', 'S');
+        $commands->putIfNull('permissions.quit', 'S');
+        $commands->putIfNull('permissions.raw', 'S');
+        $commands->putIfNull('permissions.reloadhooks', 'S');
+        $commands->putIfNull('permissions.say', 'AS');
+        $commands->putIfNull('permissions.update', 'S');
         $commands->save();
+
+        $ignore = new Config('ignore');
+        $ignore->putIfNull('masks', []);
+        $ignore->save();
 
         $dan = new Config('dan');
         $dan->putIfNull('debug', false);
