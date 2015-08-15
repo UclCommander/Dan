@@ -1,13 +1,11 @@
 <?php namespace Dan\Core;
 
-use Composer\Autoload\ClassLoader;
 use Dan\Commands\CommandManager;
 use Dan\Console\Console;
 use Dan\Database\DatabaseManager;
 use Dan\Events\EventArgs;
 use Dan\Helpers\Hooks;
 use Dan\Helpers\Logger;
-use Dan\Database\Database;
 use Dan\Irc\Connection;
 use Dan\Irc\Location\User;
 use Dan\Plugins\PluginManager;
@@ -16,7 +14,7 @@ use Illuminate\Filesystem\Filesystem;
 
 class Dan {
 
-    const VERSION = '4.0.17-dev';
+    const VERSION = '4.0.18-dev';
 
     protected static $args = [];
 
