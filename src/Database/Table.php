@@ -225,6 +225,9 @@ class Table {
 
         $items = [];
 
+        if(empty($this->getItems()))
+            return [];
+
         foreach($this->getItems() as $id => $data)
             if(Compare::is($data[$column], $is, $value))
                 $items[$id] = $data;
