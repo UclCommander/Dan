@@ -41,7 +41,7 @@ class Database {
         if(!$this->tableExists($name))
             throw new \Exception("Table {$name} doesn't exist.");
 
-        return new Table($this, $name);
+        return new Table($this, $name, $this->data[$name]);
     }
 
     /**
