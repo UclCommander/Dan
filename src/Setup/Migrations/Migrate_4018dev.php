@@ -3,7 +3,7 @@
 use Dan\Contracts\MigrationContract;
 use Dan\Core\Config;
 
-class Migrate_4017dev implements MigrationContract {
+class Migrate_4018dev implements MigrationContract {
 
     public function migrate() { }
 
