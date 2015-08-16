@@ -258,6 +258,19 @@ class Connection {
     }
 
     /**
+     * Removes a channel.
+     *
+     * @param $channel
+     */
+    public function removeChannel($channel)
+    {
+        $clean = strtolower($channel);
+        unset($this->channels[$clean]);
+
+        debug("Killing channel {$channel}");
+    }
+
+    /**
      * Joins a channel.
      *
      * @param $channel

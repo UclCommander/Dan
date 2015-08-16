@@ -14,8 +14,10 @@ class PacketKick implements PacketContract {
             return;
 
         $channel = connection()->getChannel($data[0]);
-
         $channel->removeUser($data[1]);
+
+        if($data[1] == connection()->user()->nick())
+            connection()->removeChannel($channel->getLocation());
 
         event('irc.packets.kick', [
             'user'      => $user,
