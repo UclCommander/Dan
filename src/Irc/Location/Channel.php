@@ -138,7 +138,7 @@ class Channel extends Location {
 
             $info = database()->table('users')->where('nick', $nick)->first();
 
-            if(empty($info))
+            if(!$info->count())
             {
                 // Database has no info, request it from IRC.
                 send("WHO", $nick);

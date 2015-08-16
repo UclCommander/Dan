@@ -35,7 +35,7 @@ class DatabaseManager {
     public function get($name)
     {
         if(!$this->loaded($name))
-            throw new \Exception("Database {$name} is not loaded.");
+            $this->loadDatabase($name);
 
         return static::$databases[$name];
     }
