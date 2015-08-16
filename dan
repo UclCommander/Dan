@@ -21,6 +21,18 @@ define('STORAGE_DIR', ROOT_DIR . '/storage');
 define('PLUGIN_DIR', ROOT_DIR . '/plugins');
 define('COMMAND_DIR', ROOT_DIR . '/commands');
 
+require(ROOT_DIR . '/src/functions.php');
+
+if(!file_exists(ROOT_DIR . '/vendor/autoload.php'))
+{
+    $exists = commandExists('composer');
+
+    if(!$exists)
+        file_put_contents(ROOT_DIR . '/composer', file_get_contents('https://getcomposer.org/composer.phar'));
+
+    shell_exec(($exists ? '' : (isWin() ? 'php ' : '') . ROOT_DIR . '/') . "composer install");
+}
+
 $loader = require(BASE_DIR . '/vendor/autoload.php');
 
 set_error_handler(function($severity, $message, $filename, $lineno)

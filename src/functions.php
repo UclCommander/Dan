@@ -367,13 +367,29 @@ namespace {
     }
 
     /**
+     * Checks to if the command exists.
+     *
      * @param $cmd
      * @return bool
      */
     function commandExists($cmd)
     {
-        $returnVal = shell_exec("which $cmd");
+        if(isWin())
+        {
+            $returnVal = shell_exec($cmd);
+            return !strpos($returnVal, 'is not recognized');
+        }
+
+        $returnVal = shell_exec("which {$cmd}");
         return (empty($returnVal) ? false : true);
+    }
+
+    /**
+     * May discord have mercy on your soul.
+     */
+    function isWin()
+    {
+        return strpos(strtolower(PHP_OS), 'win') === 0;
     }
 
     /**

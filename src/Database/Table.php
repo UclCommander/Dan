@@ -60,6 +60,8 @@ class Table {
 
         foreach($this->getItems() as $id => $data)
         {
+            $new = $data;
+
             foreach($values as $key => $value)
             {
                 if(!$this->database->schema($this->table)->columnExists($key))
@@ -70,16 +72,16 @@ class Table {
                     if(!is_array($value))
                         throw new Exception("Column {$key} is an array, value given is not.");
 
-                    if(isset($data[$key]))
-                        $data[$key] = array_merge($data[$key], $value);
+                    if(isset($new[$key]))
+                        $new[$key] = array_merge($new[$key], $value);
                     else
-                        $data[$key] = $value;
+                        $new[$key] = $value;
                 }
                 else
-                    $data[$key] = $value;
-
-                $this->database->data[$this->table][$id] = $data;
+                    $new[$key] = $value;
             }
+
+            $this->database->data[$this->table][$id] = $new;
         }
 
         $this->database->save();
@@ -96,10 +98,10 @@ class Table {
      */
     public function insertOrUpdate(array $where, array $values)
     {
-        $where = $this->where(...$where);
+        $whereQuery = $this->where(...$where);
 
-        if($where->count())
-            return $where->update($values);
+        if($whereQuery->count())
+            return $whereQuery->update($values);
 
         return $this->insert($values);
     }
@@ -235,6 +237,6 @@ class Table {
      */
     protected function getItems()
     {
-        return !empty($this->data) ? $this->data : $this->database->data[$this->table];
+        return $this->data;
     }
 }

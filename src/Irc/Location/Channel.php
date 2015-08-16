@@ -6,6 +6,8 @@ use Illuminate\Support\Collection;
 
 class Channel extends Location {
 
+    protected static $who = [];
+
     /** @var Collection $users */
     protected $users;
 
@@ -138,16 +140,22 @@ class Channel extends Location {
 
             $info = database()->table('users')->where('nick', $nick)->first();
 
-            if(empty($info))
+            if(!$info->count())
             {
-                // Database has no info, request it from IRC.
-                send("WHO", $nick);
+                if(!in_array($nick, static::$who))
+                {
+                    static::$who[$nick] = $nick;
+                    // Database has no info, request it from IRC.
+                    send("WHO", $nick);
+                }
 
                 // Set default
                 $info['nick'] = $nick;
                 $info['user'] = '';
                 $info['host'] = '';
             }
+            else
+                unset(static::$who[$nick]);
 
             $mode = new ModeObject();
             $mode->setPrefix($rank);

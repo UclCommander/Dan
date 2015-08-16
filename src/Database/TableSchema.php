@@ -78,8 +78,8 @@ class TableSchema {
     {
         $this->tableCreateColumn($column, $default);
 
-        foreach($this->database->data as $id => $data)
-            $this->database->data[$id][$column] = $default;
+        foreach($this->database->data[$this->table] as $id => $data)
+            $this->database->data[$this->table][$id][$column] = $default;
 
         $this->database->save();
 

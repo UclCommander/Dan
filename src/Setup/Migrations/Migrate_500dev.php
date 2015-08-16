@@ -83,6 +83,7 @@ class Migrate_500dev implements MigrationContract {
         $commands->putIfNull('permissions.plugin', 'S');
         $commands->putIfNull('permissions.quit', 'S');
         $commands->putIfNull('permissions.raw', 'S');
+        $commands->putIfNull('permissions.restart', 'S');
         $commands->putIfNull('permissions.reloadhooks', 'S');
         $commands->putIfNull('permissions.say', 'AS');
         $commands->putIfNull('permissions.update', 'S');
