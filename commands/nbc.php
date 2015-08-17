@@ -10,7 +10,7 @@ use Dan\Irc\Location\User;
 
 if($entry == 'use')
 {
-    message($location, 'http://skycld.co/nbc');
+    message($location, "{$message}: http://skycld.co/nbc");
 }
 
 if($entry == 'help')
