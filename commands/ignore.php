@@ -21,13 +21,15 @@ if($entry == 'use')
     if(in_array($ignore, config('ignore.masks')))
     {
         Config::remove('ignore.masks', $ignore);
-        message($channel, "{$ignore} removed");
+        $text = "{$ignore}{cyan} removed";
     }
     else
     {
         Config::add('ignore.masks', $ignore);
-        message($channel, "{$ignore} added");
+        $text = "{$ignore}{cyan} added";
     }
+
+    message($channel, "{reset}[{yellow} {$text} {reset}]");
 
     Config::saveAll();
 }
@@ -35,6 +37,6 @@ if($entry == 'use')
 if($entry == 'help')
 {
     return [
-        "{cp}ignore <mask> - Ignores <mask>."
+        "{cp}ignore <mask> - Ignores <mask>"
     ];
 }
