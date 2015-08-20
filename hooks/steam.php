@@ -12,6 +12,12 @@ hook(['regex' => $regex, 'name' => 'steam'], function(array $eventData, array $m
     {
         $data = Web::json("http://fm1337.com/api/steam/{$match}");
 
+        if($data == null)
+        {
+            $items[] = "{reset}[ {cyan}Error fetching steam information. {reset}]";
+            continue;
+        }
+
         $games          = $data['games']['game_count'];
         $realname       = isset($data['current']['realname']) ? $data['current']['realname'] : $data['current']['personaname'];
         $level          = $data['level'];
