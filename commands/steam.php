@@ -72,6 +72,6 @@ if($entry == 'use')
 if($entry == 'help')
 {
     return [
-        "Gets steam information foe the given user."
+        "Gets steam information for the given user."
     ];
 }
