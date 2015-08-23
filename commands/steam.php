@@ -51,11 +51,11 @@ if($entry == 'use')
                 return;
             }
 
-            $games = $data['games']['game_count'];
-            $realname = isset($data['current']['realname']) ? $data['current']['realname'] : $data['current']['personaname'];
-            $level = $data['level'];
-            $played = $data['games']['total_played'];
-            $playtime = $data['games']['total_playtime'];
+            $games      = $data['games']['game_count'];
+            $realname   = $data['current']['personaname'];
+            $level      = $data['level'];
+            $played     = $data['games']['total_played'];
+            $playtime   = $data['games']['total_playtime'];
             $currentGame = isset($data['current']['gameextrainfo']) ? $data['current']['gameextrainfo'] : null;
             $online = $data['current']['personastate'] > 0 ? "{green}ONLINE" : "{red}OFFLINE";
 
