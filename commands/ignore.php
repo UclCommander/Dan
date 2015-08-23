@@ -15,6 +15,9 @@ if($entry == 'use')
 
     $ignore = $data[0];
 
+    if(empty($ignore))
+        return "I can't ignore nobody!";
+
     if(isUser($ignore) && strpos($ignore, '@') === false)
         $ignore = "*@" . database()->table('users')->where('nick', $ignore)->first()->get('host');
 
