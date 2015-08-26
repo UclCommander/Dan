@@ -71,7 +71,6 @@ if($entry == 'use')
             message($channel, "{reset}[ {$online} {reset}| {yellow}{$realname} {reset}| {light_cyan}Level {$level} {reset}|{$currentGame} {light_cyan}{$playtime} {cyan}hours on record {reset}| {light_cyan}{$played}{cyan} of {light_cyan}{$games} {cyan}games played {reset}]");
             break;
         }
-
     }
 }
 

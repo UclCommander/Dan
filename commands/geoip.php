@@ -10,6 +10,12 @@ use Dan\Irc\Location\User;
 
 if($entry == 'use')
 {
+    if(empty($message))
+    {
+        message($location, "{reset}[{maroon} I need an IP to get information for! {reset}]");
+        return;
+    }
+
     $data = \Dan\Helpers\Web::json("http://geoip.cf/api/{$message}");
 
     if($data == null)
