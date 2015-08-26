@@ -10,7 +10,7 @@ hook(['regex' => $regex, 'name' => 'steam'], function(array $eventData, array $m
 
     foreach($matches[1] as $match)
     {
-        $data = Web::json("http://fm1337.com/api/steam/{$match}");
+        $data = Web::api('steam/get', ['user' => $match]);
 
         if($data == null)
         {

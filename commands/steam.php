@@ -18,7 +18,7 @@ if($entry == 'use')
         case 'save':
         {
             database()->table('users')->where('nick', $user->nick())->update(['info' => ['steam' => $data[1]]]);
-            message($channel, "{reset}[ {yellow}{$data[1]} {reset}is now saved to your nickname. ]");
+            message($channel, "{reset}[ {yellow}{$data[1]} {cyan}is now saved to your nickname. ]");
             break;
         }
 
@@ -47,6 +47,12 @@ if($entry == 'use')
 
             if($data['success'] == 42)
             {
+                if($data['message'] == 'No Match')
+                {
+                    message($channel, "{reset}[ {cyan}This username has no match. Please use your steam username. {reset}]");
+                    return;
+                }
+
                 message($channel, "{reset}[ {cyan}{$data['message']} {reset}]");
                 return;
             }
