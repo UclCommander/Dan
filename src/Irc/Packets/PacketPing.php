@@ -1,15 +1,12 @@
 <?php namespace Dan\Irc\Packets;
 
 use Dan\Contracts\PacketContract;
+use Dan\Irc\Connection;
 
 class PacketPing implements PacketContract {
 
-    public function handle($from, $data)
+    public function handle(Connection $connection, array $from, array $data)
     {
-        event('irc.packets.ping');
-        send("PONG", $data[0]);
-
-        //save database every ping
-        database()->save();
+        $connection->send("PONG", $data[0]);
     }
 }

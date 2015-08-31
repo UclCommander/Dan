@@ -13,7 +13,7 @@ class Packet251 implements PacketContract {
             $connection->raw(str_replace(['{NICK}'], [$nick], $command));
         }
 
-        if(config('irc.user.pass') != '')
+        if($connection->config->get('user.pass') != '')
         {
             $command    = $connection->config->get('auth_command');
             $password   = $connection->config->get('user.pass');

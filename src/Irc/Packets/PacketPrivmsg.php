@@ -2,104 +2,39 @@
 
 
 use Dan\Contracts\PacketContract;
-use Dan\Core\Dan;
-use Dan\Events\EventArgs;
-use Dan\Helpers\Hooks;
-use Dan\Helpers\Logger;
+use Dan\Hooks\HookManager;
+use Dan\Irc\Connection;
 
 class PacketPrivmsg implements PacketContract {
 
 
-    public function handle($from, $data)
+    public function handle(Connection $connection, array $from, array $data)
     {
-        event('irc.packets.privmsg', $data);
+        if(!DEBUG)
+            console("[<magenta>{$connection->getName()}</magenta>][<yellow>{$from[0]}</yellow>] {$data[1]}");
 
-        $to         = $data[0];
-        $message    = $data[1];
-        $user       = user($from);
-
-        if(strpos($message, "\001") !== false)
+        if(isChannel($data[0]))
         {
-            $ctcp = explode(' ', trim($message, " \t\n\r\0\x0B\001"), 2);
+            $user = user($from);
 
-            if($ctcp[0] == 'ACTION')
-            {
-                if(isChannel($to))
-                {
-                    $channel = connection()->getChannel($to);
+            $hookData = [
+                'connection'    => $connection,
+                'user'          => $user,
+                'channel'       => $connection->getChannel($data[0]),
+                'message'       => $data[1]
+            ];
 
-                    if($channel == null)
-                        return;
-
-                    event('irc.packets.action.public', [
-                        'user'      => $channel->getUser($user),
-                        'channel'   => $channel,
-                        'message'   => $ctcp[1],
-                    ]);
-                }
-
+            if(event('irc.packets.message.public', $hookData) === false)
                 return;
-            }
 
-            $send = event('irc.packets.message.ctcp', [
-                'type'  => $ctcp[0],
-                'args'  => (isset($ctcp[1]) ? $ctcp[1] : null)
-            ]);
+            if(HookManager::callRegexHooks($hookData))
+                return;
 
-            if(is_array($send))
-            {
-                if($ctcp[0] == 'VERSION')
-                {
-                    $v = Dan::getCurrentGitVersion();
-                    $send = "Dan the PHP Bot v" . Dan::VERSION . (PHAR ? '' : " ({$v})") . " by UclCommander, running on PHP " . phpversion() . " - http://skycld.co/dan \001";
-                }
+            if(HookManager::callCommandHooks($hookData))
+                return;
 
-                if($ctcp[0] == 'TIME')
-                    $send = date('r');
-
-                if($ctcp[0] == 'PING')
-                    $send = time();
-            }
-
-            send("NOTICE", $user->nick(), "\001{$ctcp[0]} {$send}\001");
-
-            return;
+            /*if(!$ran)
+                $connection->send("PRIVMSG", $data[0], $data[1]);*/
         }
-
-        if($to == config('irc.user.nick'))
-        {
-            event('irc.packets.message.private', [
-                'from'      => $user,
-                'message'   => $message
-            ]);
-
-            return;
-        }
-
-        $channel = connection()->getChannel($to);
-
-        if($channel == null)
-            return;
-
-        database()->table('users')->where('nick', $user->nick())->increment('messages');
-        database()->table('channels')->where('name', $channel->getLocation())->increment('messages');
-
-        console("[{$channel->getLocation()}] {$user->nick()}: {$message}");
-
-        if(!Dan::isAdminOrOwner($user))
-            foreach(config('ignore.masks') as $mask)
-                if(fnmatch($mask, $user->string()))
-                    return;
-
-        $eventData = [
-            'user'      => $channel->getUser($user),
-            'channel'   => $channel,
-            'message'   => $message
-        ];
-
-        if(Hooks::callHooks($eventData))
-            return;
-
-        event('irc.packets.message.public', $eventData);
     }
 }

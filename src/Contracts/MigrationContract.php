@@ -5,5 +5,5 @@ interface MigrationContract {
 
     public function migrate();
     public function migrateConfig();
-    public function migrateDatabase();
+    public function migrateDatabase($name);
 }

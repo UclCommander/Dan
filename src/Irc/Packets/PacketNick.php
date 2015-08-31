@@ -2,11 +2,12 @@
 
 
 use Dan\Contracts\PacketContract;
+use Dan\Irc\Connection;
 
 class PacketNick implements PacketContract {
 
 
-    public function handle($from, $data)
+    public function handle(Connection $connection, array $from, array $data)
     {
         $user = user($from);
         $nick = $data[0];
@@ -17,12 +18,12 @@ class PacketNick implements PacketContract {
         ]);
 
         database()->table('users')->insertOrUpdate(['nick', $user->nick()], [
-           'nick'   => $nick,
-           'user'   => $user->user(),
-           'host'   => $user->host(),
+            'nick'   => $nick,
+            'user'   => $user->user(),
+            'host'   => $user->host(),
         ]);
 
-        foreach(connection()->channels() as $channel)
+        foreach($connection->channels as $channel)
             if($channel->hasUser($user) != null)
                 $channel->renameUser($user, $nick);
     }

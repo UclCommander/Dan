@@ -83,10 +83,10 @@ class Database {
      */
     public function load()
     {
-        if(!filesystem()->exists(STORAGE_DIR . "/{$this->file}.json"))
+        if(!file_exists(DATABASE_DIR . "/{$this->file}.json"))
             $this->save();
 
-        $database = json_decode(filesystem()->get(STORAGE_DIR . "/{$this->file}.json"), true);
+        $database = json_decode(filesystem()->get(DATABASE_DIR . "/{$this->file}.json"), true);
 
         if(!is_array($database))
             throw new Exception("Database {$this->file} is corrupted.");
@@ -103,6 +103,6 @@ class Database {
      */
     public function save()
     {
-        filesystem()->put(STORAGE_DIR . "/{$this->file}.json", json_encode(['data' => $this->data, 'config' => $this->config], JSON_PRETTY_PRINT));
+        filesystem()->put(DATABASE_DIR . "/{$this->file}.json", json_encode(['data' => $this->data, 'config' => $this->config], JSON_PRETTY_PRINT));
     }
 }

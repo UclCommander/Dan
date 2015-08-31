@@ -16,10 +16,11 @@ class Location extends ModeObject {
      * Sends a message to this location.
      *
      * @param $message
+     * @param array $styles
      */
-    public function message($message)
+    public function message($message, $styles = [])
     {
-        message($this, $message);
+        message($this, $message, $styles);
     }
 
     /**

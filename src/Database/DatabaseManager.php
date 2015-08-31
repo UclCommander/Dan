@@ -32,7 +32,7 @@ class DatabaseManager {
      * @return \Dan\Database\Database
      * @throws \Exception
      */
-    public function get($name)
+    public function get($name) : Database
     {
         if(!$this->loaded($name))
             $this->loadDatabase($name);
@@ -46,19 +46,19 @@ class DatabaseManager {
      * @param $name
      * @return bool
      */
-    public function exists($name)
+    public function exists($name) : bool
     {
-        return filesystem()->exists(STORAGE_DIR . "/{$name}.json");
+        return filesystem()->exists(DATABASE_DIR . "{$name}.json");
     }
 
     /**
      * Creates a database.
      *
      * @param $name
-     * @return mixed
+     * @return Database
      * @throws \Exception
      */
-    public function create($name)
+    public function create($name) : Database
     {
         if($this->exists($name))
             throw new \Exception("Database {$name} already exist.");
@@ -77,7 +77,7 @@ class DatabaseManager {
      * @param $database
      * @return bool
      */
-    public function loaded($database)
+    public function loaded($database) : bool
     {
         return array_key_exists($database, static::$databases);
     }

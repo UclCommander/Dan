@@ -5,9 +5,15 @@ namespace {
     use Dan\Console\Console;
     use Dan\Core\Config;
     use Dan\Core\Dan;
+    use Dan\Database\Database;
+    use Dan\Database\DatabaseManager;
     use Dan\Events\Event;
     use Dan\Events\EventPriority;
+    use Dan\Hooks\Hook;
+    use Dan\Hooks\HookManager;
+    use Dan\Irc\Connection;
     use Dan\Irc\Location\User;
+    use Illuminate\Filesystem\Filesystem;
 
     #region class fetchers
 
@@ -16,7 +22,7 @@ namespace {
      *
      * @return \Illuminate\Filesystem\Filesystem
      */
-    function filesystem()
+    function filesystem() : Filesystem
     {
         return Dan::filesystem();
     }
@@ -24,11 +30,12 @@ namespace {
     /**
      * Returns the database instance.
      *
+     * @param string $name
      * @return \Dan\Database\Database
      */
-    function database()
+    function database($name = null) : Database
     {
-        return Dan::database();
+        return Dan::database($name);
     }
 
     /**
@@ -36,7 +43,7 @@ namespace {
      *
      * @return \Dan\Database\DatabaseManager
      */
-    function databaseManager()
+    function databaseManager() : DatabaseManager
     {
         return Dan::databaseManager();
     }
@@ -63,7 +70,27 @@ namespace {
      */
     function debug($text)
     {
-        Console::debug($text);
+        Console::factory()->debug($text);
+    }
+
+    /**
+     * Sends an INFO message to console.
+     *
+     * @param $text
+     */
+    function error($text)
+    {
+        Console::factory()->error($text);
+    }
+
+    /**
+     * Sends an INFO message to console.
+     *
+     * @param $text
+     */
+    function success($text)
+    {
+        Console::factory()->success($text);
     }
 
     /**
@@ -73,7 +100,16 @@ namespace {
      */
     function info($text)
     {
-        Console::info($text);
+        Console::factory()->info($text);
+    }
+
+    /**
+     * @param $text
+     * @deprecated use warn()
+     */
+    function alert($text)
+    {
+        warn($text);
     }
 
     /**
@@ -81,20 +117,21 @@ namespace {
      *
      * @param $text
      */
-    function alert($text)
+    function warn($text)
     {
-        Console::alert($text);
+        Console::factory()->warn($text);
     }
 
     /**
      * Sends a CRITICAL message to console.
      *
+     * @deprecated
      * @param $text
      * @param bool $die
      */
     function critical($text, $die = false)
     {
-        Console::critical($text, $die);
+        error($text);
     }
 
     /**
@@ -105,7 +142,7 @@ namespace {
      */
     function console($text, $color = true)
     {
-        Console::send($text, $color);
+        Console::factory()->line($text);
     }
 
     /**
@@ -115,9 +152,9 @@ namespace {
      */
     function vd(...$params)
     {
-        Console::send("{white}----- VAR DUMP-----");
+        Console::factory()->line("----- VAR DUMP -----");
         var_dump(...$params);
-        Console::send("----- END VAR DUMP-----{reset}");
+        Console::factory()->line("----- END VAR DUMP -----");
     }
 
     /**
@@ -131,22 +168,21 @@ namespace {
         if($debug)
             debug($message);
         else
-            alert($message);
-
-        if(connection())
-        {
-            $channel = config('dan.control_channel');
-
-            if(empty($channel) || !connection()->inChannel($channel))
-                return;
-
-            connection()->message($channel, $message);
-        }
+            warn($message);
     }
 
     #endregion
 
     #region irc
+
+    /**
+     * @param null $name
+     * @return \Dan\Irc\Connection
+     */
+    function connection($name = null) : Connection
+    {
+        return Dan::connection($name);
+    }
 
     /**
      * Sends am IRC line using the message builder.
@@ -168,25 +204,17 @@ namespace {
         Dan::connection()->raw($line);
     }
 
-    /**
-     * Gets the connection.
-     *
-     * @return \Dan\Irc\Connection
-     */
-    function connection()
-    {
-        return Dan::connection();
-    }
 
     /**
      * Sends a message.
      *
      * @param $location
      * @param $message
+     * @param array $styles
      */
-    function message($location, $message)
+    function message($location, $message, $styles = [])
     {
-        Dan::connection()->message($location, $message);
+        Dan::connection()->message($location, $message, $styles);
     }
 
     /**
@@ -239,9 +267,14 @@ namespace {
      * @param $channel
      * @return bool
      */
-    function isChannel($channel)
+    function isChannel($channel) : bool
     {
-        return boolval(preg_match("/#([a-zA-Z0-9_\-\.]+)/", $channel));
+        $types = preg_quote(Dan::connection()->support->get('CHANTYPES'));
+
+        if($types == null)
+            return false;
+
+        return boolval(preg_match("/[{$types}]([a-zA-Z0-9_\-\.]+)/", $channel));
     }
 
     /**
@@ -318,25 +351,11 @@ namespace {
 
     /**
      * Registers a hook.
-     *
-     * @param $data
-     * @param $callback
-     */
-    function hook($data, $callback)
-    {
-        Hooks::defineHook($data, $callback);
-    }
 
-    /**
-     * Calls a hook.
-     *
-     * @param $name
-     * @param array $data
-     * @return bool
      */
-    function callHook($name, $data = [])
+    function hook($name) : Hook
     {
-        return Hooks::callHook($name, $data);
+        return HookManager::registerHook($name);
     }
 
     #endregion

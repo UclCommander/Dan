@@ -1,6 +1,7 @@
 <?php namespace Dan\Irc\Location;
 
 
+use Dan\Irc\Connection;
 use Dan\Irc\ModeObject;
 use Illuminate\Support\Collection;
 
@@ -11,13 +12,24 @@ class Channel extends Location {
     /** @var Collection $users */
     protected $users;
 
-    public function __construct($name)
+    /**
+     * @var \Dan\Irc\Connection
+     */
+    protected $connection;
+
+    /**
+     * @param \Dan\Irc\Connection $connection
+     * @param $name
+     * @throws \Exception
+     */
+    public function __construct(Connection $connection, $name)
     {
         parent::__construct();
 
-        $this->users = new Collection();
-        $this->name     = $name;
-        $this->location = $name;
+        $this->users        = new Collection();
+        $this->name         = $name;
+        $this->location     = $name;
+        $this->connection   = $connection;
 
         database()->table('channels')->insertOrUpdate(['name', $name], [
            'name'   => $name
@@ -31,7 +43,7 @@ class Channel extends Location {
      */
     public function getUsers()
     {
-        return $this->users->toArray();
+        return $this->users->all();
     }
 
     /**
@@ -41,7 +53,7 @@ class Channel extends Location {
      */
     public function setTopic($topic)
     {
-        send("TOPIC", $this->name, $topic);
+        $this->connection->send("TOPIC", $this->name, $topic);
     }
 
     /**

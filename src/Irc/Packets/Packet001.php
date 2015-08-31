@@ -8,6 +8,6 @@ class Packet001 implements PacketContract {
     public function handle(Connection $connection, array $from, array $data)
     {
         if(!DEBUG)
-            console("[{$from[0]}] {$data[1]}");
+            console("[<magenta>{$from[0]}</magenta>] {$data[1]}");
     }
 }

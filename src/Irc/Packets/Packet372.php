@@ -2,13 +2,13 @@
 
 
 use Dan\Contracts\PacketContract;
+use Dan\Irc\Connection;
 
 class Packet372 implements PacketContract {
 
-
-    public function handle($from, $data)
+    public function handle(Connection $connection, array $from, array $data)
     {
-        if(config('irc.show_motd'))
+        if(!DEBUG && config('irc.show_motd'))
             console(end($data));
     }
 }

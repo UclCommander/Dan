@@ -7,40 +7,30 @@ use Dan\Core\Dan;
 class Migrate_500dev implements MigrationContract {
 
     /**
-     *
-     */
-    public function migrate()
-    {
-        if(!filesystem()->exists(CONFIG_DIR))
-            filesystem()->makeDirectory(CONFIG_DIR);
-
-        if(!filesystem()->exists(STORAGE_DIR))
-            filesystem()->makeDirectory(STORAGE_DIR);
-    }
-
-    /**
+     * @param $name
      * @throws \Exception
      */
-    public function migrateDatabase()
+    public function migrateDatabase($name)
     {
-        if(!database()->tableExists('users'))
+        if(!database($name)->tableExists('users'))
         {
             alert("Creating table users...");
 
-            database()->schema('users')->create([
+            database($name)->schema('users')->create([
                 'nick'      => '',
                 'user'      => '',
                 'host'      => '',
+                'real'      => '',
                 'messages'  => 0,
                 'info'      => [],
             ]);
         }
 
-        if(!database()->tableExists('channels'))
+        if(!database($name)->tableExists('channels'))
         {
             alert("Creating table channels...");
 
-            database()->schema('channels')->create([
+            database($name)->schema('channels')->create([
                 'name'      => '',
                 'max_users' => 0,
                 'messages'  => 0
@@ -54,24 +44,23 @@ class Migrate_500dev implements MigrationContract {
     public function migrateConfig()
     {
         $irc = new Config('irc');
-        $irc->putIfNull('server', Dan::args('--irc-server', "irc.byteirc.org"));
-        $irc->putIfNull('port', Dan::args('--irc-port', 6667));
-        $irc->putIfNull('user.nick', "Example");
-        $irc->putIfNull('user.name', "Example");
-        $irc->putIfNull('user.real', "Example Real Name");
-        $irc->putIfNull('user.pass', "");
-        $irc->putIfNull('channels', ["#DanTesting"]);
-        $irc->putIfNull('nickserv_auth_command', 'PRIVMSG NickServ :IDENTIFY %s');
-        $irc->putIfNull('autorun_commands', []);
         $irc->putIfNull('show_motd', false);
-        $irc->putIfNull('join_on_invite', false);
+        $irc->putIfNull('servers', []);
+        $irc->putIfNull('servers.byteirc', []);
+        $irc->putIfNull('servers.byteirc.server', Dan::args('--irc-server', "irc.byteirc.org"));
+        $irc->putIfNull('servers.byteirc.port', Dan::args('--irc-port', 6667));
+        $irc->putIfNull('servers.byteirc.user.nick', "Example");
+        $irc->putIfNull('servers.byteirc.user.name', "Example");
+        $irc->putIfNull('servers.byteirc.user.real', "Example Real Name");
+        $irc->putIfNull('servers.byteirc.user.pass', "");
+        $irc->putIfNull('servers.byteirc.channels', ["#DanTesting"]);
+        $irc->putIfNull('servers.byteirc.nickserv_auth_command', 'PRIVMSG NickServ :IDENTIFY %s');
+        $irc->putIfNull('servers.byteirc.autorun_commands', []);
+        $irc->putIfNull('servers.byteirc.join_on_invite', false);
+        $irc->putIfNull('servers.byteirc.command_prefix', '.');
         $irc->save();
 
         $commands = new Config('commands');
-        $commands->renameKey('commands', 'permissions');
-        $commands->renameKey('permission', 'permissions');
-        $commands->renameKey('command_starter', 'command_prefix');
-        $commands->putIfNull('command_prefix', '.');
         $commands->putIfNull('default_permissions', 'vhoaq');
         $commands->putIfNull('permissions', []);
         $commands->putIfNull('permissions.config', 'S');
@@ -94,7 +83,6 @@ class Migrate_500dev implements MigrationContract {
         $ignore->save();
 
         $dan = new Config('dan');
-        $dan->putIfNull('debug', false);
         $dan->putIfNull('control_channel', '#DanControl');
         $dan->putIfNull('owners', []);
         $dan->putIfNull('admins', []);
@@ -102,4 +90,8 @@ class Migrate_500dev implements MigrationContract {
         $dan->save();
     }
 
+    public function migrate()
+    {
+        // TODO: Implement migrate() method.
+    }
 }

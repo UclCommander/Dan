@@ -1,4 +1,4 @@
-#! /usr/bin/env php
+#! /usr/bin/env php7
 <?php
 
 error_reporting(E_ALL);
@@ -18,8 +18,9 @@ define("BASE_DIR", __DIR__);
 define('LOGS_DIR', ROOT_DIR . '/logs');
 define('CONFIG_DIR', ROOT_DIR . '/config');
 define('STORAGE_DIR', ROOT_DIR . '/storage');
+define('DATABASE_DIR', STORAGE_DIR . '/database');
 define('PLUGIN_DIR', ROOT_DIR . '/plugins');
-define('COMMAND_DIR', ROOT_DIR . '/commands');
+define('HOOK_DIR', ROOT_DIR . '/hooks');
 
 require(ROOT_DIR . '/src/functions.php');
 
@@ -33,13 +34,14 @@ if(!file_exists(ROOT_DIR . '/vendor/autoload.php'))
     shell_exec(($exists ? '' : (isWin() ? 'php ' : '') . ROOT_DIR . '/') . "composer install");
 }
 
-$loader = require(BASE_DIR . '/vendor/autoload.php');
+require(BASE_DIR . '/vendor/autoload.php');
 
 set_error_handler(function($severity, $message, $filename, $lineno)
 {
-    debug("-------------------------");
-    controlLog("{red}[{$severity}] PHP ERROR: {$message} in " . relative($filename) . " on line {$lineno}", true);
-    debug("-------------------------");
+    error("-------------------------");
+    controlLog("<error>[{$severity}] PHP ERROR: {$message} in " . relative($filename) . " on line {$lineno}</error>", true);
+    error("-------------------------");
 });
 
-(new Dan\Core\Dan($loader))->boot();
+$dan = new \Dan\Application();
+$dan->run();

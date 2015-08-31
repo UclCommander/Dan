@@ -1,119 +1,324 @@
 <?php namespace Dan\Console;
 
-use Dan\Helpers\ColorParser;
-use Dan\Helpers\Logger;
-use \Exception;
+use Dan\Contracts\SocketContract;
+use Illuminate\Contracts\Support\Arrayable;
+use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Console\Question\Question;
 
-class Console {
+class Console implements SocketContract {
 
     /**
-     * Parses PHP CLI args.
-     *
-     * @param array $args
-     * @return array
+     * @var Console
      */
-    public static function parseArgs(array $args)
+    protected static $self;
+
+    /**
+     * @var resource
+     */
+    protected $stream;
+
+    /**
+     * @var string
+     */
+    protected $attached;
+
+    /**
+     * @var \Symfony\Component\Console\Output\OutputInterface
+     */
+    protected $output;
+
+    /**
+     * @var \Symfony\Component\Console\Input\ArrayInput
+     */
+    protected $input;
+
+    /**
+     *
+     */
+    public function __construct()
     {
-        $parsed = [];
+        $this->input    = new ArrayInput([]);
+        $this->output   = new OutputStyle($this->input, new ConsoleOutput());
 
-        foreach($args as $arg)
-        {
-            $values = explode('=', $arg);
-
-            $parsed[$values[0]] = isset($values[1]) ? $values[1] : true;
-        }
-
-        return $parsed;
+        $this->stream = fopen('php://stdin', 'r');
+        stream_set_blocking($this->stream, 0);
     }
 
     /**
-     * Sends a generic message.
-     *
-     * @param string $message
-     * @param bool $color
-     * @param bool $debug
+     * @return Console
+     */
+    public static function factory()
+    {
+        if(is_null(static::$self))
+            static::$self = new static();
+
+        return static::$self;
+    }
+
+    /**
+     * @param $argv
+     * @return array|string
+     */
+    public static function arguments()
+    {
+        return static::factory()->argument();
+    }
+
+    /**
      * @return string
      */
-    public static function send($message, $color = true, $debug = false)
+    public function getName()
     {
-        if(!$debug)
-            Logger::logChat(ColorParser::strip($message));
-
-        if($color)
-            $message = ConsoleFormat::parse($message . "{reset}");
-
-        echo ConsoleFormat::parse("{reset}[" . date('m-d-Y H:m:s') . "] ") . $message . PHP_EOL;
+        return 'console';
     }
 
     /**
-     * Sends an SUCCESS message.
-     *
-     * @param $message
+     * @return resource
      */
-    public static function success($message)
+    public function getStream()
     {
-        static::send("{green}[SUCCESS] {$message}");
+        return $this->stream;
     }
 
     /**
-     * Sends an ALERT message.
-     *
-     * @param $message
+     * @param resource $resource
      */
-    public static function alert($message)
+    public function handle($resource)
     {
-        static::send("{yellow}[ALERT] {$message}");
+        $message = trim(fgets($resource));
+
+        echo $message . PHP_EOL;
     }
 
-    /**
-     * Sends an INFO message.
-     *
-     * @param $message
-     */
-    public static function info($message)
-    {
-        static::send("{cyan}[INFO] {$message}");
-    }
 
     /**
-     * Sends a DEBUG message.
+     * Get the value of a command argument.
      *
-     * @param $message
+     * @param  string  $key
+     * @return string|array
      */
-    public static function debug($message)
+    public function argument($key = null)
     {
-        if(defined("DEBUG") && DEBUG)
-        {
-            Logger::logDebug($message);
-            static::send("{purple}[DEBUG] {$message}", true, true);
+        if (is_null($key)) {
+            return $this->input->getArguments();
         }
+
+        return $this->input->getArgument($key);
     }
 
     /**
-     * Sends a CRITICAL message.
+     * Get the value of a command option.
      *
-     * @param $message
-     * @param bool $die
+     * @param  string  $key
+     * @return string|array
      */
-    public static function critical($message, $die = false)
+    public function option($key = null)
     {
-        static::send("{red}[CRITICAL] {$message}");
+        if (is_null($key)) {
+            return $this->input->getOptions();
+        }
 
-        if($die)
-            die;
+        return $this->input->getOption($key);
     }
 
     /**
-     * @param \Exception $exception
+     * Confirm a question with the user.
+     *
+     * @param  string  $question
+     * @param  bool    $default
+     * @return bool
      */
-    public static function exception(Exception $exception)
+    public function confirm($question, $default = false)
     {
-        static::send("{red}----PHP EXCEPTION----");
-        static::send("{red}Message: {cyan}{$exception->getMessage()}");
-        static::send("{red}File: {cyan}{$exception->getFile()}");
-        static::send("{red}Line: {cyan}{$exception->getLine()}");
-        static::send("{red}Trace: {cyan}");
-        static::send($exception->getTraceAsString());
-        static::send("{red}----END EXCEPTION----");
+        return $this->output->confirm($question, $default);
+    }
+
+    /**
+     * Prompt the user for input.
+     *
+     * @param  string  $question
+     * @param  string  $default
+     * @return string
+     */
+    public function ask($question, $default = null)
+    {
+        return $this->output->ask($question, $default);
+    }
+
+    /**
+     * Prompt the user for input with auto completion.
+     *
+     * @param  string  $question
+     * @param  array   $choices
+     * @param  string  $default
+     * @return string
+     */
+    public function anticipate($question, array $choices, $default = null)
+    {
+        return $this->askWithCompletion($question, $choices, $default);
+    }
+
+    /**
+     * Prompt the user for input with auto completion.
+     *
+     * @param  string  $question
+     * @param  array   $choices
+     * @param  string  $default
+     * @return string
+     */
+    public function askWithCompletion($question, array $choices, $default = null)
+    {
+        $question = new Question($question, $default);
+
+        $question->setAutocompleterValues($choices);
+
+        return $this->output->askQuestion($question);
+    }
+
+    /**
+     * Prompt the user for input but hide the answer from the console.
+     *
+     * @param  string  $question
+     * @param  bool    $fallback
+     * @return string
+     */
+    public function secret($question, $fallback = true)
+    {
+        $question = new Question($question);
+
+        $question->setHidden(true)->setHiddenFallback($fallback);
+
+        return $this->output->askQuestion($question);
+    }
+
+    /**
+     * Give the user a single choice from an array of answers.
+     *
+     * @param  string  $question
+     * @param  array   $choices
+     * @param  string  $default
+     * @param  mixed   $attempts
+     * @param  bool    $multiple
+     * @return bool
+     */
+    public function choice($question, array $choices, $default = null, $attempts = null, $multiple = null)
+    {
+        $question = new ChoiceQuestion($question, $choices, $default);
+
+        $question->setMaxAttempts($attempts)->setMultiselect($multiple);
+
+        return $this->output->askQuestion($question);
+    }
+
+    /**
+     * Format input to textual table.
+     *
+     * @param  array   $headers
+     * @param  array|\Illuminate\Contracts\Support\Arrayable  $rows
+     * @param  string  $style
+     * @return void
+     */
+    public function table(array $headers, $rows, $style = 'default')
+    {
+        $table = new Table($this->output);
+
+        if ($rows instanceof Arrayable) {
+            $rows = $rows->toArray();
+        }
+
+        $table->setHeaders($headers)->setRows($rows)->setStyle($style)->render();
+    }
+
+    /**
+     * Write a string as information output.
+     *
+     * @param  string  $string
+     * @return void
+     */
+    public function info($string)
+    {
+        $this->output->writeln("[<cyan>INFO</cyan>] <info>$string</info>");
+    }
+
+    /**
+     * Write a string as standard output.
+     *
+     * @param  string  $string
+     * @return void
+     */
+    public function line($string)
+    {
+        $this->output->writeln($string);
+    }
+
+    /**
+     * Write a string as comment output.
+     *
+     * @param  string  $string
+     * @return void
+     */
+    public function debug($string)
+    {
+        if(!DEBUG)
+            return;
+
+        $this->output->writeln("[<magenta>DEBUG</magenta>] <debug>$string</debug>");
+    }
+
+    /**
+     * Write a string as comment output.
+     *
+     * @param  string  $string
+     * @return void
+     */
+    public function comment($string)
+    {
+        $this->output->writeln("[COMMENT] <comment>$string</comment>");
+    }
+
+    /**
+     * Write a string as question output.
+     *
+     * @param  string  $string
+     * @return void
+     */
+    public function question($string)
+    {
+        $this->output->writeln("[QUEST] <question>$string</question>");
+    }
+
+    /**
+     * Write a string as error output.
+     *
+     * @param  string  $string
+     * @return void
+     */
+    public function error($string)
+    {
+        $this->output->writeln("[<red>ERROR</red>] <error>$string</error>");
+    }
+
+    /**
+     * Write a string as warning output.
+     *
+     * @param  string  $string
+     * @return void
+     */
+    public function warn($string)
+    {
+        $this->output->writeln("[<yellow>WARN</yellow>] <warning>$string</warning>");
+    }
+    /**
+     * Write a string as warning output.
+     *
+     * @param  string  $string
+     * @return void
+     */
+    public function success($string)
+    {
+        $this->output->writeln("[<green>OK</green>] <success>$string</success>");
     }
 }

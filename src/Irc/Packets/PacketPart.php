@@ -2,28 +2,23 @@
 
 
 use Dan\Contracts\PacketContract;
+use Dan\Irc\Connection;
 
 class PacketPart implements PacketContract {
 
 
-    public function handle($from, $data)
+    public function handle(Connection $connection, array $from, array $data)
     {
-        $user = user($from);
+        if($from[0] != $connection->user->nick())
+        {
+            $channel = $connection->getChannel($data[0]);
 
-        console("[{$data[0]}] {$user->nick()} left the channel");
+            $channel->removeUser($from[0]);
+        }
+        else
+            $connection->removeChannel($data[0]);
 
-        if(!connection()->inChannel($data[0]))
-            return;
-
-        $channel = connection()->getChannel($data[0]);
-        $channel->removeUser($user);
-
-        if($user->user() == connection()->user()->nick())
-            connection()->removeChannel($channel->getLocation());
-
-        event('irc.packets.part', [
-            'user'      => $user,
-            'channel'   => $channel
-        ]);
+        if(!DEBUG)
+            console("[<magenta>{$connection->getName()}</magenta>] <yellow>{$from[0]}</yellow> <cyan>left {$data[0]}</cyan>");
     }
 }

@@ -36,7 +36,7 @@ class Event {
      */
     public function destroy()
     {
-        debug("{yellow}[EVENTS] Destroying event {$this->id} for {$this->name}");
+        debug("[EVENTS] Destroying event <yellow>{$this->id}</yellow> for <info>{$this->name}</info>");
         unset(static::$events[$this->name][$this->priority][$this->id]);
     }
 
@@ -67,7 +67,7 @@ class Event {
      */
     public static function fire($event, $data = null)
     {
-        debug("{yellow}[EVENTS] Firing event {$event}");
+        debug("Firing event <info>{$event}</info>");
 
         if(!static::has($event))
             return $data;

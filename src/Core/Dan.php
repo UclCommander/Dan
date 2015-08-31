@@ -1,44 +1,76 @@
 <?php namespace Dan\Core;
 
 use Dan\Console\Console;
+use Dan\Contracts\SocketContract;
 use Dan\Database\Database;
 use Dan\Database\DatabaseManager;
 use Dan\Events\EventArgs;
 use Dan\Helpers\Logger;
+use Dan\Hooks\HookManager;
 use Dan\Irc\Connection;
 use Dan\Irc\Location\User;
-use Dan\Setup\Migrate;
+use Dan\Setup\Setup;
 use Illuminate\Filesystem\Filesystem;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class Dan {
 
+    /** @var string Current version */
     const VERSION = '5.0.0-dev';
 
+    /** @var array */
     protected static $args = [];
 
-    /**
-     * @var Filesystem $filesystem
-     */
+    /** @var string */
+    protected static $currentConnection;
+
+    /** @var Filesystem $filesystem */
     protected $filesystem;
 
-    /** @var Connection $connection */
-    protected $connection;
+    /** @var SocketContract[] */
+    protected $connections = [];
 
-    /** @var static $dan  */
+    /** @var static $dan */
     protected static $dan;
 
     /** @var DatabaseManager */
     protected $databaseManager;
 
+    /** @var bool $running */
+    protected $running = false;
+
     /**
-     *
+     * @var \Symfony\Component\Console\Input\InputInterface
      */
-    public function __construct()
+    protected $input;
+
+    /**
+     * @var \Symfony\Component\Console\Output\OutputInterface
+     */
+    protected $output;
+
+    public function __construct(InputInterface $input, OutputInterface $output)
     {
-        static::$dan = $this;
+        $this->input = $input;
+        $this->output = $output;
+
+        static::$dan    = $this;
 
         $this->filesystem       = new Filesystem();
         $this->databaseManager  = new DatabaseManager();
+
+        if(!filesystem()->exists(CONFIG_DIR))
+            filesystem()->makeDirectory(CONFIG_DIR);
+
+        if(!filesystem()->exists(STORAGE_DIR))
+            filesystem()->makeDirectory(STORAGE_DIR);
+
+        if(!filesystem()->exists(DATABASE_DIR))
+            filesystem()->makeDirectory(DATABASE_DIR);
+
+        if(!filesystem()->exists(HOOK_DIR))
+            filesystem()->makeDirectory(HOOK_DIR);
     }
 
     /**
@@ -46,20 +78,16 @@ class Dan {
      */
     public function boot()
     {
-        global $argv;
+        define('DEBUG', $this->input->getOption('debug'));
 
-        static::$args = Console::parseArgs($argv);
+        if(DEBUG)
+            debug("!!!DEBUG MODE ACTIVATED!!!");
 
         if(array_key_exists('--clear-config', static::$args))
             filesystem()->deleteDirectory(CONFIG_DIR, true);
 
         if(array_key_exists('--clear-storage', static::$args))
             filesystem()->deleteDirectory(STORAGE_DIR, true);
-
-        define('DEBUG', (config('dan.debug') || (array_key_exists('--debug', static::$args) && static::$args['--debug'] == 'true')));
-
-        if(DEBUG)
-            debug("!!!DEBUG MODE ACTIVATED!!!");
 
         Logger::defineSession();
 
@@ -71,31 +99,111 @@ class Dan {
         }
         catch(\Exception $exception)
         {
-            Console::critical($exception->getMessage(), true);
+
+            error($exception->getMessage());
+            die;
         }
 
-        Migrate::checkAndDo();
+        Setup::migrate();
+        HookManager::loadHooks();
 
-        if(!$this->databaseManager->loaded('database'))
-            $this->databaseManager->loadDatabase('database');
+        success("Bot loaded.");
 
-        info("Bot loaded.");
+        $this->fromUpdate();
 
-        if(static::args('--from') == 'update')
+        $this->addSocket('console', new Console());
+
+        foreach(config('irc.servers') as $name => $config)
+        {
+            $irc = new Connection($name, $config);
+            $irc->connect();
+            $this->addSocket($name, $irc);
+        }
+
+        $this->running = true;
+
+        $this->startSockets();
+    }
+
+    /**
+     * @param $name
+     * @param \Dan\Contracts\SocketContract $connection
+     */
+    public function addSocket($name, SocketContract $connection)
+    {
+        if(!$this->databaseManager->exists($name))
+        {
+            $this->databaseManager->create($name);
+            Setup::populateDatabase($name);
+        }
+
+        $this->connections[$name] = $connection;
+    }
+
+    /**
+     *
+     */
+    public function startSockets()
+    {
+        while($this->running)
+        {
+            usleep(200000);
+
+            $inputs     = $this->getStreams();
+            $write      = null;
+            $except     = null;
+
+            if(stream_select($inputs, $write, $except, 0) > 0)
+            {
+                foreach($inputs as $input)
+                {
+                    foreach($this->connections as $connection)
+                    {
+                        if($input == $connection->getStream())
+                        {
+                            static::$currentConnection = $connection->getName();
+                            $connection->handle($input);
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @return array
+     */
+    protected function getStreams() : array
+    {
+        $streams = [];
+
+        foreach($this->connections as $connection)
+            $streams[] = $connection->getStream();
+
+        return $streams;
+    }
+
+
+    /**
+     * Does from-update checks.
+     */
+    public function fromUpdate()
+    {
+        if($this->input->getOption('from-update'))
         {
             subscribe('irc.packets.join', function(EventArgs $eventArgs) {
 
-                if($eventArgs->get('channel')->getLocation() != static::args('--channel'))
+                $channel = $this->input->getOption('channel');
+
+                if($eventArgs->get('channel')->getLocation() != $channel)
                     return;
 
                 $v = static::getCurrentGitVersion();
-                message(static::args('--channel'), "{reset}[ {green}Up to date {reset}| Currently on {yellow}{$v['id']}{reset} | {cyan}{$v['message']} {reset}]");
+                message($channel, "{reset}[ {green}Up to date {reset}| Currently on {yellow}{$v['id']}{reset} | {cyan}{$v['message']} {reset}]");
                 $eventArgs->get('event')->destroy();
             });
         }
-
-        $this->connection = new Connection();
-        $this->connection->start();
     }
 
     /**
@@ -104,7 +212,7 @@ class Dan {
      * @param string $reason
      * @return bool
      */
-    public static function quit($reason = "Bot shutting down") : bool
+    public static function quit($reason = "Bot shutting down")
     {
         if(event('dan.quitting') === false)
             return false;
@@ -139,8 +247,14 @@ class Dan {
      * @return \Dan\Database\Database
      * @throws \Exception
      */
-    public static function database($name = 'database') : Database
+    public static function database($name = null) : Database
     {
+        if($name == null)
+            $name = static::$currentConnection;
+
+        if($name == null)
+            $name = 'console';
+
         return static::$dan->databaseManager->get($name);
     }
 
@@ -156,13 +270,29 @@ class Dan {
     }
 
     /**
+     * @param $name
+     * @return bool
+     */
+    public static function hasConnection($name)
+    {
+        return array_key_exists($name, static::$dan->connections);
+    }
+
+    /**
      * Gets the IRC connection.
      *
-     * @return Connection
+     * @param null $name
+     * @return \Dan\Irc\Connection
      */
-    public static function connection() : Connection
+    public static function connection($name = null) : Connection
     {
-        return static::$dan->connection;
+        if($name == null)
+            $name = static::$currentConnection;
+
+        if($name == null)
+            $name = 'console';
+
+        return static::$dan->connections[$name];
     }
 
     /**
@@ -171,7 +301,7 @@ class Dan {
      * @param \Dan\Irc\Location\User $user
      * @return bool
      */
-    public static function isOwner(User $user) : bool
+    public static function isOwner(User $user)
     {
         foreach(config('dan.owners') as $usr)
             if (fnmatch($usr, $user->string()))
@@ -186,7 +316,7 @@ class Dan {
      * @param \Dan\Irc\Location\User $user
      * @return bool
      */
-    public static function isAdmin(User $user) : bool
+    public static function isAdmin(User $user)
     {
         foreach(config('dan.admins') as $usr)
             if (fnmatch($usr, $user->string()))
@@ -201,7 +331,7 @@ class Dan {
      * @param \Dan\Irc\Location\User $user
      * @return bool
      */
-    public static function isAdminOrOwner(User $user) : bool
+    public static function isAdminOrOwner(User $user)
     {
         return (static::isOwner($user) || static::isAdmin($user));
     }

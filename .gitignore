@@ -3,3 +3,4 @@ vendor/
 /storage
 /config
 /plugins
+/logs

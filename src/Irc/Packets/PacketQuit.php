@@ -1,23 +1,13 @@
 <?php namespace Dan\Irc\Packets; 
 
-
 use Dan\Contracts\PacketContract;
-use Dan\Helpers\Logger;
+use Dan\Irc\Connection;
 
 class PacketQuit implements PacketContract {
 
 
-    public function handle($from, $data)
+    public function handle(Connection $connection, array $from, array $data)
     {
-        $user = user($from);
-
-        console("[{$data[0]}] {$user->nick()} left IRC");
-
-        foreach(connection()->channels() as $channel)
-            $channel->removeUser($user);
-
-        event('irc.packets.quit', [
-            'user'      => $user
-        ]);
+        // TODO: Implement handle() method.
     }
 }
