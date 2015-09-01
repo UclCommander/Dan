@@ -225,7 +225,9 @@ class Dan {
 
         controlLog('Bye!');
 
-        static::connection()->send("QUIT", $reason);
+        foreach(static::$dan->connections as $connection)
+            if($connection instanceof Connection)
+                $connection->send("QUIT", $reason);
 
         return true;
     }

@@ -244,6 +244,24 @@ class Connection implements SocketContract {
     /**
      * @param $location
      * @param $message
+     * @param array $styles
+     */
+    public function action($location, $message, $styles = [])
+    {
+        $formatter = new IrcOutputFormatter(true);
+
+        if(!empty($styles))
+            foreach($styles as $name => $style)
+                $formatter->setStyle($name, new IrcOutputFormatterStyle(...$style));
+
+        $message = $formatter->format($message);
+
+        $this->send('PRIVMSG', $location, "\001ACTION $message\001");
+    }
+
+    /**
+     * @param $location
+     * @param $message
      */
     public function notice($location, $message)
     {

@@ -78,7 +78,6 @@ hook('8ball')
 
 hook('fgtlist')
     ->command(['fgtlist', 'fgts'])
-    ->console()
     ->help('Gets da fgts')
     ->func(function(Collection $args) {
         $list = [
@@ -88,5 +87,53 @@ hook('fgtlist')
         ];
 
         foreach($list as $fgt)
-            $args->get('channel')->notice($fgt);
+            $args->get('user')->notice($fgt);
+    });
+
+
+hook('slap')
+    ->command(['slap'])
+    ->help('Slaps someone')
+    ->func(function (Collection $args){
+        $message    = $args->get('message');
+        $channel    = $args->get('channel');
+        $user       = $args->get('user');
+
+        $data = explode(' ', $message, 2);
+
+        if($data[0] == connection()->user->nick())
+        {
+            $channel->message("Hey! That's rude!");
+            $channel->action("smacks {$user->nick()} on the back of the head");
+            return;
+        }
+
+        $verb = array_random([
+            'smacks', 'kicks', 'slaps', 'chops',
+            'rekts', 'kills', 'blows up', 'annihilates',
+            'roundhouse kicks',
+        ]);
+
+        $after = array_random([
+            'into a wall', 'into space', 'to death', 'out of the channel',
+            'into a pancake', 'into a bacon pancake',
+            'into a cupcake'
+        ]);
+
+        $channel->action("{$verb} {$data[0]} {$after}");
+    });
+
+hook('whoopass')
+    ->command(['whoopass'])
+    ->help("When a normal beating just won't do!")
+    ->func(function(Collection $args) {
+        if($args->get('message') && $args->get('user')->hasOneOf('hoaq'))
+        {
+            $data = explode(' ', $args->get('message'));
+
+            send('KICK', $args->get('channel'), $data[0], "When a normal beating just won't do! WHOOPASS! Extra strength! http://skycld.co/whoopass");
+            return;
+        }
+
+        $args->get('channel')->message("When a normal beating just won't do! http://skycld.co/whoopass");
     });

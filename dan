@@ -19,7 +19,6 @@ define('LOGS_DIR', ROOT_DIR . '/logs');
 define('CONFIG_DIR', ROOT_DIR . '/config');
 define('STORAGE_DIR', ROOT_DIR . '/storage');
 define('DATABASE_DIR', STORAGE_DIR . '/database');
-define('PLUGIN_DIR', ROOT_DIR . '/plugins');
 define('HOOK_DIR', ROOT_DIR . '/hooks');
 
 require(ROOT_DIR . '/src/functions.php');
@@ -39,7 +38,7 @@ require(BASE_DIR . '/vendor/autoload.php');
 set_error_handler(function($severity, $message, $filename, $lineno)
 {
     error("-------------------------");
-    controlLog("<error>[{$severity}] PHP ERROR: {$message} in " . relative($filename) . " on line {$lineno}</error>", true);
+    controlLog("<error>[{$severity}] PHP ERROR: {$message} in " . relative($filename) . " on line {$lineno}</error>");
     error("-------------------------");
 });
 

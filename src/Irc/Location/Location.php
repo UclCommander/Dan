@@ -24,6 +24,16 @@ class Location extends ModeObject {
     }
 
     /**
+     * Sends an action to this location.
+     *
+     * @param $message
+     */
+    public function action($message)
+    {
+        action($this, $message);
+    }
+
+    /**
      * Sends a notice to this location.
      *
      * @param $message

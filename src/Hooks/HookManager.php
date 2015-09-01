@@ -1,7 +1,9 @@
 <?php namespace Dan\Hooks;
 
+use Dan\Core\Dan;
 use Dan\Hooks\Types\CommandHook;
-use Dan\Hooks\Types\EventHook;
+use Dan\Irc\Location\Channel;
+use Dan\Irc\Location\User;
 
 class HookManager {
 
@@ -136,6 +138,17 @@ class HookManager {
         if(!in_array($name, $command->commands))
             return false;
 
+        /** @var Channel $channel */
+        $channel = $args['channel'];
+        /** @var User $user */
+        $user = $args['user'];
+
+        if(!static::hasPermission($command, $user))
+        {
+            $channel->message("You can't use this command!");
+            return true;
+        }
+
         try
         {
             $command->run($args);
@@ -147,5 +160,43 @@ class HookManager {
         }
 
         return true;
+    }
+
+    /**
+     * @param \Dan\Hooks\Types\CommandHook $command
+     * @param \Dan\Irc\Location\User $user
+     * @return bool
+     */
+    protected static function hasPermission(CommandHook $command, User $user)
+    {
+        if(Dan::isOwner($user))
+            return true;
+
+        $rank = static::getRank($command);
+
+        if(strpos($rank, 'A') !== false)
+            if(Dan::isAdmin($user))
+                return true;
+
+        return $user->hasOneOf($rank);
+    }
+
+    /**
+     * @param \Dan\Hooks\Types\CommandHook $command
+     * @return array|\Dan\Core\Config|mixed|string
+     */
+    protected static function getRank(CommandHook $command)
+    {
+        $ranks      = config("commands.permissions");
+        $commands   = $command->commands;
+
+        foreach($commands as $cmd)
+            if(array_key_exists($cmd, $ranks))
+                return $ranks[$cmd];
+
+        if($command->rank != null)
+            return $command->rank;
+
+        return config('commands.default_permissions');
     }
 }

@@ -9,8 +9,22 @@ hook('users')
     ->func(function(Collection $args) {
         $users = [];
 
+        $count = 0;
+
         foreach($args->get('channel')->getUsers() as $user)
-            $users[] = $user['nick'];
+        {
+            if($count == 9)
+            {
+                $args->get('user')->notice(implode(', ', $users));
+                $users = [];
+                $count = 0;
+                continue;
+            }
+
+            $users[] = '+' . implode('', $user['modes']->modes()->toArray()) . ":" . $user['nick'];
+
+            $count++;
+        }
 
         $args->get('user')->notice(implode(', ', $users));
     });

@@ -105,3 +105,38 @@ hook('say')
 
         $channel->message(implode(' ', $data));
     });
+
+
+hook('join')
+    ->command(['join', 'j'])
+    ->console()
+    ->rank('AS')
+    ->help("Joins a channel")
+    ->func(function(Collection $args) {
+        $args->get('connection')->joinChannel($args->get('message'));
+    });
+
+hook('part')
+    ->command(['part', 'leave', 'p'])
+    ->console()
+    ->rank('AS')
+    ->help("Leaves a channel")
+    ->func(function(Collection $args) {
+        $partFrom   = explode(' ', $args->get('message'));
+        $chan       = $args->get('channel')->getLocation();
+        $reason     = $args->get('message');
+
+        if(isChannel($partFrom[0]))
+        {
+            $chan   = $partFrom[0];
+            $reason = isset($partFrom[1]) ? $partFrom[1] : null;
+        }
+
+        if(!connection()->inChannel($chan))
+        {
+            $args->get('channel')->message("I'm not in this channel!");
+            return;
+        }
+
+        $args->get('connection')->partChannel($chan, $reason);
+    });
