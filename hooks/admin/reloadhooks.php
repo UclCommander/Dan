@@ -1,10 +1,14 @@
 <?php
 
+/**
+ * Reloads all hooks.
+ *
+ * Do not directly edit this file.
+ * If you want to change the rank, see commands.permissions in the configuration.
+ */
+
 use Illuminate\Support\Collection;
 
-/**
- * Reloads all bot hooks.
- */
 hook('reloadhooks')
     ->command(['reloadhooks', 'rlh'])
     ->console()
