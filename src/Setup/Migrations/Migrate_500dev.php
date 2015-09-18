@@ -14,7 +14,7 @@ class Migrate_500dev implements MigrationContract {
     {
         if(!database($name)->tableExists('users'))
         {
-            alert("Creating table users...");
+            info("Creating table users...");
 
             database($name)->schema('users')->create([
                 'nick'      => '',
@@ -28,12 +28,13 @@ class Migrate_500dev implements MigrationContract {
 
         if(!database($name)->tableExists('channels'))
         {
-            alert("Creating table channels...");
+            info("Creating table channels...");
 
             database($name)->schema('channels')->create([
                 'name'      => '',
                 'max_users' => 0,
-                'messages'  => 0
+                'messages'  => 0,
+                'info'      => [],
             ]);
         }
     }
@@ -58,6 +59,7 @@ class Migrate_500dev implements MigrationContract {
         $irc->putIfNull('servers.byteirc.autorun_commands', []);
         $irc->putIfNull('servers.byteirc.join_on_invite', false);
         $irc->putIfNull('servers.byteirc.command_prefix', '.');
+        $irc->putIfNull('servers.byteirc.control_channel', '#DanControl');
         $irc->save();
 
         $commands = new Config('commands');
@@ -83,10 +85,8 @@ class Migrate_500dev implements MigrationContract {
         $ignore->save();
 
         $dan = new Config('dan');
-        $dan->putIfNull('control_channel', '#DanControl');
         $dan->putIfNull('owners', []);
         $dan->putIfNull('admins', []);
-        $dan->putIfNull('plugins', []);
         $dan->save();
     }
 

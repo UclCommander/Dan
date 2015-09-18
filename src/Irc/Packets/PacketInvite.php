@@ -2,22 +2,23 @@
 
 use Dan\Contracts\PacketContract;
 use Dan\Core\Dan;
+use Dan\Irc\Connection;
 
 class PacketInvite implements PacketContract {
 
 
-    public function handle($from, $data)
+    public function handle(Connection $connection, array $from, array $data)
     {
+        $inviter = user($from);
+
         event('irc.packets.invite', [
-            'user'      => user($from),
+            'user'      => $inviter,
             'who'       => $data[0],
             'channel'   => $data[1]
         ]);
 
-        if($data[0] != connection()->user()->nick())
+        if($data[0] != $connection->user->nick())
             return;
-
-        $inviter = user($data[0]);
 
         if($inviter == null)
             return;
@@ -27,6 +28,6 @@ class PacketInvite implements PacketContract {
 
         controlLog("{$data[0]} invited me to {$data[1]}");
 
-        connection()->joinChannel($data[1]);
+        $connection->joinChannel($data[1]);
     }
 }

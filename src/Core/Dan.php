@@ -115,6 +115,9 @@ class Dan {
 
         foreach(config('irc.servers') as $name => $config)
         {
+            if(!in_array($name, config('irc.enabled')))
+                continue;
+
             $irc = new Connection($name, $config);
             $irc->connect();
             $this->addSocket($name, $irc);

@@ -230,6 +230,19 @@ class Connection implements SocketContract {
      */
     public function message($location, $message, $styles = [])
     {
+        if(isChannel($location))
+        {
+            event('irc.bot.message.public', [
+                'connection'    => $this,
+                'user'          => $this->user,
+                'channel'       => $location instanceof Channel ? $location : $this->getChannel($location),
+                'message'       => $message
+            ]);
+        }
+
+        if(!DEBUG)
+            console("[<magenta>{$this->name}</magenta>][<yellow>{$this->user->nick()}</yellow>] {$message}");
+
         $formatter = new IrcOutputFormatter(true);
 
         if(!empty($styles))

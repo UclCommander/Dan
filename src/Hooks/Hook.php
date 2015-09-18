@@ -19,6 +19,16 @@ class Hook {
     protected $type = false;
 
     /**
+     * @var
+     */
+    protected $name;
+
+    public function __construct($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
      * Returns of the hook is a command or not.
      *
      * @return bool
@@ -34,6 +44,14 @@ class Hook {
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
     /**
@@ -61,12 +79,13 @@ class Hook {
      * Creates a command hook.
      *
      * @param $event
+     * @param array $settings
      * @return \Dan\Hooks\Types\EventHook
      */
-    public function on($event) : EventHook
+    public function on($event, array $settings = []) : EventHook
     {
         $this->type = 'event';
-        $this->hook = new EventHook($event);
+        $this->hook = new EventHook((array)$event, $settings);
         return $this->hook;
     }
 

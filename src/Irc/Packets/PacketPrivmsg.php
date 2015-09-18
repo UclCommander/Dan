@@ -15,28 +15,45 @@ class PacketPrivmsg implements PacketContract {
 
         if(isChannel($data[0]))
         {
-            $channel = $connection->getChannel($data[0]);
-
-            $user = $channel->getUser(user($from));
+            $channel    = $connection->getChannel($data[0]);
+            $user       = $channel->getUser(user($from));
+            $message    = $data[1];
 
             $hookData = [
                 'connection'    => $connection,
                 'user'          => $user,
                 'channel'       => $channel,
-                'message'       => $data[1]
+                'message'       => $message
             ];
+
+            if(strpos($message, "\001") === 0)
+            {
+                $ctcp = explode(' ', trim($message, "\001"), 2);
+
+                var_dump($ctcp, $data, str_split($ctcp[0]), ($ctcp[0] == "ACTION"));
+
+                if($ctcp[0] == 'ACTION')
+                {
+                    var_dump($ctcp[0]);
+                    $hookData['message'] = $ctcp[1];
+                    event('irc.packets.action.public', $hookData);
+                    return;
+                }
+
+                return;
+            }
 
             if(event('irc.packets.message.public', $hookData) === false)
                 return;
 
-            if(HookManager::callRegexHooks($hookData))
+            $info   = database()->table('channels')->where('name', $channel->getLocation())->first()->get('info');
+            $except = isset($info['disabled_hooks']) ? $info['disabled_hooks'] : [];
+
+            if(HookManager::data($hookData)->except($except)->call('regex'))
                 return;
 
-            if(HookManager::callCommandHooks($hookData))
+            if(HookManager::data($hookData)->except($except)->call('command'))
                 return;
-
-            /*if(!$ran)
-                $connection->send("PRIVMSG", $data[0], $data[1]);*/
         }
     }
 }

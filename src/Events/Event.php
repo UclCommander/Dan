@@ -65,14 +65,14 @@ class Event {
      * @param $data
      * @return mixed
      */
-    public static function fire($event, $data = null)
+    public static function fire($name, $data = null)
     {
-        debug("Firing event <info>{$event}</info>");
+        debug("Firing event <info>{$name}</info>");
 
-        if(!static::has($event))
+        if(!static::has($name))
             return $data;
 
-        $list = static::$events[$event];
+        $list = static::$events[$name];
 
         krsort($list);
 
@@ -82,7 +82,8 @@ class Event {
         {
             foreach($events as $id => $event)
             {
-                $data->put('event', $event);
+                $data->put('event', $name);
+
                 /** @var static $event */
                 $return = $event->call($data);
 

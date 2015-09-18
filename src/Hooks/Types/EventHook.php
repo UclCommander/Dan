@@ -3,6 +3,7 @@
 
 use Dan\Contracts\HookTypeContract;
 use Dan\Events\EventArgs;
+use Dan\Events\EventPriority;
 
 class EventHook implements HookTypeContract {
 
@@ -21,26 +22,29 @@ class EventHook implements HookTypeContract {
      */
     protected $settings;
 
+    /**
+     * @var \Dan\Events\Event[]
+     */
+    protected $events;
 
     /**
-     * @var \Dan\Events\Event
+     * @param array $events
+     * @param array $settings
      */
-    protected $event;
-
-    /**
-     * @param $event
-     */
-    public function __construct($event)
+    public function __construct(array $events, array $settings = [])
     {
-        $this->event = subscribe($event, [$this, 'run']);
+        $this->settings = $settings;
+
+        foreach($events as $event)
+            $this->events[] = subscribe($event, [$this, 'run'], isset($settings['priority']) ? $settings['priority'] : EventPriority::Normal);
     }
 
     /**
-     * @return \Dan\Events\Event
+     * @return \Dan\Events\Event[]
      */
-    public function event()
+    public function events()
     {
-        return $this->event;
+        return $this->events;
     }
 
     /**
@@ -95,6 +99,13 @@ class EventHook implements HookTypeContract {
             $args['channel']->message("Something unexpected has happened!");
             error($error->getMessage());
 
+            return false;
+        }
+        catch(\Exception $e)
+        {
+            $args['channel']->message("Something unexpected has happened!");
+            error($e->getMessage());
+            
             return false;
         }
     }

@@ -12,6 +12,7 @@ namespace {
     use Dan\Hooks\Hook;
     use Dan\Hooks\HookManager;
     use Dan\Irc\Connection;
+    use Dan\Irc\Location\Channel;
     use Dan\Irc\Location\User;
     use Illuminate\Filesystem\Filesystem;
 
@@ -169,6 +170,16 @@ namespace {
             debug($message);
         else
             warn($message);
+
+        if(connection())
+        {
+            $channel = connection()->config->get('control_channel');
+
+            if(empty($channel) || !connection()->inChannel($channel))
+                return;
+
+            connection()->message($channel, $message);
+        }
     }
 
     #endregion
@@ -269,6 +280,9 @@ namespace {
      */
     function isChannel($channel) : bool
     {
+        if($channel instanceof Channel)
+            return true;
+
         $types = preg_quote(Dan::connection()->support->get('CHANTYPES'));
 
         if($types == null)

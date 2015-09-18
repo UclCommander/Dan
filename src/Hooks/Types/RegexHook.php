@@ -1,6 +1,7 @@
 <?php namespace Dan\Hooks\Types;
 
 use Dan\Contracts\HookTypeContract;
+use Illuminate\Support\Collection;
 
 class RegexHook implements HookTypeContract {
 
@@ -64,10 +65,12 @@ class RegexHook implements HookTypeContract {
      */
     public function run($args)
     {
-        if(!preg_match($this->regex, $args['message'], $matches))
+        if(!preg_match_all($this->regex, $args['message'], $matches))
             return false;
 
         $args['matches'] = $matches;
+
+        $args = new Collection($args);
 
         if($this->class != null)
         {
@@ -76,5 +79,14 @@ class RegexHook implements HookTypeContract {
 
             return $class->$method($args);
         }
+
+        if($this->callable != null)
+        {
+            $func = $this->callable;
+
+            return $func($args);
+        }
+
+        return null;
     }
 }

@@ -2,11 +2,11 @@
 
 
 use Dan\Contracts\PacketContract;
+use Dan\Irc\Connection;
 
 class Packet396 implements PacketContract {
 
-
-    public function handle($from, $data)
+    public function handle(Connection $connection, array $from, array $data)
     {
         if($data[0] == config('irc.user.nick'))
         {
