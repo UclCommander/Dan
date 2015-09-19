@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Autovoice hook. Automatically voices registered users on join.
+ * Autovoice hook. Automagically voices registered users on join.
  *
  * Do not directly edit this file.
  */
@@ -56,7 +56,7 @@ hook('autovoice')
                 {
                     if($user->nick() != 'NickServ')
                         return;
-                    
+
                     if(strpos($message, $nick) === false)
                         return;
 
