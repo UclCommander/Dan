@@ -44,6 +44,17 @@ class Location extends ModeObject {
     }
 
     /**
+     * Sets a mode on this location.
+     *
+     * @param $mode
+     * @internal param $message
+     */
+    public function mode($mode)
+    {
+        connection()->send("MODE", $this->location, $mode);
+    }
+
+    /**
      * Returns a IRC compatible endpoint location.
      *
      * @return mixed

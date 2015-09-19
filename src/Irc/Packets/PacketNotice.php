@@ -7,6 +7,16 @@ class PacketNotice implements PacketContract {
 
     public function handle(Connection $connection, array $from, array $data)
     {
+        if($data[0] == $connection->user->nick())
+        {
+            $user       = user($from);
+            $message    = $data[1];
 
+            event('irc.packets.notice.private', [
+                'connection'    => $connection,
+                'user'          => $user,
+                'message'       => $message
+            ]);
+        }
     }
 }

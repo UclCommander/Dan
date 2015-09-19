@@ -37,6 +37,20 @@ class Channel extends Location {
     }
 
     /**
+     * Sets a user mode on the given user.
+     *
+     * @param $user
+     * @param $mode
+     */
+    public function userMode($user, $mode)
+    {
+        if($user instanceof User)
+            $user = $user->getLocation();
+
+        connection()->send("MODE", $this->location, $mode, $user);
+    }
+
+    /**
      * Gets all users in the channel.
      *
      * @return array
