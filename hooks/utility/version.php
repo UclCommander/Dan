@@ -12,6 +12,7 @@ use Illuminate\Support\Collection;
 
 hook('version')
     ->command(['version', 'v'])
+    ->console()
     ->help('Gets the current version')
     ->func(function(Collection $args) {
         $v = Dan::getCurrentGitVersion();

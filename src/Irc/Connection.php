@@ -246,7 +246,7 @@ class Connection implements SocketContract {
      */
     public function message($location, $message, $styles = [])
     {
-        if(isChannel($location))
+        if(isChannel($location, $this->getName()))
         {
             event('irc.bot.message.public', [
                 'connection'    => $this,

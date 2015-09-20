@@ -13,11 +13,6 @@ class Channel extends Location {
     protected $users;
 
     /**
-     * @var \Dan\Irc\Connection
-     */
-    protected $connection;
-
-    /**
      * @param \Dan\Irc\Connection $connection
      * @param $name
      * @throws \Exception

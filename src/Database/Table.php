@@ -226,7 +226,7 @@ class Table {
         $items = [];
 
         foreach($this->getItems() as $id => $data)
-            if(Compare::is($data[$column], $is, $value))
+            if(Compare::is(strtolower($data[$column]), $is, strtolower($value)))
                 $items[$id] = $data;
 
         return $items;

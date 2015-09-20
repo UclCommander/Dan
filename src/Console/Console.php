@@ -1,14 +1,17 @@
 <?php namespace Dan\Console;
 
+use Dan\Contracts\MessagingContract;
 use Dan\Contracts\SocketContract;
+use Dan\Hooks\HookManager;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Collection;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 
-class Console implements SocketContract {
+class Console implements SocketContract, MessagingContract {
 
     /**
      * @var Console
@@ -36,10 +39,19 @@ class Console implements SocketContract {
     protected $input;
 
     /**
+     * @var \Illuminate\Support\Collection
+     */
+    public $config;
+
+    /**
      *
      */
     public function __construct()
     {
+        $this->config = new Collection([
+            'command_prefix'   => '/',
+        ]);
+
         $this->input    = new ArrayInput([]);
         $this->output   = new OutputStyle($this->input, new ConsoleOutput());
 
@@ -59,7 +71,6 @@ class Console implements SocketContract {
     }
 
     /**
-     * @param $argv
      * @return array|string
      */
     public static function arguments()
@@ -90,7 +101,16 @@ class Console implements SocketContract {
     {
         $message = trim(fgets($resource));
 
-        echo $message . PHP_EOL;
+        $hookData = [
+            'connection'    => $this,
+            'user'          => $this,
+            'channel'       => $this,
+            'message'       => $message,
+            'console'       => true
+        ];
+
+        if(HookManager::data($hookData)->call('command'))
+            return;
     }
 
 
@@ -321,4 +341,43 @@ class Console implements SocketContract {
     {
         $this->output->writeln("[<green>OK</green>] <success>$string</success>");
     }
+
+    /**
+     * Sends a message.
+     *
+     * @param $message
+     * @param array $styles
+     */
+    public function message($message, $styles = [])
+    {
+        $this->output->writeln($message);
+    }
+
+    /**
+     * Sends an action.
+     *
+     * @param $message
+     */
+    public function action($message)
+    {
+        $this->warn($message);
+    }
+
+    /**
+     * Sends a notice.
+     *
+     * @param $message
+     */
+    public function notice($message)
+    {
+        $this->info($message);
+    }
+
+    /**
+     * Backwards compatibility.
+     *
+     * @return string
+     */
+    public function nick()          { return 'console'; }
+    public function getLocation()   { return 'console'; }
 }

@@ -13,7 +13,6 @@ use Illuminate\Support\Collection;
 
 hook('ignore')
     ->command(['ignore'])
-    ->console()
     ->rank('AS')
     ->help('Ignores the given user or pattern')
     ->func(function(Collection $args) {

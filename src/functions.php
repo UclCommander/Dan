@@ -3,6 +3,8 @@
 namespace {
 
     use Dan\Console\Console;
+    use Dan\Contracts\MessagingContract;
+    use Dan\Contracts\SocketContract;
     use Dan\Core\Config;
     use Dan\Core\Dan;
     use Dan\Database\Database;
@@ -188,9 +190,9 @@ namespace {
 
     /**
      * @param null $name
-     * @return \Dan\Irc\Connection
+     * @return \Dan\Irc\Connection|SocketContract|MessagingContract
      */
-    function connection($name = null) : Connection
+    function connection($name = null)
     {
         return Dan::connection($name);
     }
@@ -276,14 +278,15 @@ namespace {
      * Checks to see if the string is a channel.
      *
      * @param $channel
+     * @param null $connection
      * @return bool
      */
-    function isChannel($channel) : bool
+    function isChannel($channel, $connection = null) : bool
     {
         if($channel instanceof Channel)
             return true;
 
-        $types = preg_quote(Dan::connection()->support->get('CHANTYPES'));
+        $types = preg_quote(Dan::connection($connection)->support->get('CHANTYPES'));
 
         if($types == null)
             return false;

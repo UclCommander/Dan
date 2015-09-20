@@ -1,5 +1,6 @@
 <?php namespace Dan\Hooks;
 
+use Dan\Contracts\MessagingContract;
 use Dan\Core\Dan;
 use Dan\Hooks\Types\CommandHook;
 use Dan\Irc\Location\Channel;
@@ -156,20 +157,27 @@ class HookManager {
         /** @var User $user */
         $user = $args['user'];
 
-        if(!$this->hasPermission($command, $user))
+        $console = isset($args['console']) && $args['console'];
+
+        if(!$console)
         {
-            $channel->message("You can't use this command!");
-            return true;
+            if(!$this->hasPermission($command, $user))
+            {
+                $channel->message("You can't use this command!");
+                return true;
+            }
+
+            controlLog("{$user->nick()} used {$command->commands[0]} in {$channel->getLocation()}");
+
         }
 
         try
         {
-            controlLog("{$user->nick()} used {$command->commands[0]} in {$channel->getLocation()}");
             $command->run($args);
         }
         catch(\Error $error)
         {
-            if(isset($this->args['channel']) && $this->args['channel'] instanceof Location)
+            if(isset($this->args['channel']) && $this->args['channel'] instanceof MessagingContract)
                 $this->args['channel']->message("Something unexpected has happened!");
 
             controlLog($error->getMessage());
@@ -255,6 +263,9 @@ class HookManager {
             catch(\Error $error)
             {
                 error($error->getMessage());
+
+                if(DEBUG)
+                    error($error->getTraceAsString());
             }
         }
     }

@@ -12,7 +12,7 @@ class PacketPrivmsg implements PacketContract {
     public function handle(Connection $connection, array $from, array $data)
     {
         if(!DEBUG)
-            console("[<magenta>{$connection->getName()}</magenta>][<yellow>{$from[0]}</yellow>] {$data[1]}");
+            console("[<magenta>{$connection->getName()}</magenta>][<cyan>{$data[0]}</cyan>][<yellow>{$from[0]}</yellow>] {$data[1]}");
 
         if(isChannel($data[0]))
         {

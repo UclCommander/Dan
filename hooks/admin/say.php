@@ -34,14 +34,12 @@ hook('say')
             return;
         }
 
-        $types = preg_quote($connection->support->get('CHANTYPES'));
 
-        preg_match("/([a-z]+)\:([{$types}][a-zA-Z0-9_\-\.]+)/", $data[0], $matches);
-
-        if(count($matches) == 3)
+        if(strpos($data[0], ':') !== false)
         {
-            $where = $matches[1];
-            $chan = $matches[2];
+            $srv    = explode(':', $data[0]);
+            $where  = $srv[0];
+            $chan   = $srv[1];
 
             array_shift($data);
 
@@ -52,6 +50,12 @@ hook('say')
             }
 
             $conn = Dan::connection($where);
+
+            if(!isChannel($chan, $where))
+            {
+                $channel->message("Invalid Channel prefix.");
+                return;
+            }
 
             if(!$conn->inChannel($chan))
             {

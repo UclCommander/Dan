@@ -18,13 +18,16 @@ hook('update')
     ->func(function(Collection $args) {
         if($args->get('message') != 'do')
         {
-            if(Update::check())
+            if(!Update::check())
             {
-                $args->get('channel')->message('Update found! Run <i>update do</i> to update the bot automatically.');
+                $args->get('channel')->message('No updates found.');
+                return;
             }
+
+            $args->get('channel')->message('Update found! Run <i>update do</i> to update the bot automatically.');
 
             return;
         }
 
-
+        Update::go($args->get('connection'));
     });

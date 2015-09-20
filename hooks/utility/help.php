@@ -15,7 +15,12 @@ hook('help')
 
         foreach($hooks as $hook)
         {
-            $cmds = $hook->hook()->commands;
+            $h = $hook->hook();
+
+            if(!$h->canRunInConsole)
+                continue;
+
+            $cmds = $h->commands;
 
             if($name != null && in_array($name, $cmds))
             {
@@ -25,11 +30,9 @@ hook('help')
                 return;
             }
 
-            $first = array_shift($cmds);
-
-            $cmd = $first . (count($cmds) > 0 ? " (" . implode(', ', $cmds) . ")" : '');
-
-            $list = array_merge($list, (array)$cmd);
+            $first  = array_shift($cmds);
+            $cmd    = $first . (count($cmds) > 0 ? " (" . implode(', ', $cmds) . ")" : '');
+            $list   = array_merge($list, (array)$cmd);
         }
 
         sort($list);

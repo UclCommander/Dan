@@ -10,7 +10,8 @@
 use Illuminate\Support\Collection;
 
 hook('memory')
-    ->command(['memory',])
+    ->command(['memory'])
+    ->console()
     ->help('Gets the current memory usage')
     ->func(function(Collection $args) {
 

@@ -1,6 +1,7 @@
 <?php namespace Dan\Core;
 
 use Dan\Console\Console;
+use Dan\Contracts\MessagingContract;
 use Dan\Contracts\SocketContract;
 use Dan\Database\Database;
 use Dan\Database\DatabaseManager;
@@ -243,7 +244,7 @@ class Dan {
             if($connection instanceof Connection)
                 $connection->send("QUIT", $reason);
 
-        return true;
+        die;
     }
 
     /**
@@ -337,9 +338,9 @@ class Dan {
      * Gets the IRC connection.
      *
      * @param null $name
-     * @return \Dan\Irc\Connection
+     * @return \Dan\Irc\Connection|SocketContract|MessagingContract
      */
-    public static function connection($name = null) : Connection
+    public static function connection($name = null)
     {
         if($name == null)
             $name = static::$currentConnection;
