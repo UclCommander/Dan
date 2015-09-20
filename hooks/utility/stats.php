@@ -19,13 +19,12 @@ hook('stats')
         $data = database()->table('channels')->where('name', $channel)->first();
 
         $stats = $data['info']['stats'];
-
         $users = $stats['users'];
 
-        sort($users);
+        arsort($users);
 
-        $user = array_keys($stats['users'])[0];
-        $messages = $stats['users'][$user];
+        $user = key($users);
+        $messages = $users[$user];
 
         $nick   = $stats['nick'] ?? 0;
         $join   = $stats['join'] ?? 0;
@@ -64,7 +63,8 @@ hook('stats_record')
 
         $db         = database()->table('channels')->where('name', $channel->getLocation());
         $stats      = $db->first();
-        $stats      = isset($stats['info']['stats']) ? $stats['info']['stats'] : [];
+
+        $stats      = $stats->has('info') ? (isset($stats['info']['stats']) ? $stats['info']['stats'] : []) : [];
 
         switch($args->get('event'))
         {

@@ -4,6 +4,7 @@
 use Dan\Contracts\HookTypeContract;
 use Dan\Events\EventArgs;
 use Dan\Events\EventPriority;
+use Dan\Irc\Location\Location;
 
 class EventHook implements HookTypeContract {
 
@@ -28,11 +29,18 @@ class EventHook implements HookTypeContract {
     protected $events;
 
     /**
+     * @var string
+     */
+    protected $name;
+
+    /**
+     * @param $name
      * @param array $events
      * @param array $settings
      */
-    public function __construct(array $events, array $settings = [])
+    public function __construct($name, array $events, array $settings = [])
     {
+        $this->name     = $name;
         $this->settings = $settings;
 
         foreach($events as $event)
@@ -77,6 +85,16 @@ class EventHook implements HookTypeContract {
      */
     public function run($args)
     {
+        // Check to see if this is running in a channel, if so, check for disabled hooks and ignore those.
+        if(isset($args['channel']))
+        {
+            $info   = database()->table('channels')->where('name', $args['channel']->getLocation())->first()->get('info');
+            $except = isset($info['disabled_hooks']) ? $info['disabled_hooks'] : [];
+
+            if(in_array($this->name, $except))
+                return null;
+        }
+
         try
         {
             if($this->class != null)
@@ -96,14 +114,18 @@ class EventHook implements HookTypeContract {
         }
         catch(\Error $error)
         {
-            $args['channel']->message("Something unexpected has happened!");
+            if(isset($args['channel']) && $args['channel'] instanceof Location)
+                $args['channel']->message("Something unexpected has happened!");
+
             error($error->getMessage());
 
             return false;
         }
         catch(\Exception $e)
         {
-            $args['channel']->message("Something unexpected has happened!");
+            if(isset($args['channel']) && $args['channel'] instanceof Location)
+                $args['channel']->message("Something unexpected has happened!");
+
             error($e->getMessage());
             
             return false;

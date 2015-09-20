@@ -8,5 +8,7 @@ class PacketPing implements PacketContract {
     public function handle(Connection $connection, array $from, array $data)
     {
         $connection->send("PONG", $data[0]);
+
+        event('irc.packets.ping');
     }
 }

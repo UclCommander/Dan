@@ -85,7 +85,7 @@ class Hook {
     public function on($event, array $settings = []) : EventHook
     {
         $this->type = 'event';
-        $this->hook = new EventHook((array)$event, $settings);
+        $this->hook = new EventHook($this->name, (array)$event, $settings);
         return $this->hook;
     }
 

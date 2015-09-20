@@ -26,7 +26,7 @@ class PacketInvite implements PacketContract {
         if(!config('irc.join_on_invite') && !Dan::isAdminOrOwner($inviter))
             return;
 
-        controlLog("{$data[0]} invited me to {$data[1]}");
+        controlLog("{$inviter->nick()} invited me to {$data[1]}");
 
         $connection->joinChannel($data[1]);
     }
