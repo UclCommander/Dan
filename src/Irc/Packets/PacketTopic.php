@@ -12,7 +12,7 @@ class PacketTopic implements PacketContract {
 
         $channel = $connection->getChannel($data[0]);
 
-        event('irc.packets.title', [
+        event('irc.packets.topic', [
             'user'      => user($from),
             'channel'   => $channel,
             'topic'     => $data[1],

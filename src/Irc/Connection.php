@@ -19,7 +19,7 @@ class Connection implements SocketContract {
     /** @var Socket $socket */
     protected $socket;
 
-    /** @var Collection */
+    /** @var Collection|Channel[] */
     public $channels = [];
 
     /** @var DotCollection  */
@@ -75,6 +75,7 @@ class Connection implements SocketContract {
         success("Connected.");
 
         $this->login();
+        return true;
     }
 
     /**
@@ -221,6 +222,21 @@ class Connection implements SocketContract {
         $name = strtolower($channel);
 
         $this->channels->put($name, new Channel($this, $name));
+    }
+    /**
+     * Removes a channel.
+     *
+     * @param $channel
+     * @return \Dan\Irc\Location\Channel
+     */
+    public function removeChannel($channel)
+    {
+        if(!$this->inChannel($channel))
+            return;
+
+        $name = strtolower($channel);
+
+        $this->channels->forget($name);
     }
 
     /**

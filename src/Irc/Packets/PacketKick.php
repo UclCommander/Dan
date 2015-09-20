@@ -7,12 +7,18 @@ class PacketKick implements PacketContract {
 
     public function handle(Connection $connection, array $from, array $data)
     {
-        if($from[0] != $connection->user->nick())
-        {
-            $channel = $connection->getChannel($data[0]);
+        $channel = $connection->getChannel($data[0]);
 
+        event('irc.packets.kick', [
+            'user'      => $channel->getUser(user($from)),
+            'kicked'    => user($data[1]),
+            'message'   => isset($data[2]) ? $data[2] : null,
+            'channel'   => $channel,
+            'connection'    => $connection
+        ]);
+
+        if($data[1] != $connection->user->nick())
             $channel->removeUser($data[1]);
-        }
         else
             $connection->removeChannel($data[0]);
 

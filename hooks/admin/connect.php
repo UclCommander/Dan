@@ -8,6 +8,7 @@
  */
 
 use Dan\Core\Dan;
+use Dan\Irc\Location\Channel;
 use Illuminate\Support\Collection;
 
 hook('connect')
@@ -16,12 +17,31 @@ hook('connect')
     ->rank('S')
     ->help("Connects to a network")
     ->func(function(Collection $args) {
+        /** @var Channel $channel */
+        $channel = $args->get('channel');
+
         try
         {
-            Dan::self()->connect($args->get('message'));
+            $network = $args->get('message');
+
+            if(!array_key_exists($network, config('irc.servers')))
+            {
+                $channel->message("This network has no configuration set.");
+                return;
+            }
+
+            $channel->message("Connecting to the network <b>{$network}</b>");
+
+            if(Dan::self()->connect($network))
+            {
+                $channel->message("Connected to the network.");
+                return;
+            }
+
+            $channel->message("Error connecting to network.");
         }
         catch(Exception $e)
         {
-            $args->get('channel')->message($e->getMessage());
+            $channel->message($e->getMessage());
         }
     });

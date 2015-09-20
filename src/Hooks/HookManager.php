@@ -267,6 +267,8 @@ class HookManager {
     {
         static::$hooks[$name] = new Hook($name);
 
+        success("Loaded hook {$name}");
+
         return static::$hooks[$name];
     }
 

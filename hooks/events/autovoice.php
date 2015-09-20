@@ -46,6 +46,9 @@ hook('autovoice')
                     return;
                 }
 
+                if(array_key_exists($user->nick(), $this->cache))
+                    return;
+
                 $this->cache[$user->nick()] = $channel;
                 $connection->message('NickServ', "info {$user->nick()}");
             }

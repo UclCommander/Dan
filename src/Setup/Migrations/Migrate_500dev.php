@@ -21,7 +21,6 @@ class Migrate_500dev implements MigrationContract {
                 'user'      => '',
                 'host'      => '',
                 'real'      => '',
-                'messages'  => 0,
                 'info'      => [],
             ]);
         }
@@ -33,7 +32,6 @@ class Migrate_500dev implements MigrationContract {
             database($name)->schema('channels')->create([
                 'name'      => '',
                 'max_users' => 0,
-                'messages'  => 0,
                 'info'      => [],
             ]);
         }

@@ -18,7 +18,10 @@ class PacketPrivmsg implements PacketContract {
         {
             $channel    = $connection->getChannel($data[0]);
             $user       = $channel->getUser(user($from));
-            $message    = isset($data[1]) ? $data[1] : '';
+            $message    = $data[1] ?? null;
+
+            if($user == null)
+                return;
 
             $hookData = [
                 'connection'    => $connection,
