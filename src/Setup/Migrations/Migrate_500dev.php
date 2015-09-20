@@ -44,6 +44,7 @@ class Migrate_500dev implements MigrationContract {
     {
         $irc = new Config('irc');
         $irc->putIfNull('show_motd', false);
+        $irc->putIfNull('enabled', []);
         $irc->putIfNull('servers', []);
         $irc->putIfNull('servers.byteirc', []);
         $irc->putIfNull('servers.byteirc.server', Dan::args('--irc-server', "irc.byteirc.org"));
@@ -83,6 +84,8 @@ class Migrate_500dev implements MigrationContract {
         $ignore->save();
 
         $dan = new Config('dan');
+        $dan->putIfNull('auto_check_for_updates', true);
+        $dan->putIfNull('auto_install_updates', true);
         $dan->putIfNull('owners', []);
         $dan->putIfNull('admins', []);
         $dan->save();
