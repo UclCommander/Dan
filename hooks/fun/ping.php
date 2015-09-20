@@ -11,6 +11,7 @@ use Illuminate\Support\Collection;
 
 hook('ping')
     ->command(['ping'])
+    ->console()
     ->help('Ping pong!')
     ->func(function(Collection $args) {
         $args->get('channel')->message("Pong!");

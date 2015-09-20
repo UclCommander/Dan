@@ -20,6 +20,7 @@ use Illuminate\Support\Collection;
 
 hook('config')
     ->command(['config'])
+    ->console()
     ->rank('S')
     ->help([
         'config reload - Reloads configuration from file.',
