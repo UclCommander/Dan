@@ -15,9 +15,6 @@ class Setup {
 
     public static function migrate()
     {
-        /*if(array_key_exists(Dan::VERSION, static::$migrations))
-            return;*/
-
         foreach(static::$migrations as $version => $migration)
         {
             /** @var MigrationContract $class */

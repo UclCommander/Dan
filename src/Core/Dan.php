@@ -109,6 +109,9 @@ class Dan {
 
         success("Bot loaded.");
 
+        if(empty(config('irc.enabled')))
+            warn("There are no IRC servers enabled. Please add and/or enable one or use /connect <server>");
+
         $this->fromUpdate();
 
         $this->addSocket('console', new Console());

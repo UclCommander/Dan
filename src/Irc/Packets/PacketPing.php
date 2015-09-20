@@ -2,6 +2,7 @@
 
 use Dan\Contracts\PacketContract;
 use Dan\Irc\Connection;
+use Dan\Setup\Update;
 
 class PacketPing implements PacketContract {
 
@@ -10,5 +11,7 @@ class PacketPing implements PacketContract {
         $connection->send("PONG", $data[0]);
 
         event('irc.packets.ping');
+
+        Update::autoUpdate();
     }
 }
