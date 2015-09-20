@@ -16,13 +16,17 @@ hook('restart')
     ->rank('S')
     ->help('Makes the bot restart')
     ->func(function(Collection $args) {
+
         if(!function_exists('pcntl_exec'))
         {
-            message($args['channel'], "Unable to restart. PHP needs to be compiled with --enable-pcntl for automatic restarts.");
+            $args->get('user')->notice("Unable to restart. PHP needs to be compiled with --enable-pcntl for automatic restarts.");
             return;
         }
 
+        $all = explode(' ', $args->get('message'));
+
+        $args->get('channel')->message("Bye!");
         Dan::quit("Restarting bot.");
-        pcntl_exec(ROOT_DIR . '/dan');
+        pcntl_exec(ROOT_DIR . '/dan', $all);
         return;
     });

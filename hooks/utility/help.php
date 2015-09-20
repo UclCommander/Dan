@@ -9,7 +9,7 @@ hook('help')
     ->help('Gets help')
     ->func(function(Collection $args) {
         $hooks = HookManager::getHooks('command');
-        $name = $args['message'];
+        $name = $args->get('message');
 
         $list = [];
 
@@ -19,7 +19,9 @@ hook('help')
 
             if($name != null && in_array($name, $cmds))
             {
-                $args['channel']->message($hook->hook()->help);
+                foreach($hook->hook()->help as $help)
+                    $args->get('user')->notice($help);
+
                 return;
             }
 
@@ -32,5 +34,5 @@ hook('help')
 
         sort($list);
 
-        $args['channel']->message(implode(', ', $list));
+        $args->get('user')->notice(implode(', ', $list));
     });

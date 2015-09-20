@@ -22,9 +22,9 @@ class CommandHook implements HookTypeContract {
     public $rank = null;
 
     /**
-     * @var string
+     * @var array
      */
-    public $help = null;
+    public $help = [];
 
     /**
      * @var object
@@ -69,7 +69,7 @@ class CommandHook implements HookTypeContract {
      */
     public function help($text) : CommandHook
     {
-        $this->help = $text;
+        $this->help = (array)$text;
         return $this;
     }
 

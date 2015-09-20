@@ -74,7 +74,7 @@ class Dan {
     }
 
     /**
-     * Boots up Dan
+     * Boots up Dan.
      */
     public function boot()
     {
@@ -129,6 +129,27 @@ class Dan {
     }
 
     /**
+     * Connects to a network.
+     *
+     * @param $name
+     * @return bool
+     * @throws \Exception
+     */
+    public function connect($name)
+    {
+        if(!array_key_exists($name, config('irc.servers')))
+            throw new \Exception("Sever {$name} does not exist.");
+
+        $irc = new Connection($name, config("irc.servers.{$name}"));
+        $irc->connect();
+        $this->addSocket($name, $irc);
+
+        return true;
+    }
+
+    /**
+     * Adds a socket to the que.
+     *
      * @param $name
      * @param \Dan\Contracts\SocketContract $connection
      */
@@ -144,7 +165,7 @@ class Dan {
     }
 
     /**
-     *
+     * Starts reading from all sockets.
      */
     public function startSockets()
     {
@@ -175,6 +196,56 @@ class Dan {
     }
 
     /**
+     * Disconnects from a network.
+     *
+     * @param $name
+     * @throws \Exception
+     */
+    public static function disconnect($name)
+    {
+        if(!array_key_exists($name, config('irc.servers')))
+            throw new \Exception("Not connection to server {$name}.");
+
+        $connection = static::$dan->connections[$name];
+
+        if($connection instanceof Connection)
+        {
+            $connection->send("QUIT", "Disconnecting");
+            return;
+        }
+
+        throw new \Exception("This connection cannot be closed.");
+    }
+
+    /**
+     * Safely closes the bot.
+     *
+     * @param string $reason
+     * @return bool
+     */
+    public static function quit($reason = "Bot shutting down")
+    {
+        if(event('dan.quitting') === false)
+            return false;
+
+        controlLog('Shutting down...');
+
+        Config::saveAll();
+
+        database()->save();
+
+        controlLog('Bye!');
+
+        foreach(static::$dan->connections as $connection)
+            if($connection instanceof Connection)
+                $connection->send("QUIT", $reason);
+
+        return true;
+    }
+
+    /**
+     * Gets all connection streams.
+     *
      * @return array
      */
     protected function getStreams() : array
@@ -207,32 +278,6 @@ class Dan {
                 $eventArgs->get('event')->destroy();
             });
         }
-    }
-
-    /**
-     * Safely closes the bot.
-     *
-     * @param string $reason
-     * @return bool
-     */
-    public static function quit($reason = "Bot shutting down")
-    {
-        if(event('dan.quitting') === false)
-            return false;
-
-        controlLog('Shutting down...');
-
-        Config::saveAll();
-
-        database()->save();
-
-        controlLog('Bye!');
-
-        foreach(static::$dan->connections as $connection)
-            if($connection instanceof Connection)
-                $connection->send("QUIT", $reason);
-
-        return true;
     }
 
     /**
@@ -275,6 +320,8 @@ class Dan {
     }
 
     /**
+     * Checks to see if a connection exists.
+     *
      * @param $name
      * @return bool
      */
@@ -342,7 +389,7 @@ class Dan {
     }
 
     /**
-     * Get program arguments
+     * Get program arguments.
      *
      * @param null $arg
      * @param null $default
@@ -372,5 +419,16 @@ class Dan {
         $commitMessage  = trim(last($messages));
 
         return ['id' => $commitId, 'message' => $commitMessage];
+    }
+
+
+    /**
+     * Gets the Dan instance.
+     *
+     * @return \Dan\Core\Dan
+     */
+    public static function self()
+    {
+        return static::$dan;
     }
 }
