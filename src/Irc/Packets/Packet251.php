@@ -15,7 +15,7 @@ class Packet251 implements PacketContract {
 
         if($connection->config->get('user.pass') != '')
         {
-            $command    = $connection->config->get('auth_command');
+            $command    = $connection->config->get('nickserv_auth_command');
             $password   = $connection->config->get('user.pass');
 
             $connection->raw(sprintf($command, $password));
