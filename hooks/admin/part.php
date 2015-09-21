@@ -22,7 +22,7 @@ hook('part')
         if(isChannel($partFrom[0]))
         {
             $chan   = $partFrom[0];
-            $reason = isset($partFrom[1]) ? $partFrom[1] : null;
+            $reason = $partFrom[1] ?? null;
         }
 
         if(!connection()->inChannel($chan))

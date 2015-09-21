@@ -184,6 +184,24 @@ class Connection implements SocketContract {
     }
 
     /**
+     * Joins a channel.
+     *
+     * @param $name
+     * @param string $reason
+     */
+    public function partChannel($name, $reason = "Leaving")
+    {
+        if(!$this->inChannel($name))
+            return;
+
+        $name = strtolower($name);
+
+        $this->channels->forget($name);
+
+        $this->send('PART', $name, $reason);
+    }
+
+    /**
      * Checks to see if the bot is in a channel.
      *
      * @param $channel

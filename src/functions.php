@@ -264,9 +264,9 @@ namespace {
         if(is_array($data))
         {
             $info['nick'] = isset($data['nick']) ? $data['nick'] : $data[0];
-            $info['user'] = isset($data['user']) ? $data['user'] : $data[1];
-            $info['host'] = isset($data['host']) ? $data['host'] : $data[2];
-            $info['rank'] = isset($data['rank']) ? $data['rank'] : (isset($data[3]) ? $data[3] : null);
+            $info['user'] = isset($data['user']) ? $data['user'] : $data[1] ?? null;
+            $info['host'] = isset($data['host']) ? $data['host'] : $data[2] ?? null;
+            $info['rank'] = isset($data['rank']) ? $data['rank'] : $data[3] ?? null;
         }
         else
             $info = database()->table('users')->where('nick', $data)->first()->toArray();
