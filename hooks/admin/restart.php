@@ -24,7 +24,7 @@ hook('restart')
         }
 
         $args->get('channel')->message("Bye!");
-        Dan::quit("Restarting bot.");
+        Dan::quit("Restarting bot.", true);
         pcntl_exec(ROOT_DIR . '/dan');
         return;
     });

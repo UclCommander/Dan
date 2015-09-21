@@ -225,9 +225,10 @@ class Dan {
      * Safely closes the bot.
      *
      * @param string $reason
+     * @param bool $reboot
      * @return bool
      */
-    public static function quit($reason = "Bot shutting down")
+    public static function quit($reason = "Bot shutting down", $reboot = false)
     {
         if(event('dan.quitting') === false)
             return false;
@@ -244,7 +245,10 @@ class Dan {
             if($connection instanceof Connection)
                 $connection->send("QUIT", $reason);
 
-        die;
+        if(!$reboot)
+            die;
+
+        return true;
     }
 
     /**

@@ -41,7 +41,7 @@ class Update {
 
             $messagingContract->message("Core files changed, restarting bot.");
 
-            Dan::quit("Updating bot.");
+            Dan::quit("Updating bot.", true);
             pcntl_exec(ROOT_DIR . '/dan');
             return;
         }
