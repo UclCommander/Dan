@@ -275,7 +275,7 @@ class Connection implements SocketContract {
         }
 
         if(!DEBUG)
-            console("[<magenta>{$this->name}</magenta>][<yellow>{$this->user->nick()}</yellow>] {$message}");
+            console("[<magenta>{$this->name}</magenta>][[<cyan>{$location}</cyan>]][<yellow>{$this->user->nick()}</yellow>] {$message}");
 
         $formatter = new IrcOutputFormatter(true);
 

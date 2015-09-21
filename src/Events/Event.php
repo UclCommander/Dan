@@ -19,6 +19,8 @@ class Event {
 
         $this->id = md5(microtime().$this->name.$this->priority.($function instanceof Closure ? md5($function) : serialize($this->function)));
 
+        debug("[EVENTS] Registering event <yellow>{$this->id}</yellow> for <info>{$this->name}</info>");
+
         static::$events[$name][$priority][$this->id] = $this;
     }
 
@@ -82,6 +84,8 @@ class Event {
         {
             foreach($events as $id => $event)
             {
+                debug("Calling event ID {$id}");
+
                 $data->put('event', $name);
 
                 /** @var static $event */
@@ -89,6 +93,9 @@ class Event {
 
                 if($return === false)
                     return false;
+
+                if($return == null)
+                    continue;
 
                 if($return instanceof EventArgs)
                 {
@@ -101,6 +108,6 @@ class Event {
             }
         }
 
-        return null;
+        return $data;
     }
 }

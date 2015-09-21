@@ -35,7 +35,7 @@ hook('title')
                 if(fnmatch($ignore, $info['host']))
                     continue 2;
 
-            $headers    = getHeaders($match);
+            $headers    = getHeaders($url);
             $type       = is_array($headers['content-type']) ? reset($headers['content-type']) : $headers['content-type'];
             $mimeType   = explode(';', $type)[0];
 
@@ -44,7 +44,7 @@ hook('title')
 
             if($mimeType == 'text/html')
             {
-                $html = Web::get($match);
+                $html = Web::get($url);
 
                 $str = trim(preg_replace('/\s+/', ' ', $html));
                 preg_match("/\<title\>(.*)\<\/title\>/i", $str, $title);

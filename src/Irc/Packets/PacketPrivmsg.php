@@ -3,6 +3,7 @@
 
 use Dan\Contracts\PacketContract;
 use Dan\Core\Dan;
+use Dan\Events\EventArgs;
 use Dan\Hooks\HookManager;
 use Dan\Irc\Connection;
 
@@ -44,8 +45,17 @@ class PacketPrivmsg implements PacketContract {
                 return;
             }
 
-            if(event('irc.packets.message.public', $hookData) === false)
+            $event = event('irc.packets.message.public', $hookData);
+
+            if($event === false)
                 return;
+
+            if($event instanceof EventArgs)
+            {
+                $hookData['user']    = $event->get('user');
+                $hookData['channel'] = $event->get('channel');
+                $hookData['message'] = $event->get('message');
+            }
 
             $info   = database()->table('channels')->where('name', $channel->getLocation())->first()->get('info');
             $except = isset($info['disabled_hooks']) ? $info['disabled_hooks'] : [];
