@@ -17,7 +17,7 @@ hook('help')
         {
             $h = $hook->hook();
 
-            if(!$h->canRunInConsole)
+            if($args->get('console') && !$h->canRunInConsole)
                 continue;
 
             $cmds = $h->commands;
