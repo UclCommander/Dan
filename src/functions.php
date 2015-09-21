@@ -271,7 +271,7 @@ namespace {
         else
             $info = database()->table('users')->where('nick', $data)->first()->toArray();
 
-        return new User($info, $save);
+        return new User($info, null, $save);
     }
 
     /**

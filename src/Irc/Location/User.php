@@ -2,6 +2,7 @@
 
 
 use Dan\Database\Savable;
+use Dan\Irc\Connection;
 use Illuminate\Contracts\Support\Arrayable;
 
 class User extends Location implements Savable, Arrayable {
@@ -15,9 +16,11 @@ class User extends Location implements Savable, Arrayable {
     protected $save = true;
 
 
-    public function __construct(array $data, $save = true)
+    public function __construct(array $data, Connection $connection = null, $save = true)
     {
         parent::__construct();
+
+        $this->connection = $connection ?? connection();
 
         $this->nick     = isset($data['nick']) ? $data['nick'] : null;
         $this->user     = isset($data['user']) ? $data['user'] : null;
