@@ -21,7 +21,8 @@ class PacketPart implements PacketContract {
         event('irc.packets.part', [
             'user'          => user($from),
             'channel'       => $connection->getChannel($data[0]),
-            'connection'    => $connection
+            'connection'    => $connection,
+            'message'       => $data[1] ?? null
         ]);
 
         if(!DEBUG)
