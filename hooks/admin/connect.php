@@ -24,13 +24,20 @@ hook('connect')
         {
             $network = $args->get('message');
 
+            if(empty($network))
+            {
+                $channel->message("Connected Networks: " . implode(', ', array_filter(array_keys(config('irc.servers')), function($x) { return Dan::hasConnection($x); })));
+                $channel->message("Available Networks: " . implode(', ', array_filter(array_keys(config('irc.servers')), function($x) { return !Dan::hasConnection($x); })));
+                return;
+            }
+
             if(!array_key_exists($network, config('irc.servers')))
             {
                 $channel->message("This network has no configuration set.");
                 return;
             }
 
-            $channel->message("Connecting to the network <b>{$network}</b>");
+            $channel->message("Connecting to the network <i>{$network}</i>");
 
             if(Dan::self()->connect($network))
             {

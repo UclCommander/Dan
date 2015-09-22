@@ -11,7 +11,7 @@ use Dan\Core\Dan;
 use Illuminate\Support\Collection;
 
 hook('restart')
-    ->command(['restart', 'reload', 'reboot'])
+    ->command(['restart', 'reboot'])
     ->console()
     ->rank('S')
     ->help('Makes the bot restart')

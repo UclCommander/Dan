@@ -10,7 +10,7 @@
 use Illuminate\Support\Collection;
 
 hook('reloadhooks')
-    ->command(['reloadhooks', 'rlh'])
+    ->command(['reloadhooks', 'reload', 'rlh'])
     ->console()
     ->rank('S')
     ->help('Reloads bot hooks')
