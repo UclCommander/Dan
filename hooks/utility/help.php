@@ -37,5 +37,23 @@ hook('help')
 
         sort($list);
 
-        $args->get('user')->notice(implode(', ', $list));
+        $i = 0;
+
+        $items = [];
+
+        foreach($list as $item)
+        {
+            if($i == 10)
+            {
+                $args->get('user')->notice(implode(', ', $items));
+                $items = [];
+                $i = 0;
+                continue;
+            }
+
+            $items[] = $item;
+            $i++;
+        }
+
+        $args->get('user')->notice(implode(', ', $items));
     });
