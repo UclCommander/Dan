@@ -1,6 +1,7 @@
 <?php namespace Dan\Irc\Location;
 
 
+use Dan\Helpers\DotCollection;
 use Dan\Irc\Connection;
 use Dan\Irc\ModeObject;
 use Illuminate\Support\Collection;
@@ -29,6 +30,23 @@ class Channel extends Location {
         database()->table('channels')->insertOrUpdate(['name', $name], [
            'name'   => $name
         ]);
+    }
+
+    /**
+     * Gets the channels extra info.
+     *
+     * @param null $info
+     * @return \Dan\Helpers\DotCollection|mixed
+     * @throws \Exception
+     */
+    public function info($info = null)
+    {
+        $data = new DotCollection(database()->table('channels')->where('name', $this->name)->first()->get('info'));
+
+        if($info != null)
+            return $data->get($info);
+
+        return $data;
     }
 
     /**
