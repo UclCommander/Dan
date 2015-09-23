@@ -35,7 +35,8 @@ hook('chaninfo')
                 $hooks = [];
 
                 foreach(HookManager::getHooks() as $hook)
-                    $hooks[] = $hook->getName();
+                    if(!$hook->isCommand())
+                        $hooks[] = $hook->getName();
 
                 sort($hooks);
 
