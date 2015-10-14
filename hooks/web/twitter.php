@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 hook('twitter_tweet')
     ->regex("/https?:\/\/twitter\.com\/([a-zA-Z0-9]+)\/status\/([0-9]{0,18})/")
     ->func(function(Collection $args) {
-        $status = last($args->get('matches'));
+        $status = last(last($args->get('matches')));
 
         if(!is_numeric($status))
             return false;
@@ -22,10 +22,10 @@ hook('twitter_tweet')
     });
 
 hook('twitter_user')
-    ->regex("/https?:\/\/twitter\.com\/([a-zA-Z0-9]+)(?!\/status)/")
+    ->regex("/https?:\/\/twitter\.com\/([a-zA-Z0-9]+)\/?/")
     ->func(function(\Illuminate\Support\Collection $args) {
         $user = last($args->get('matches'));
-
+        
         $data = Web::api('twitter/user', ['user' => $user]);
 
         $followers = number_format($data['followers_count']);

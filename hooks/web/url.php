@@ -5,7 +5,7 @@ use Dan\Irc\Location\Channel;
 use Illuminate\Support\Collection;
 
 $ignored = [
-    '*speedtest.net', '*youtube.*', 'youtu.be', 'github.com', '*newegg.com'
+    '*speedtest.net', '*youtube.*', 'youtu.be', 'github.com', '*newegg.com', 'twitter.com'
 ];
 
 $mime = [
