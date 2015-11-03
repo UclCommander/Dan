@@ -16,7 +16,7 @@ hook('twitter_tweet')
 
         $text = str_replace(["\n"], ' ', $data['text']);
 
-        $args->get('channel')->message("[ <yellow>@{$data['user']['screen_name']}</yellow> | <green>RT {$data['retweet_count']}</green> | <light_cyan>{$data['favorite_count']}★</light_cyan> | <cyan>{$text}</cyan> ]");
+        $args->get('channel')->message("[ <yellow>@{$data['user']['screen_name']}</yellow> | <green>RT {$data['retweet_count']}</green> | <light_cyan>{$data['favorite_count']}❤</light_cyan> | <cyan>{$text}</cyan> ]");
 
         return true;
     });
@@ -25,7 +25,7 @@ hook('twitter_user')
     ->regex("/https?:\/\/twitter\.com\/([a-zA-Z0-9]+)\/?/")
     ->func(function(\Illuminate\Support\Collection $args) {
         $user = last($args->get('matches'));
-        
+
         $data = Web::api('twitter/user', ['user' => $user]);
 
         $followers = number_format($data['followers_count']);

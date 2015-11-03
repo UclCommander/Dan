@@ -37,7 +37,7 @@ hook('youtube')
             $favoriteCount  = number_format($json['statistics']['favoriteCount']);
 
             $d = new DateInterval($duration);
-            $duration = $d->format('%H:%I:%S');
+            $duration = $d->format('%H') == '00' ? $d->format('%I:%S') : $d->format('%H:%I:%S');
 
             $d = new DateTime($published);
             $published = $d->format('F j, Y');
