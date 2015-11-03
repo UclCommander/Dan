@@ -29,5 +29,5 @@ hook('update')
             return;
         }
 
-        Update::go($args->get('connection'));
+        Update::go($args->get('channel'));
     });
