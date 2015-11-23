@@ -114,19 +114,25 @@ class EventHook implements HookTypeContract {
         }
         catch(\Error $error)
         {
+            error($error->getMessage());
+
+            if(DEBUG)
+                error($error->getFile() . ":" . $error->getLine());
+
             if(isset($args['channel']) && $args['channel'] instanceof Location)
                 $args['channel']->message("Something unexpected has happened!");
-
-            error($error->getMessage());
 
             return false;
         }
         catch(\Exception $e)
         {
+            error($e->getMessage());
+
+            if(DEBUG)
+                error($e->getFile() . ":" . $e->getLine());
+
             if(isset($args['channel']) && $args['channel'] instanceof Location)
                 $args['channel']->message("Something unexpected has happened!");
-
-            error($e->getMessage());
 
             return false;
         }

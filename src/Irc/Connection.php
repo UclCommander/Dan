@@ -261,11 +261,15 @@ class Connection implements SocketContract {
      * @param $location
      * @param $message
      * @param array $styles
+     * @throws \Exception
      */
     public function message($location, $message, $styles = [])
     {
         if(isChannel($location, $this->getName()))
         {
+            if(!$this->inChannel($location))
+                throw new \Exception("This channel doesn't exist.");
+
             event('irc.bot.message.public', [
                 'connection'    => $this,
                 'user'          => $this->user,

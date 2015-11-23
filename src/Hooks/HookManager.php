@@ -66,10 +66,13 @@ class HookManager {
         }
         catch(\Error $error)
         {
+            error($error->getMessage());
+
+            if(DEBUG)
+                error($error->getFile() . ":" . $error->getLine());
+
             if(isset($this->args['channel']) && $this->args['channel'] instanceof Location)
                 $this->args['channel']->message("Something unexpected has happened!");
-
-            error($error->getMessage());
 
             return false;
         }
@@ -123,10 +126,13 @@ class HookManager {
         }
         catch(\Error $error)
         {
+            error($error->getMessage());
+
+            if(DEBUG)
+                error($error->getFile() . ":" . $error->getLine());
+
             if(isset($this->args['channel']) && $this->args['channel'] instanceof Location)
                 $this->args['channel']->message("Something unexpected has happened!");
-
-            error($error->getMessage());
 
             return false;
         }
@@ -170,10 +176,13 @@ class HookManager {
         }
         catch(\Error $error)
         {
+            error($error->getMessage());
+
+            if(DEBUG)
+                error($error->getFile() . ":" . $error->getLine());
+
             if(isset($this->args['channel']) && $this->args['channel'] instanceof MessagingContract)
                 $this->args['channel']->message("Something unexpected has happened!");
-
-            controlLog($error->getMessage());
         }
 
         return true;
