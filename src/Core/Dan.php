@@ -144,6 +144,9 @@ class Dan {
         if(!array_key_exists($name, config('irc.servers')))
             throw new \Exception("Sever {$name} does not exist.");
 
+        if(array_key_exists($name, $this->connections))
+            throw new \Exception("Already connected to this server.");
+
         $irc = new Connection($name, config("irc.servers.{$name}"));
         $irc->connect();
         $this->addSocket($name, $irc);

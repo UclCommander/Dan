@@ -69,7 +69,9 @@ hook('say')
 
         if(isChannel($data[0]))
         {
-            if(!$connection->inChannel($data[0]))
+            $name = $data[0];
+
+            if(!$connection->inChannel($name))
             {
                 $channel->message("I'm not in that channel!");
                 return;
@@ -77,7 +79,7 @@ hook('say')
 
             array_shift($data);
 
-            $connection->getChannel($data[0])->message(implode(' ', $data));
+            $connection->getChannel($name)->message(implode(' ', $data));
             return;
         }
 

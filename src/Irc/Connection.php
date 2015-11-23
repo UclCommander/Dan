@@ -220,7 +220,7 @@ class Connection implements SocketContract {
      */
     public function getChannel($channel)
     {
-        if(!$this->inChannel($channel))
+        if(!$this->inChannel(strtolower($channel)))
             return null;
 
         return $this->channels->get(strtolower($channel));

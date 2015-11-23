@@ -71,9 +71,6 @@ class HookManager {
 
             error($error->getMessage());
 
-            if(DEBUG)
-                error($error->getTraceAsString());
-
             return false;
         }
     }
@@ -131,9 +128,6 @@ class HookManager {
 
             error($error->getMessage());
 
-            if(DEBUG)
-                error($error->getTraceAsString());
-
             return false;
         }
     }
@@ -168,7 +162,6 @@ class HookManager {
             }
 
             controlLog("{$user->nick()} used {$command->commands[0]} in {$channel->getLocation()}");
-
         }
 
         try
@@ -181,9 +174,6 @@ class HookManager {
                 $this->args['channel']->message("Something unexpected has happened!");
 
             controlLog($error->getMessage());
-
-            if(DEBUG)
-                error($error->getTraceAsString());
         }
 
         return true;
@@ -263,9 +253,6 @@ class HookManager {
             catch(\Error $error)
             {
                 error($error->getMessage());
-
-                if(DEBUG)
-                    error($error->getTraceAsString());
             }
         }
     }

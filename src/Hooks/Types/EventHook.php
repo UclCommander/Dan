@@ -127,7 +127,7 @@ class EventHook implements HookTypeContract {
                 $args['channel']->message("Something unexpected has happened!");
 
             error($e->getMessage());
-            
+
             return false;
         }
     }
