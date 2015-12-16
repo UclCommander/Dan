@@ -5,7 +5,7 @@ use Dan\Helpers\Web;
 use Illuminate\Support\Collection;
 
 hook('twitter_tweet')
-    ->regex("/https?:\/\/twitter\.com\/([a-zA-Z0-9]+)\/status\/([0-9]{0,18})/")
+    ->regex("/https?:\/\/twitter\.com\/([a-zA-Z0-9_]+)\/status\/([0-9]{0,18})/")
     ->func(function(Collection $args) {
         $status = last(last($args->get('matches')));
 
@@ -22,7 +22,7 @@ hook('twitter_tweet')
     });
 
 hook('twitter_user')
-    ->regex("/https?:\/\/twitter\.com\/([a-zA-Z0-9]+)\/?/")
+    ->regex("/https?:\/\/twitter\.com\/([a-zA-Z0-9_]+)\/?/")
     ->func(function(\Illuminate\Support\Collection $args) {
         $user = last($args->get('matches'));
 
