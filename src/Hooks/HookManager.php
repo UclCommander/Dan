@@ -299,6 +299,8 @@ class HookManager {
             if($hook->getType() != $type)
                 unset($hooks[$name]);
 
+        ksort($hooks);
+
         return $hooks;
     }
 }
