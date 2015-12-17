@@ -13,7 +13,6 @@ namespace {
     use Dan\Events\EventPriority;
     use Dan\Hooks\Hook;
     use Dan\Hooks\HookManager;
-    use Dan\Irc\Connection;
     use Dan\Irc\Location\Channel;
     use Dan\Irc\Location\User;
     use Illuminate\Filesystem\Filesystem;
@@ -378,6 +377,29 @@ namespace {
     #endregion
 
     #region utility
+
+    /**
+     * Removes line breaks and double spaces from string.
+     *
+     * @param $string
+     * @return mixed
+     */
+    function cleanString($string)
+    {
+        return str_replace(["\n", "\r", '  '], ' ', $string);
+    }
+
+    /**
+     * Adds 's' if count isn't 1
+     *
+     * @param $word
+     * @param $count
+     * @return string
+     */
+    function pluralize($word, $count)
+    {
+        return ($count == 1) ? $word : $word . 's';
+    }
 
     /**
      * Coverts a number to a human readable size.
