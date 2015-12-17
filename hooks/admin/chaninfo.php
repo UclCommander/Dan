@@ -20,7 +20,12 @@ use Illuminate\Support\Collection;
 hook('chaninfo')
     ->command(['chaninfo', 'cinfo'])
     ->rank('oaq')
-    ->help('Sets channel info. Available sub-commands: hooks')
+    ->help([
+        "Sets channel information and settings.",
+        "cinfo hooks enable/disable <hook> - Enables or disables the given hook",
+        "cinfo hooks disabled - View all disabled hooks",
+        "cinfo hooks list - View all available hooks",
+    ])
     ->func(function(Collection $args) {
 
         $data = explode(' ', $args->get('message'));
