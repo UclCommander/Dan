@@ -37,6 +37,7 @@ class Update {
 
         if(strpos($shell, 'composer.lock'))
         {
+            $messagingContract->message("composer.lock changed, installing new packages.");
             shell_exec(sprintf("cd %s && composer install", ROOT_DIR));
         }
 
