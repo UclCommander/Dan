@@ -37,7 +37,7 @@ class Parser {
                 continue;
             }
 
-            if ($data[$i] == ':' && (!$inString && !$in005))
+            if ($data[$i] == ':' && (!$inString && !$in005 && !$userStr))
             {
                 $inString = true;
                 continue;
