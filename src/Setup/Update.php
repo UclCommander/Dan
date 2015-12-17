@@ -4,7 +4,6 @@
 use Dan\Contracts\MessagingContract;
 use Dan\Core\Dan;
 use Dan\Hooks\HookManager;
-use Dan\Irc\Location\Location;
 
 class Update {
 
@@ -25,11 +24,21 @@ class Update {
     }
 
 
+    /**
+     * Updates the bot.
+     *
+     * @param \Dan\Contracts\MessagingContract $messagingContract
+     */
     public static function go(MessagingContract $messagingContract)
     {
         $repo = static::$repo;
 
         $shell = shell_exec(sprintf("cd %s && git pull origin {$repo}", ROOT_DIR));
+
+        if(strpos($shell, 'composer.lock'))
+        {
+            shell_exec(sprintf("cd %s && composer install", ROOT_DIR));
+        }
 
         if(strpos($shell, 'src/'))
         {
@@ -54,7 +63,7 @@ class Update {
     }
 
     /**
-     *
+     * Checks for updates automatically.
      */
     public static function autoUpdate()
     {
