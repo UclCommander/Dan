@@ -11,7 +11,7 @@ hook('github_push')
     ->http()
     ->post('/github/push')
     ->func(function(Collection $args) {
-        $data   = json_decode($args->get('data'), true);
+        $data   = $args->get('data');
         $commit = head($data['commits']);
         $repo   = $data['repository'];
 
