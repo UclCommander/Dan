@@ -18,7 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class Dan {
 
     /** @var string Current version */
-    const VERSION = '5.0.0-dev';
+    const VERSION = '5.0.0';
 
     /** @var array */
     protected static $args = [];

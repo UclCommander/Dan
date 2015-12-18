@@ -4,7 +4,7 @@ use Dan\Contracts\MigrationContract;
 use Dan\Core\Config;
 use Dan\Core\Dan;
 
-class Migrate_500dev implements MigrationContract {
+class Migrate_500 implements MigrationContract {
 
     /**
      * @param $name
