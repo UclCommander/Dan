@@ -10,7 +10,7 @@ class Setup {
      *
      */
     protected static $migrations = [
-        '5.0.0-dev' => \Dan\Setup\Migrations\Migrate_500dev::class
+        '5.0.0' => \Dan\Setup\Migrations\Migrate_500::class
     ];
 
     public static function migrate()
