@@ -18,7 +18,7 @@ class Update {
     {
         $repo = static::$repo;
 
-        $status = shell_exec("git remote update && git status {$repo}");
+        $status = shell_exec("timeout 10s git remote update && timeout 10s git status {$repo}");
 
         return (strpos($status, "up-to-date") === false) === true;
     }
@@ -33,7 +33,7 @@ class Update {
     {
         $repo = static::$repo;
 
-        $shell = shell_exec(sprintf("cd %s && git pull origin {$repo}", ROOT_DIR));
+        $shell = shell_exec(sprintf("cd %s && timeout 10s git pull origin {$repo}", ROOT_DIR));
 
         if(strpos($shell, 'composer.lock'))
         {
