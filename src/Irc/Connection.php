@@ -2,6 +2,7 @@
 
 use Dan\Contracts\PacketContract;
 use Dan\Contracts\SocketContract;
+use Dan\Core\Dan;
 use Dan\Helpers\DotCollection;
 use Dan\Irc\Formatter\IrcOutputFormatter;
 use Dan\Irc\Formatter\IrcOutputFormatterStyle;
@@ -122,6 +123,7 @@ class Connection implements SocketContract {
         if($cmd[0] == "ERROR")
         {
             warn("Disconnected from IRC");
+            Dan::self()->removeSocket($this->name);
             return;
         }
 

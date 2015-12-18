@@ -172,6 +172,16 @@ class Dan {
     }
 
     /**
+     * Removes a socket connection.
+     *
+     * @param $name
+     */
+    public function removeSocket($name)
+    {
+        unset($this->connections[$name]);
+    }
+
+    /**
      * Starts reading from all sockets.
      */
     public function startSockets()
@@ -194,7 +204,6 @@ class Dan {
                         {
                             static::$currentConnection = $connection->getName();
                             $connection->handle($input);
-
                         }
                     }
                 }
