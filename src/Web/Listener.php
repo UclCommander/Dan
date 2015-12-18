@@ -49,6 +49,7 @@ class Listener implements SocketContract {
             'command_prefix'   => '/',
         ]);
 
+        info("Starting socket listener on tcp://" . config('web.host') . ":" . config('web.port'));
         $this->socket = stream_socket_server("tcp://" . config('web.host') . ":" . config('web.port'), $errno, $errstr);
 
         if($this->socket === false) {
@@ -96,6 +97,8 @@ class Listener implements SocketContract {
 
         $headers = parse_headers($socketData);
         $data    = $this->parseUriData($headers[0]);
+
+        info("Accepted new {$data['method']} client to {$data['path']}");
 
         if (isset($headers['Content-Type'])) {
             switch ($headers['Content-Type']) {
