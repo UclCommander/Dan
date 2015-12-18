@@ -49,7 +49,7 @@ class Listener implements SocketContract {
             'command_prefix'   => '/',
         ]);
 
-        $this->socket = stream_socket_server("tcp://127.0.0.1:" . config('web.port'), $errno, $errstr);
+        $this->socket = stream_socket_server("tcp://" . config('web.host') . ":" . config('web.port'), $errno, $errstr);
 
         if($this->socket === false) {
             throw new \Exception($errstr);
