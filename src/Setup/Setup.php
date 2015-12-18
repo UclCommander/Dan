@@ -1,7 +1,9 @@
 <?php namespace Dan\Setup;
 
 use Dan\Contracts\MigrationContract;
-use Dan\Core\Dan;
+use Dan\Setup\Migrations\Migrate_500;
+use Dan\Setup\Migrations\Migrate_510;
+
 
 class Setup {
 
@@ -10,7 +12,8 @@ class Setup {
      *
      */
     protected static $migrations = [
-        '5.0.0' => \Dan\Setup\Migrations\Migrate_500::class
+        '5.0.0' => Migrate_500::class,
+        '5.1.0' => Migrate_510::class
     ];
 
     public static function migrate()
