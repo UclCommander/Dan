@@ -13,8 +13,8 @@ hook('twitter_tweet')
             return false;
 
         $data = Web::api('twitter/tweet', ['id' => $status]);
+        $text = htmlspecialchars_decode(str_replace(["\n"], ' ', $data['text']));
 
-        $text = str_replace(["\n"], ' ', $data['text']);
 
         $args->get('channel')->message("[ <yellow>@{$data['user']['screen_name']}</yellow> | <green>RT {$data['retweet_count']}</green> | <light_cyan>{$data['favorite_count']}❤</light_cyan> | <cyan>{$text}</cyan> ]");
 
