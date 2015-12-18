@@ -100,8 +100,8 @@ class Listener implements SocketContract {
 
         info("Accepted new {$data['method']} client to {$data['path']}");
 
-        if (isset($headers['Content-Type'])) {
-            switch ($headers['Content-Type']) {
+        if (isset($headers['content-type'])) {
+            switch ($headers['content-type']) {
                 case "application/x-www-form-urlencoded":
                     $headers['data'] = $this->parseQuery($headers['data']);
                     break;
