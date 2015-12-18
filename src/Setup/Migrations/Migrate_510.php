@@ -18,6 +18,7 @@ class Migrate_510 implements MigrationContract {
     {
         $web = new Config('web');
         $web->putIfNull('enabled', false);
+        $web->putIfNull('host', '127.0.0.1');
         $web->putIfNull('port', '6969');
         $web->putIfNull('routes', []);
         $web->save();
