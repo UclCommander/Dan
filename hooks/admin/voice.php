@@ -1,7 +1,6 @@
 <?php
 
 use Dan\Irc\Location\Channel;
-use Dan\Irc\Location\User;
 use Illuminate\Support\Collection;
 
 hook('voice')

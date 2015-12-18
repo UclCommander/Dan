@@ -53,5 +53,6 @@ hook('github_push')
                 continue;
 
             $connection->getChannel($channel)->message("[ " . implode(' | ', array_filter($compiled)) . " ]");
+            $connection->getChannel($channel)->message("[ {$commit['url']} ]");
         }
     });
