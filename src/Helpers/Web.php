@@ -107,7 +107,7 @@ class Web {
      * @param bool $xmlRequest
      * @return mixed
      */
-    public static function json($uri, $params = [], $headers = ['X-Requested-With: XMLHttpRequest'], $xmlRequest = true)
+    public static function json($uri, $params = [], $headers = [], $xmlRequest = true)
     {
         if($xmlRequest)
             $headers = array_merge(['X-Requested-With: XMLHttpRequest'], (array)$headers);

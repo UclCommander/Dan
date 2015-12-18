@@ -15,6 +15,7 @@ namespace {
     use Dan\Hooks\HookManager;
     use Dan\Irc\Location\Channel;
     use Dan\Irc\Location\User;
+    use Dan\Web\Response;
     use Illuminate\Filesystem\Filesystem;
 
     #region class fetchers
@@ -167,17 +168,18 @@ namespace {
      */
     function controlLog($message, $debug = false)
     {
-        if($debug)
+        if ($debug) {
             debug($message);
-        else
+        } else {
             warn($message);
+        }
 
-        if(connection())
-        {
+        if (connection()) {
             $channel = connection()->config->get('control_channel');
 
-            if(empty($channel) || !connection()->inChannel($channel))
+            if (empty($channel) || !connection()->inChannel($channel)) {
                 return;
+            }
 
             connection()->message($channel, $message);
         }
@@ -260,15 +262,14 @@ namespace {
      */
     function user($data, $save = true)
     {
-        if(is_array($data))
-        {
+        if (is_array($data)) {
             $info['nick'] = isset($data['nick']) ? $data['nick'] : $data[0];
             $info['user'] = isset($data['user']) ? $data['user'] : $data[1] ?? null;
             $info['host'] = isset($data['host']) ? $data['host'] : $data[2] ?? null;
             $info['rank'] = isset($data['rank']) ? $data['rank'] : $data[3] ?? null;
-        }
-        else
+        } else {
             $info = database()->table('users')->where('nick', $data)->first()->toArray();
+        }
 
         return new User($info, null, $save);
     }
@@ -282,13 +283,15 @@ namespace {
      */
     function isChannel($channel, $connection = null) : bool
     {
-        if($channel instanceof Channel)
+        if ($channel instanceof Channel) {
             return true;
+        }
 
         $types = preg_quote(Dan::connection($connection)->support->get('CHANTYPES'));
 
-        if($types == null)
+        if ($types == null) {
             return false;
+        }
 
         return boolval(preg_match("/[{$types}]([a-zA-Z0-9_\-\.]+)/", $channel));
     }
@@ -301,14 +304,17 @@ namespace {
      */
     function isServer($user)
     {
-        if(is_array($user))
+        if (is_array($user)) {
             $user = reset($user);
+        }
 
-        if($user == 'AUTH' || $user == '*')
+        if ($user == 'AUTH' || $user == '*') {
             return true;
+        }
 
-        if(isUser($user))
+        if (isUser($user)) {
             return false;
+        }
 
         return true;
     }
@@ -321,17 +327,21 @@ namespace {
      */
     function isUser($pattern)
     {
-        if($pattern instanceof User)
+        if ($pattern instanceof User) {
             return true;
+        }
 
-        if(is_array($pattern) && count($pattern) == 3)
+        if (is_array($pattern) && count($pattern) == 3) {
             return true;
+        }
 
-        if(is_array($pattern))
+        if (is_array($pattern)) {
             $pattern = reset($pattern);
+        }
 
-        if(fnmatch("*!*@*", $pattern))
+        if (fnmatch("*!*@*", $pattern)) {
             return true;
+        }
 
         return database()->table('users')->where('nick', $pattern)->count() != 0;
     }
@@ -367,7 +377,6 @@ namespace {
 
     /**
      * Registers a hook.
-
      */
     function hook($name) : Hook
     {
@@ -398,7 +407,7 @@ namespace {
      */
     function pluralize($word, $count)
     {
-        return ($count == 1) ? $word : $word . 's';
+        return ($count == 1) ? $word : $word.'s';
     }
 
     /**
@@ -410,7 +419,8 @@ namespace {
     function convert($size)
     {
         $unit = ['b', 'kb', 'mb', 'gb', 'tb', 'pb'];
-        return @round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) . ' ' . $unit[$i];
+
+        return @round($size / pow(1024, ($i = floor(log($size, 1024)))), 2).' '.$unit[$i];
     }
 
     /**
@@ -432,13 +442,14 @@ namespace {
      */
     function commandExists($cmd)
     {
-        if(isWin())
-        {
+        if (isWin()) {
             $returnVal = shell_exec($cmd);
+
             return !strpos($returnVal, 'is not recognized');
         }
 
         $returnVal = shell_exec("which {$cmd}");
+
         return (empty($returnVal) ? false : true);
     }
 
@@ -459,8 +470,9 @@ namespace {
      */
     function parseFormat($format, array $data)
     {
-        foreach($data as $key => $value)
-            $format = str_replace("{" . strtoupper($key) . "}", $value, $format);
+        foreach ($data as $key => $value) {
+            $format = str_replace("{".strtoupper($key)."}", $value, $format);
+        }
 
         return $format;
     }
@@ -477,8 +489,9 @@ namespace {
 
         $new = [];
 
-        foreach($headers as $key => $value)
+        foreach ($headers as $key => $value) {
             $new[strtolower($key)] = $value;
+        }
 
         return $new;
     }
@@ -518,37 +531,48 @@ namespace {
         $redirect_url = null;
         $url_parts = @parse_url($url);
 
-        if(!$url_parts)
+        if (!$url_parts) {
             return false;
+        }
 
-        if(!isset($url_parts['host']))
+        if (!isset($url_parts['host'])) {
             return false;
+        }
 
-        if(!isset($url_parts['path']))
+        if (!isset($url_parts['path'])) {
             $url_parts['path'] = '/';
+        }
 
-        $sock = fsockopen($url_parts['host'], (isset($url_parts['port']) ? (int)$url_parts['port'] : 80), $errno, $errstr, 30);
+        $sock = fsockopen(
+            $url_parts['host'],
+            (isset($url_parts['port']) ? (int)$url_parts['port'] : 80),
+            $errno,
+            $errstr,
+            30
+        );
 
-        if(!$sock)
+        if (!$sock) {
             return false;
+        }
 
-        $request = "HEAD " . $url_parts['path'] . (isset($url_parts['query']) ? '?' . $url_parts['query'] : '') . " HTTP/1.1\r\n";
-        $request .= 'Host: ' . $url_parts['host'] . "\r\n";
+        $request = "HEAD ".$url_parts['path'].(isset($url_parts['query']) ? '?'.$url_parts['query'] : '')." HTTP/1.1\r\n";
+        $request .= 'Host: '.$url_parts['host']."\r\n";
         $request .= "Connection: Close\r\n\r\n";
 
         fwrite($sock, $request);
 
         $response = '';
 
-        while(!feof($sock))
+        while (!feof($sock)) {
             $response .= fread($sock, 8192);
+        }
 
         fclose($sock);
 
-        if(preg_match('/^Location: (.+?)$/m', $response, $matches))
-        {
-            if(substr($matches[1], 0, 1) == "/")
-                return $url_parts['scheme'] . "://" . $url_parts['host'] . trim($matches[1]);
+        if (preg_match('/^Location: (.+?)$/m', $response, $matches)) {
+            if (substr($matches[1], 0, 1) == "/") {
+                return $url_parts['scheme']."://".$url_parts['host'].trim($matches[1]);
+            }
 
             return trim($matches[1]);
         }
@@ -567,10 +591,10 @@ namespace {
     {
         $redirects = [];
 
-        while($newurl = get_redirect_url($url))
-        {
-            if(in_array($newurl, $redirects))
+        while ($newurl = get_redirect_url($url)) {
+            if (in_array($newurl, $redirects)) {
                 break;
+            }
 
             $redirects[] = $newurl;
             $url = $newurl;
@@ -591,11 +615,85 @@ namespace {
     {
         $redirects = get_all_redirects($url);
 
-        if(count($redirects) > 0)
+        if (count($redirects) > 0) {
             return array_pop($redirects);
+        }
 
         return $url;
     }
 
     #endregion
+
+    #region web functions
+
+    if (!function_exists('response')) {
+
+        /**
+         * @param null $message
+         * @param int $code
+         * @return \Dan\Web\Response
+         */
+        function response($message = null, $code = 200)
+        {
+            return new Response($message, $code);
+        }
+    }
+
+    if (!function_exists('parse_headers')) {
+
+        /**
+         * Parses http headers
+         *
+         * @param $raw_headers
+         * @return array
+         */
+        function parse_headers($raw_headers)
+        {
+            $headers = [];
+            $key = '';
+
+            $data = false;
+
+            foreach (explode("\n", $raw_headers) as $i => $h) {
+
+                if(empty(trim($h))) {
+                    $data = true;
+                    continue;
+                }
+
+                if($data) {
+                    $headers['data'] = trim(($headers['data'] ?? "\n") . $h);
+                    continue;
+                }
+
+                $h = explode(':', $h, 2);
+
+                if (isset($h[1])) {
+                    if (!isset($headers[$h[0]])) {
+                        $headers[$h[0]] = trim($h[1]);
+                    } elseif (is_array($headers[$h[0]])) {
+                        $headers[$h[0]] = array_merge($headers[$h[0]], [trim($h[1])]);
+                    } else {
+                        $headers[$h[0]] = array_merge([$headers[$h[0]]], [trim($h[1])]);
+                    }
+
+                    $key = $h[0];
+                } else {
+                    if (substr($h[0], 0, 1) == "\t") // [+]
+                    {
+                        $headers[$key] .= "\r\n\t".trim($h[0]);
+                    } elseif (!$key) {
+                        $headers[0] = trim($h[0]);
+                    }
+
+                    trim($h[0]);
+                }
+            }
+
+            return $headers;
+        }
+    }
+
+    #endregion
+
 }

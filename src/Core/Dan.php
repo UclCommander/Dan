@@ -11,6 +11,7 @@ use Dan\Hooks\HookManager;
 use Dan\Irc\Connection;
 use Dan\Irc\Location\User;
 use Dan\Setup\Setup;
+use Dan\Web\Listener;
 use Illuminate\Filesystem\Filesystem;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,7 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class Dan {
 
     /** @var string Current version */
-    const VERSION = '5.0.0';
+    const VERSION = '5.1.0';
 
     /** @var array */
     protected static $args = [];
@@ -116,6 +117,10 @@ class Dan {
         $this->fromUpdate();
 
         $this->addSocket('console', new Console());
+
+        if(config('web.enabled')) {
+            $this->addSocket('listener', new Listener());
+        }
 
         foreach(config('irc.servers') as $name => $config)
         {

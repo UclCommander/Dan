@@ -3,10 +3,18 @@
 
 interface SocketContract {
 
-    public function getStream();
-
-    public function handle($resource);
-
+    /**
+     * @return string
+     */
     public function getName();
 
+    /**
+     * @return resource
+     */
+    public function getStream();
+
+    /**
+     * @param $resource
+     */
+    public function handle($resource);
 }

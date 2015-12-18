@@ -6,6 +6,7 @@ use Dan\Hooks\Types\CommandHook;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\Location;
 use Dan\Irc\Location\User;
+use Dan\Web\Response;
 
 class HookManager {
 
@@ -111,6 +112,28 @@ class HookManager {
 
         return false;
     }
+    /**
+     * Runs all the http hooks.
+     *
+     * @param $args
+     * @return bool
+     */
+    public function callHttpHooks($args)
+    {
+        foreach(static::getHooks('http', $this->except) as $hook) {
+            $value = $this->runHttpHook($hook, $args);
+
+            if($value instanceof Response || $value === true) {
+                return $value;
+            }
+
+            if($value === null) {
+                return response();
+            }
+        }
+
+        return response("404 Route Not Found", 404);
+    }
 
 
     /**
@@ -186,6 +209,18 @@ class HookManager {
         }
 
         return true;
+    }
+
+    /**
+     * Runs the HTTP hook.
+     *
+     * @param \Dan\Hooks\Hook $hook
+     * @param $args
+     * @return bool|void
+     */
+    public function runHttpHook(Hook $hook, $args)
+    {
+        return $hook->hook()->run($args);
     }
 
     /**

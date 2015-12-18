@@ -4,6 +4,7 @@
 use Dan\Contracts\HookTypeContract;
 use Dan\Hooks\Types\CommandHook;
 use Dan\Hooks\Types\EventHook;
+use Dan\Hooks\Types\HttpHook;
 use Dan\Hooks\Types\RegexHook;
 
 class Hook {
@@ -100,6 +101,19 @@ class Hook {
     {
         $this->type = 'regex';
         $this->hook = new RegexHook($regex, $settings);
+        return $this->hook;
+    }
+
+    /**
+     * Creates a HTTP hook.
+     *
+     * @param array $settings
+     * @return \Dan\Hooks\Types\HttpHook
+     */
+    public function http(array $settings = []) : HttpHook
+    {
+        $this->type = 'http';
+        $this->hook = new HttpHook($settings);
         return $this->hook;
     }
 }
