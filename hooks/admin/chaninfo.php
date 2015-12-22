@@ -15,6 +15,7 @@
 use Dan\Core\Dan;
 use Dan\Hooks\HookManager;
 use Dan\Irc\Location\Channel;
+use Dan\Irc\Location\User;
 use Illuminate\Support\Collection;
 
 hook('chaninfo')
@@ -33,6 +34,9 @@ hook('chaninfo')
         /** @var Channel $channel */
         $channel = $args->get('channel');
 
+        /** @var User $user */
+        $user = $args->get('user');
+
         switch($data[0])
         {
             case 'hooks':
@@ -50,19 +54,19 @@ hook('chaninfo')
 
                 if(!isset($data[1]))
                 {
-                    $channel->message("Options: enable <hook>, disable <hook>, disabled, list");
+                    $user->notice("Options: enable <hook>, disable <hook>, disabled, list");
                     return;
                 }
 
                 if($data[1] == 'disabled')
                 {
-                    $channel->message("Disabled hooks: " . implode(', ', $except));
+                    $user->notice("Disabled hooks: " . implode(', ', $except));
                     return;
                 }
 
                 if($data[1] == 'list')
                 {
-                    $channel->message("Available hooks: " . implode(', ', $hooks));
+                    $user->notice("Available hooks: " . implode(', ', $hooks));
                     return;
                 }
 
@@ -121,7 +125,7 @@ hook('chaninfo')
                 break;
 
             default:
-                $channel->message("Available sub-commands: hooks");
-
+                $user->notice("Available sub-commands: hooks");
+                break;
         }
     });
