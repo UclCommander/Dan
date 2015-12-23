@@ -8,14 +8,13 @@ class PacketJoin implements PacketContract {
 
     public function handle(Connection $connection, array $from, array $data)
     {
-        if($from[0] != $connection->user->nick())
-        {
+        if ($from[0] != $connection->user->nick()) {
             $channel = $connection->getChannel($data[0]);
 
             $channel->setUsers($from[0]);
-        }
-        else
+        } else {
             $connection->addChannel($data[0]);
+        }
 
         event('irc.packets.join', [
             'user'          => user($from),
@@ -23,7 +22,8 @@ class PacketJoin implements PacketContract {
             'connection'    => $connection
         ]);
 
-        if(!DEBUG)
+        if (!DEBUG) {
             console("[<magenta>{$connection->getName()}</magenta>] <yellow>{$from[0]}</yellow> <cyan>joined {$data[0]}</cyan>");
+        }
     }
 }

@@ -94,12 +94,12 @@ class Connection implements SocketContract {
     {
         $lines = $this->socket->read();
 
-        foreach($lines as $line)
-        {
+        foreach ($lines as $line) {
             $line = trim($line);
 
-            if (empty($line))
+            if (empty($line)) {
                 continue;
+            }
 
             debug("[<magenta>{$this->name}</magenta>] >> {$line}");
 
@@ -114,41 +114,39 @@ class Connection implements SocketContract {
     {
         $data = Parser::parseLine($line);
 
-        $from   = $data['from'];
-        $cmd    = $data['command'];
+        $from = $data['from'];
+        $cmd = $data['command'];
 
         $data = $cmd;
         array_shift($data);
 
-        if($cmd[0] == "ERROR")
-        {
+        if ($cmd[0] == "ERROR") {
             warn("Disconnected from IRC");
             Dan::self()->removeSocket($this->name);
+
             return;
         }
 
         $normal = ucfirst(strtolower($cmd[0]));
-        $class  = "Dan\\Irc\\Packets\\Packet{$normal}";
+        $class = "Dan\\Irc\\Packets\\Packet{$normal}";
 
-        if(!class_exists($class))
-        {
+        if (!class_exists($class)) {
             debug("<default>[ERROR]</default> [<red>{$this->name}</red>] <error>Unable to find packet handler for {$normal}</error>");
+
             return;
         }
 
-        try
-        {
+        try {
             /** @var PacketContract $handler */
             $handler = new $class();
             $handler->handle($this, $from, $data);
+
             unset($handler);
-        }
-        catch(\Exception $exception)
-        {
+
+        } catch (\Exception $exception) {
             error($exception->getMessage());
-        }
-        catch(\Error $error)
-        {
+
+        } catch (\Error $error) {
             error($error->getMessage());
         }
     }
@@ -179,8 +177,9 @@ class Connection implements SocketContract {
      */
     public function joinChannel($name, $key = '')
     {
-        if(!in_array(substr($name, 0, 1), str_split($this->support->get('CHANTYPES'))))
-            throw new \Exception("Invalid channel prefix " . substr($name, 0, 1));
+        if (!in_array(substr($name, 0, 1), str_split($this->support->get('CHANTYPES')))) {
+            throw new \Exception("Invalid channel prefix ".substr($name, 0, 1));
+        }
 
         $this->send('JOIN', $name, $key);
     }
@@ -193,8 +192,9 @@ class Connection implements SocketContract {
      */
     public function partChannel($name, $reason = "Leaving")
     {
-        if(!$this->inChannel($name))
+        if (!$this->inChannel($name)) {
             return;
+        }
 
         $name = strtolower($name);
 
@@ -222,8 +222,9 @@ class Connection implements SocketContract {
      */
     public function getChannel($channel)
     {
-        if(!$this->inChannel(strtolower($channel)))
+        if (!$this->inChannel(strtolower($channel))) {
             return null;
+        }
 
         return $this->channels->get(strtolower($channel));
     }
@@ -236,12 +237,13 @@ class Connection implements SocketContract {
      */
     public function addChannel($channel)
     {
-        if($this->inChannel($channel))
+        if ($this->inChannel($channel)) {
             return;
+        }
 
         $name = strtolower($channel);
 
-        $this->channels->put($name, new Channel($this, $name));
+        $this->channels->put($name, new Channel($this, $channel));
     }
     /**
      * Removes a channel.
@@ -251,8 +253,9 @@ class Connection implements SocketContract {
      */
     public function removeChannel($channel)
     {
-        if(!$this->inChannel($channel))
+        if (!$this->inChannel($channel)) {
             return;
+        }
 
         $name = strtolower($channel);
 
@@ -267,10 +270,10 @@ class Connection implements SocketContract {
      */
     public function message($location, $message, $styles = [])
     {
-        if(isChannel($location, $this->getName()))
-        {
-            if(!$this->inChannel($location))
+        if (isChannel($location, $this->getName())) {
+            if(!$this->inChannel($location)) {
                 throw new \Exception("This channel doesn't exist.");
+            }
 
             event('irc.bot.message.public', [
                 'connection'    => $this,
@@ -280,14 +283,17 @@ class Connection implements SocketContract {
             ]);
         }
 
-        if(!DEBUG)
+        if (!DEBUG) {
             console("[<magenta>{$this->name}</magenta>][[<cyan>{$location}</cyan>]][<yellow>{$this->user->nick()}</yellow>] {$message}");
+        }
 
         $formatter = new IrcOutputFormatter(true);
 
-        if(!empty($styles))
-            foreach($styles as $name => $style)
+        if (!empty($styles)) {
+            foreach ($styles as $name => $style) {
                 $formatter->setStyle($name, new IrcOutputFormatterStyle(...$style));
+            }
+        }
 
         $message = $formatter->format($message);
 
@@ -303,9 +309,11 @@ class Connection implements SocketContract {
     {
         $formatter = new IrcOutputFormatter(true);
 
-        if(!empty($styles))
-            foreach($styles as $name => $style)
+        if (!empty($styles)) {
+            foreach ($styles as $name => $style) {
                 $formatter->setStyle($name, new IrcOutputFormatterStyle(...$style));
+            }
+        }
 
         $message = $formatter->format($message);
 
@@ -324,27 +332,30 @@ class Connection implements SocketContract {
     /**
      * Builds a line from params.
      *
-     * @param ...$params
+     * @param array ...$params
      */
     public function send(...$params)
     {
         $compiled = [];
 
-        for($i = 0; $i < count($params);$i++)
-        {
+        for ($i = 0; $i < count($params); $i++) {
             $add = $params[$i];
 
-            if(is_null($add))
+            if(is_null($add)) {
                 continue;
+            }
 
-            if($add instanceof Location)
+            if($add instanceof Location) {
                 $add = $add->getLocation();
+            }
 
-            if(is_array($add))
+            if(is_array($add)) {
                 $add = json_encode($add);
+            }
 
-            if(strpos($add, ' ') !== false)
+            if(strpos($add, ' ') !== false) {
                 $add = ":{$add}";
+            }
 
             $compiled[] = $add;
         }
