@@ -54,7 +54,7 @@ class Connection implements SocketContract {
     /**
      * Gets the connection name.
      *
-     * @return string
+     * @return \Dan\Irc\string|string
      */
     public function getName() : string
     {
@@ -122,8 +122,8 @@ class Connection implements SocketContract {
 
         if ($cmd[0] == "ERROR") {
             warn("Disconnected from IRC");
+            unset($this->socket);
             Dan::self()->removeSocket($this->name);
-
             return;
         }
 
@@ -166,6 +166,17 @@ class Connection implements SocketContract {
 
         $this->send('USER', $name, $name, '*', $real);
         $this->send("NICK", $nick);
+    }
+
+    /**
+     * Stops the current connection.
+     *
+     * @param string $reason
+     * @return mixed
+     */
+    public function quit($reason = null)
+    {
+        $this->send("QUIT", $reason);
     }
 
     /**
@@ -378,5 +389,4 @@ class Connection implements SocketContract {
     }
 
     #endregion
-
 }

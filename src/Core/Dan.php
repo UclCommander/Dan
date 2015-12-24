@@ -19,7 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class Dan {
 
     /** @var string Current version */
-    const VERSION = '5.1.0';
+    const VERSION = '5.1.1';
 
     /** @var array */
     protected static $args = [];
@@ -247,8 +247,9 @@ class Dan {
      */
     public static function quit($reason = "Bot shutting down", $reboot = false)
     {
-        if(event('dan.quitting') === false)
+        if (event('dan.quitting') === false) {
             return false;
+        }
 
         controlLog('Shutting down...');
 
@@ -258,12 +259,13 @@ class Dan {
 
         controlLog('Bye!');
 
-        foreach(static::$dan->connections as $connection)
-            if($connection instanceof Connection)
-                $connection->send("QUIT", $reason);
+        foreach (static::$dan->connections as $connection) {
+            $connection->quit($reason);
+        }
 
-        if(!$reboot)
+        if (!$reboot) {
             die;
+        }
 
         return true;
     }

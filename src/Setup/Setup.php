@@ -3,6 +3,7 @@
 use Dan\Contracts\MigrationContract;
 use Dan\Setup\Migrations\Migrate_500;
 use Dan\Setup\Migrations\Migrate_510;
+use Dan\Setup\Migrations\Migrate_511;
 
 
 class Setup {
@@ -13,7 +14,8 @@ class Setup {
      */
     protected static $migrations = [
         '5.0.0' => Migrate_500::class,
-        '5.1.0' => Migrate_510::class
+        '5.1.0' => Migrate_510::class,
+        '5.1.1' => Migrate_511::class,
     ];
 
     public static function migrate()

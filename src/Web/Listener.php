@@ -76,6 +76,24 @@ class Listener implements SocketContract {
     }
 
     /**
+     * Stops the current connection.
+     *
+     * @param string $reason
+     * @return mixed
+     */
+    public function quit($reason = null)
+    {
+        if (!is_null($this->client)) {
+            fclose($this->client);
+        }
+
+        fclose($this->socket);
+
+        unset($this->client);
+        unset($this->socket);
+    }
+
+    /**
      * Handles the socket event.
      *
      * @param $resource

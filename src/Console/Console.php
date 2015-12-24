@@ -95,6 +95,14 @@ class Console implements SocketContract, MessagingContract {
     }
 
     /**
+     * Stops the current connection.
+     *
+     * @param string $reason
+     * @return mixed
+     */
+    public function quit($reason = null) { }
+
+    /**
      * @param resource $resource
      */
     public function handle($resource)
