@@ -18,15 +18,17 @@ class OutputStyle extends SymfonyStyle {
             'debug'     => new OutputFormatterStyle('magenta'),
             'success'   => new OutputFormatterStyle('green'),
 
-            'black'     => new OutputFormatterStyle('black'),
-            'red'       => new OutputFormatterStyle('red'),
-            'green'     => new OutputFormatterStyle('green'),
-            'yellow'    => new OutputFormatterStyle('yellow'),
-            'blue'      => new OutputFormatterStyle('blue'),
-            'magenta'   => new OutputFormatterStyle('magenta'),
-            'cyan'      => new OutputFormatterStyle('cyan'),
-            'white'     => new OutputFormatterStyle('white'),
-            'default'   => new OutputFormatterStyle('default'),
+            'black'         => new OutputFormatterStyle('black'),
+            'red'           => new OutputFormatterStyle('red'),
+            'green'         => new OutputFormatterStyle('green'),
+            'yellow'        => new OutputFormatterStyle('yellow'),
+            'orange'        => new OutputFormatterStyle('yellow'),
+            'blue'          => new OutputFormatterStyle('blue'),
+            'magenta'       => new OutputFormatterStyle('magenta'),
+            'cyan'          => new OutputFormatterStyle('cyan'),
+            'light_cyan'    => new OutputFormatterStyle('cyan'),
+            'white'         => new OutputFormatterStyle('white'),
+            'default'       => new OutputFormatterStyle('default'),
         ]));
     }
 }

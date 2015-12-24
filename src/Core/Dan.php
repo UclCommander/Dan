@@ -224,14 +224,15 @@ class Dan {
      */
     public static function disconnect($name)
     {
-        if(!array_key_exists($name, config('irc.servers')))
+        if (!array_key_exists($name, config('irc.servers'))) {
             throw new \Exception("Not connection to server {$name}.");
+        }
 
         $connection = static::$dan->connections[$name];
 
-        if($connection instanceof Connection)
-        {
+        if ($connection instanceof Connection) {
             $connection->send("QUIT", "Disconnecting");
+
             return;
         }
 

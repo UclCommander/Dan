@@ -8,6 +8,7 @@ class IrcOutputFormatterStyle implements OutputFormatterStyleInterface {
     protected $char = "\x03";
 
     private static $availableForegroundColors = [
+        'error'         => ['set' => '04', 'unset' => ''],
         'white'         => ['set' => '00', 'unset' => ''],
         'black'         => ['set' => '01', 'unset' => ''],
         'blue'          => ['set' => '02', 'unset' => ''],
