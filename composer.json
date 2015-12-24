@@ -13,6 +13,7 @@
         "rap2hpoutre/similar-text-finder": "^0.1.2",
         "symfony/console": "^2.7",
         "symfony/var-dumper": "^2.7",
-        "knplabs/github-api": "~1.4"
+        "knplabs/github-api": "~1.4",
+        "endroid/twitter": "^1.1"
     }
 }
