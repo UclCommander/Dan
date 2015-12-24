@@ -13,7 +13,7 @@ class PacketNick implements PacketContract {
         $nick = $data[0];
 
         event('irc.packets.nick', [
-            'user'  => $from,
+            'user'  => $user,
             'nick'  => $data[0],
         ]);
 

@@ -13,6 +13,20 @@ hook('stats')
         $channel = $args->get('channel');
         $message = $args->get('message');
 
+        if ($message == 'reset') {
+            if (!$args->get('user')->hasOneOf('oaq')) {
+                $channel->message("You don't have permissions to reset stats.");
+                return;
+            }
+
+            $db = database()->table('channels')->where('name', $channel->getLocation());
+            $db->update(['info' => ['stats' => null]]);
+
+            $channel->message("Stats reset");
+            return;
+        }
+
+
         if($message && isChannel($message))
             $channel = $message;
 
@@ -75,9 +89,28 @@ hook('stats_record')
             return;
         }
 
+        if($args->get('event') == 'irc.packets.nick') {
+            foreach (connection()->channels as $chan) {
+                if ($chan->hasUser($user)) {
+                    $db = database()->table('channels')->where('name', $chan->getLocation());
+                    $stats = $db->first();
+                    $stats = $stats->has('info') ? (isset($stats['info']['stats']) ? $stats['info']['stats'] : []) : [];
+                    $stats['nick'] = ($stats['nick'] ?? 0) + 1;
+
+                    if (isset($stats['users'][$args->get('nick')])) {
+                        $stats['users'][$args->get('nick')] = $stats['users'][$user->nick()];
+                        unset($stats['users'][$user->nick()]);
+                    }
+
+                    $db->update(['info' => ['stats' => $stats]]);
+                }
+            }
+
+            return;
+        }
+
         $db         = database()->table('channels')->where('name', $channel->getLocation());
         $stats      = $db->first();
-
         $stats      = $stats->has('info') ? (isset($stats['info']['stats']) ? $stats['info']['stats'] : []) : [];
 
         switch($args->get('event')) {
@@ -100,13 +133,6 @@ hook('stats_record')
 
             case 'irc.packets.kick': {
                 $stats['kick'] = ($stats['kick'] ?? 0) + 1;
-                break;
-            }
-
-            case 'irc.packets.nick': {
-                $stats['nick'] = ($stats['nick'] ?? 0) + 1;
-                $stats['users'][$args->get('nick')] = $stats['users'][$user->nick()];
-                unset($stats['users'][$user->nick()]);
                 break;
             }
 
