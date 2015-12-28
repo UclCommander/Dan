@@ -11,5 +11,5 @@ hook('lmgtfy')
     ->command(['lmgtfy', 'lazy'])
     ->help('For those lazy people.')
     ->func(function(\Illuminate\Support\Collection $args) {
-        $args->get('channel')->message("http://lmgtfy.com/?q=" . urlencode($args->get('message')));
+        $args->get('channel')->message(shortLink("http://lmgtfy.com/?q=" . urlencode($args->get('message'))));
     });

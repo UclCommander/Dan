@@ -42,7 +42,9 @@ hook('textreplace')
                 if($new == $data['message'])
                     continue;
 
-                $channel->message("{$data['user']}: {$new}");
+                $messages[$time]['message'] = $new;
+
+                $channel->message("[{$data['user']}] {$new}");
                 return false;
             }
         }
