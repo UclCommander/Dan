@@ -372,6 +372,9 @@ class Dan {
         if($name == null)
             $name = 'console';
 
+        if(!static::hasConnection($name))
+            return null;
+
         return static::$dan->connections[$name];
     }
 
