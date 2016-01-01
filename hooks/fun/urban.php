@@ -22,38 +22,40 @@ hook('urban')
         $index = 0;
         $data = explode(' ', $message);
 
-        if(is_numeric(last($data)))
-        {
-            $index = abs(last($data) - 1);
-            array_pop($data);
+        if (count($data) > 1) {
+            if (is_numeric(last($data))) {
+                $index = abs(last($data) - 1);
+                array_pop($data);
+            }
         }
 
         $msg = urlencode(implode(' ', $data));
 
         $json = Web::json("http://api.urbandictionary.com/v0/define?term={$msg}");
 
-        if($json == null)
-        {
+        if ($json == null) {
             $channel->message("Error fetching definition");
+
             return;
         }
 
-        if($json['result_type'] == 'no_results')
-        {
+        if ($json['result_type'] == 'no_results') {
             $channel->message(" [ <cyan>No definition found</cyan> ]");
+
             return;
         }
 
-        $list       = $json['list'];
-        $item       = ($index > count($list) ?  $list[0] : $list[$index]);
+        $list = $json['list'];
+        $item = ($index > count($list) ? $list[0] : $list[$index]);
 
-        $cleanDef   = str_replace('  ', ' ', str_replace(["\n", "\r"], ' ', $item['definition']));
+        $cleanDef = str_replace('  ', ' ', str_replace(["\n", "\r"], ' ', $item['definition']));
 
         $split = substr($cleanDef, 0, 350);
 
         $channel->message("[ <yellow>{$item['word']}</yellow> | <cyan>{$split}</cyan> | <green>+{$item['thumbs_up']}</green>/<red>-{$item['thumbs_down']}</red> ]");
 
-        if(strlen($cleanDef) > 350)
-            $channel->message(" [ <cyan>Read more: " . $item['permalink'] . "</cyan> ]");
+        if (strlen($cleanDef) > 350) {
+            $channel->message(" [ <cyan>Read more: ".shortLink($item['permalink'])."</cyan> ]");
+        }
     });
 
