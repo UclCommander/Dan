@@ -1,8 +1,9 @@
-<?php namespace Dan\Database;
+<?php
 
+namespace Dan\Database;
 
-class Compare {
-
+class Compare
+{
     protected $methods = [
         '='     => 'isEqual',
         '!='    => 'isNotEqual',
@@ -16,12 +17,15 @@ class Compare {
      * @param $a
      * @param $is
      * @param $b
-     * @return mixed
+     *
      * @throws \Exception
+     *
+     * @return mixed
      */
     public static function is($a, $is, $b)
     {
-        $compare = new static;
+        $compare = new static();
+
         return $compare->compare($a, $is, $b);
     }
 
@@ -29,13 +33,16 @@ class Compare {
      * @param $a
      * @param $is
      * @param $b
-     * @return mixed
+     *
      * @throws \Exception
+     *
+     * @return mixed
      */
     public function compare($a, $is, $b)
     {
-        if(!array_key_exists($is, $this->methods))
+        if (!array_key_exists($is, $this->methods)) {
             throw new \Exception("Invalid comparison operator '{$is}'");
+        }
 
         $method = $this->methods[$is];
 
@@ -45,6 +52,7 @@ class Compare {
     /**
      * @param $a
      * @param $b
+     *
      * @return bool
      */
     public function isEqual($a, $b)
@@ -55,6 +63,7 @@ class Compare {
     /**
      * @param $a
      * @param $b
+     *
      * @return bool
      */
     public function isNotEqual($a, $b)
@@ -65,6 +74,7 @@ class Compare {
     /**
      * @param $a
      * @param $b
+     *
      * @return bool
      */
     public function isGreaterThan($a, $b)
@@ -75,6 +85,7 @@ class Compare {
     /**
      * @param $a
      * @param $b
+     *
      * @return bool
      */
     public function isGreaterThanOrEqual($a, $b)
@@ -85,6 +96,7 @@ class Compare {
     /**
      * @param $a
      * @param $b
+     *
      * @return bool
      */
     public function isLessThan($a, $b)
@@ -95,6 +107,7 @@ class Compare {
     /**
      * @param $a
      * @param $b
+     *
      * @return bool
      */
     public function isLessThanOrEqual($a, $b)

@@ -1,12 +1,13 @@
-<?php namespace Dan\Irc\Location; 
+<?php
 
+namespace Dan\Irc\Location;
 
 use Dan\Contracts\MessagingContract;
 use Dan\Irc\Connection;
 use Dan\Irc\ModeObject;
 
-class Location extends ModeObject implements MessagingContract {
-
+class Location extends ModeObject implements MessagingContract
+{
     /**
      * @var Connection
      */
@@ -54,11 +55,12 @@ class Location extends ModeObject implements MessagingContract {
      * Sets a mode on this location.
      *
      * @param $mode
+     *
      * @internal param $message
      */
     public function mode($mode)
     {
-        $this->connection->send("MODE", $this->location, $mode);
+        $this->connection->send('MODE', $this->location, $mode);
     }
 
     /**

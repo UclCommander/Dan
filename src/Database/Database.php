@@ -1,9 +1,11 @@
-<?php namespace Dan\Database;
+<?php
+
+namespace Dan\Database;
 
 use Exception;
 
-class Database {
-
+class Database
+{
     /**
      * @var array
      */
@@ -33,21 +35,26 @@ class Database {
      * Gets a table manipulation object.
      *
      * @param $name
-     * @return \Dan\Database\Table
+     *
      * @throws \Exception
+     *
+     * @return \Dan\Database\Table
      */
     public function table($name)
     {
-        if(!$this->tableExists($name))
+        if (!$this->tableExists($name)) {
             throw new \Exception("Table {$name} doesn't exist.");
+        }
 
         return new Table($this, $name, $this->data[$name]);
     }
 
     /**
      * @param $table
-     * @return \Dan\Database\TableSchema
+     *
      * @throws \Exception
+     *
+     * @return \Dan\Database\TableSchema
      */
     public function schema($table)
     {
@@ -58,6 +65,7 @@ class Database {
      * Checks to see if a table exists.
      *
      * @param $table
+     *
      * @return bool
      */
     public function tableExists($table)
@@ -83,16 +91,17 @@ class Database {
      */
     public function load()
     {
-        if(!file_exists(DATABASE_DIR . "/{$this->file}.json"))
+        if (!file_exists(DATABASE_DIR."/{$this->file}.json")) {
             $this->save();
+        }
 
-        $database = json_decode(filesystem()->get(DATABASE_DIR . "/{$this->file}.json"), true);
+        $database = json_decode(filesystem()->get(DATABASE_DIR."/{$this->file}.json"), true);
 
-        if(!is_array($database))
+        if (!is_array($database)) {
             throw new Exception("Database {$this->file} is corrupted.");
+        }
 
-        if(!empty($database))
-        {
+        if (!empty($database)) {
             $this->config = $database['config'];
             $this->data = $database['data'];
         }
@@ -103,6 +112,6 @@ class Database {
      */
     public function save()
     {
-        filesystem()->put(DATABASE_DIR . "/{$this->file}.json", json_encode(['data' => $this->data, 'config' => $this->config], JSON_PRETTY_PRINT));
+        filesystem()->put(DATABASE_DIR."/{$this->file}.json", json_encode(['data' => $this->data, 'config' => $this->config], JSON_PRETTY_PRINT));
     }
 }

@@ -1,7 +1,8 @@
-<?php namespace Dan\Updates; 
+<?php
 
+namespace Dan\Updates;
 
-interface UpdateContract {
-
+interface UpdateContract
+{
     public function run();
 }

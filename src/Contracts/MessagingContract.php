@@ -1,8 +1,9 @@
-<?php namespace Dan\Contracts;
+<?php
 
+namespace Dan\Contracts;
 
-interface MessagingContract {
-
+interface MessagingContract
+{
     /**
      * Sends a message.
      *

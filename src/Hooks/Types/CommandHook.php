@@ -1,11 +1,12 @@
-<?php namespace Dan\Hooks\Types;
+<?php
 
+namespace Dan\Hooks\Types;
 
 use Dan\Contracts\HookTypeContract;
 use Illuminate\Support\Collection;
 
-class CommandHook implements HookTypeContract {
-
+class CommandHook implements HookTypeContract
+{
     /**
      * @var array
      */
@@ -50,26 +51,31 @@ class CommandHook implements HookTypeContract {
     public function console() : CommandHook
     {
         $this->canRunInConsole = true;
+
         return $this;
     }
 
     /**
      * @param $rank
+     *
      * @return \Dan\Hooks\Types\CommandHook
      */
     public function rank($rank) : CommandHook
     {
         $this->rank = $rank;
+
         return $this;
     }
 
     /**
      * @param $text
+     *
      * @return \Dan\Hooks\Types\CommandHook
      */
     public function help($text) : CommandHook
     {
-        $this->help = (array)$text;
+        $this->help = (array) $text;
+
         return $this;
     }
 
@@ -89,14 +95,12 @@ class CommandHook implements HookTypeContract {
         $this->class = $anonymous;
     }
 
-
     /**
      * @param $args
      */
     public function run($args)
     {
-        if($this->callable != null)
-        {
+        if ($this->callable != null) {
             $func = $this->callable;
 
             $func(new Collection($args));

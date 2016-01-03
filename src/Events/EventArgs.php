@@ -1,6 +1,9 @@
-<?php namespace Dan\Events;
+<?php
 
+namespace Dan\Events;
 
 use Illuminate\Support\Collection;
 
-class EventArgs extends Collection {}
+class EventArgs extends Collection
+{
+}

@@ -1,15 +1,16 @@
-<?php namespace Dan\Irc\Formatter;
+<?php
 
+namespace Dan\Irc\Formatter;
 
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Formatter\OutputFormatterStyleInterface;
 use Symfony\Component\Console\Formatter\OutputFormatterStyleStack;
 
-class IrcOutputFormatter implements OutputFormatterInterface {
-
+class IrcOutputFormatter implements OutputFormatterInterface
+{
     private $decorated;
-    private $styles = array();
+    private $styles = [];
 
     /**
      * @var \Dan\Irc\Formatter\IrcOutputFormatterStyleStack
@@ -36,35 +37,35 @@ class IrcOutputFormatter implements OutputFormatterInterface {
      *
      * @api
      */
-    public function __construct($decorated = false, array $styles = array())
+    public function __construct($decorated = false, array $styles = [])
     {
         $this->decorated = (bool) $decorated;
 
-        $this->setStyle('white',        new IrcOutputFormatterStyle('white'));
-        $this->setStyle('black',        new IrcOutputFormatterStyle('black'));
-        $this->setStyle('blue',         new IrcOutputFormatterStyle('blue'));
-        $this->setStyle('green',        new IrcOutputFormatterStyle('green'));
-        $this->setStyle('red',          new IrcOutputFormatterStyle('red'));
-        $this->setStyle('maroon',       new IrcOutputFormatterStyle('maroon'));
-        $this->setStyle('purple',       new IrcOutputFormatterStyle('purple'));
-        $this->setStyle('orange',       new IrcOutputFormatterStyle('orange'));
-        $this->setStyle('yellow',       new IrcOutputFormatterStyle('yellow'));
-        $this->setStyle('light_green',  new IrcOutputFormatterStyle('light_green'));
-        $this->setStyle('cyan',         new IrcOutputFormatterStyle('cyan'));
-        $this->setStyle('light_cyan',   new IrcOutputFormatterStyle('light_cyan'));
-        $this->setStyle('light_blue',   new IrcOutputFormatterStyle('light_blue'));
-        $this->setStyle('pink',         new IrcOutputFormatterStyle('pink'));
-        $this->setStyle('gray',         new IrcOutputFormatterStyle('gray'));
-        $this->setStyle('light_gray',   new IrcOutputFormatterStyle('light_gray'));
-        $this->setStyle('default',      new IrcOutputFormatterStyle('default'));
-        $this->setStyle('bold',         new IrcOutputFormatterStyle(null, null, ['bold']));
-        $this->setStyle('b',            new IrcOutputFormatterStyle(null, null, ['bold']));
-        $this->setStyle('italic',       new IrcOutputFormatterStyle(null, null, ['italic']));
-        $this->setStyle('i',            new IrcOutputFormatterStyle(null, null, ['italic']));
-        $this->setStyle('underline',    new IrcOutputFormatterStyle(null, null, ['underline']));
-        $this->setStyle('u',            new IrcOutputFormatterStyle(null, null, ['underline']));
-        $this->setStyle('normal',       new IrcOutputFormatterStyle(null, null, ['normal']));
-        $this->setStyle('n',            new IrcOutputFormatterStyle(null, null, ['normal']));
+        $this->setStyle('white', new IrcOutputFormatterStyle('white'));
+        $this->setStyle('black', new IrcOutputFormatterStyle('black'));
+        $this->setStyle('blue', new IrcOutputFormatterStyle('blue'));
+        $this->setStyle('green', new IrcOutputFormatterStyle('green'));
+        $this->setStyle('red', new IrcOutputFormatterStyle('red'));
+        $this->setStyle('maroon', new IrcOutputFormatterStyle('maroon'));
+        $this->setStyle('purple', new IrcOutputFormatterStyle('purple'));
+        $this->setStyle('orange', new IrcOutputFormatterStyle('orange'));
+        $this->setStyle('yellow', new IrcOutputFormatterStyle('yellow'));
+        $this->setStyle('light_green', new IrcOutputFormatterStyle('light_green'));
+        $this->setStyle('cyan', new IrcOutputFormatterStyle('cyan'));
+        $this->setStyle('light_cyan', new IrcOutputFormatterStyle('light_cyan'));
+        $this->setStyle('light_blue', new IrcOutputFormatterStyle('light_blue'));
+        $this->setStyle('pink', new IrcOutputFormatterStyle('pink'));
+        $this->setStyle('gray', new IrcOutputFormatterStyle('gray'));
+        $this->setStyle('light_gray', new IrcOutputFormatterStyle('light_gray'));
+        $this->setStyle('default', new IrcOutputFormatterStyle('default'));
+        $this->setStyle('bold', new IrcOutputFormatterStyle(null, null, ['bold']));
+        $this->setStyle('b', new IrcOutputFormatterStyle(null, null, ['bold']));
+        $this->setStyle('italic', new IrcOutputFormatterStyle(null, null, ['italic']));
+        $this->setStyle('i', new IrcOutputFormatterStyle(null, null, ['italic']));
+        $this->setStyle('underline', new IrcOutputFormatterStyle(null, null, ['underline']));
+        $this->setStyle('u', new IrcOutputFormatterStyle(null, null, ['underline']));
+        $this->setStyle('normal', new IrcOutputFormatterStyle(null, null, ['normal']));
+        $this->setStyle('n', new IrcOutputFormatterStyle(null, null, ['normal']));
 
         foreach ($styles as $name => $style) {
             $this->setStyle($name, $style);
@@ -129,9 +130,9 @@ class IrcOutputFormatter implements OutputFormatterInterface {
      *
      * @param string $name
      *
-     * @return OutputFormatterStyleInterface
-     *
      * @throws \InvalidArgumentException When style isn't defined
+     *
+     * @return OutputFormatterStyleInterface
      *
      * @api
      */

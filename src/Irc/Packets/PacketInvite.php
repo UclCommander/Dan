@@ -1,12 +1,13 @@
-<?php namespace Dan\Irc\Packets; 
+<?php
+
+namespace Dan\Irc\Packets;
 
 use Dan\Contracts\PacketContract;
 use Dan\Core\Dan;
 use Dan\Irc\Connection;
 
-class PacketInvite implements PacketContract {
-
-
+class PacketInvite implements PacketContract
+{
     public function handle(Connection $connection, array $from, array $data)
     {
         $inviter = user($from);
@@ -14,17 +15,20 @@ class PacketInvite implements PacketContract {
         event('irc.packets.invite', [
             'user'      => $inviter,
             'who'       => $data[0],
-            'channel'   => $data[1]
+            'channel'   => $data[1],
         ]);
 
-        if($data[0] != $connection->user->nick())
+        if ($data[0] != $connection->user->nick()) {
             return;
+        }
 
-        if($inviter == null)
+        if ($inviter == null) {
             return;
+        }
 
-        if(!config('irc.join_on_invite') && !Dan::isAdminOrOwner($inviter))
+        if (!config('irc.join_on_invite') && !Dan::isAdminOrOwner($inviter)) {
             return;
+        }
 
         controlLog("{$inviter->nick()} invited me to {$data[1]}");
 

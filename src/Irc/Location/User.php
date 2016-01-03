@@ -1,12 +1,13 @@
-<?php namespace Dan\Irc\Location;
+<?php
 
+namespace Dan\Irc\Location;
 
 use Dan\Database\Savable;
 use Dan\Irc\Connection;
 use Illuminate\Contracts\Support\Arrayable;
 
-class User extends Location implements Savable, Arrayable {
-
+class User extends Location implements Savable, Arrayable
+{
     protected $nick;
     protected $user;
     protected $host;
@@ -15,23 +16,23 @@ class User extends Location implements Savable, Arrayable {
 
     protected $save = true;
 
-
     public function __construct(array $data, Connection $connection = null, $save = true)
     {
         parent::__construct();
 
         $this->connection = $connection ?? connection();
 
-        $this->nick     = isset($data['nick']) ? $data['nick'] : null;
-        $this->user     = isset($data['user']) ? $data['user'] : null;
-        $this->host     = isset($data['host']) ? $data['host'] : null;
-        $this->real     = isset($data['real']) ? $data['real'] : null;
+        $this->nick = isset($data['nick']) ? $data['nick'] : null;
+        $this->user = isset($data['user']) ? $data['user'] : null;
+        $this->host = isset($data['host']) ? $data['host'] : null;
+        $this->real = isset($data['real']) ? $data['real'] : null;
         $this->location = isset($data['nick']) ? $data['nick'] : null;
-        $this->rank     = isset($data['rank']) ? $data['rank'] : null;
-        $this->save     = $save;
+        $this->rank = isset($data['rank']) ? $data['rank'] : null;
+        $this->save = $save;
 
-        if($this->rank != null)
+        if ($this->rank != null) {
             $this->setPrefix($this->rank);
+        }
 
         $this->save();
     }
@@ -81,8 +82,9 @@ class User extends Location implements Savable, Arrayable {
      */
     public function save()
     {
-        if(!$this->save)
+        if (!$this->save) {
             return;
+        }
 
         database()->table('users')->insertOrUpdate(['nick', $this->nick], [
            'nick' => $this->nick,

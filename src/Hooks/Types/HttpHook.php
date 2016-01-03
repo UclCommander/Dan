@@ -1,5 +1,6 @@
-<?php namespace Dan\Hooks\Types;
+<?php
 
+namespace Dan\Hooks\Types;
 
 use Dan\Contracts\HookTypeContract;
 use Illuminate\Support\Collection;
@@ -38,6 +39,7 @@ class HttpHook implements HookTypeContract
 
     /**
      * @param $uri
+     *
      * @return $this
      */
     public function get($uri)
@@ -50,6 +52,7 @@ class HttpHook implements HookTypeContract
 
     /**
      * @param $uri
+     *
      * @return $this
      */
     public function post($uri)
@@ -64,6 +67,7 @@ class HttpHook implements HookTypeContract
      * Registers an anonymous class to the hook.
      *
      * @param $anonymous
+     *
      * @return void
      */
     public function anon($anonymous)
@@ -75,6 +79,7 @@ class HttpHook implements HookTypeContract
      * Registers an anonymous function to the hook.
      *
      * @param callable $callable
+     *
      * @return void
      */
     public function func(callable $callable)
@@ -86,31 +91,31 @@ class HttpHook implements HookTypeContract
      * Runs the hook.
      *
      * @param $args
-     * @return bool
+     *
      * @throws \Exception
+     *
+     * @return bool
      */
     public function run($args)
     {
-        if($args['path'] != $this->uri) {
+        if ($args['path'] != $this->uri) {
             return false;
         }
 
-        if($args['path'] == $this->uri && $args['method'] != $this->method) {
+        if ($args['path'] == $this->uri && $args['method'] != $this->method) {
             throw new \Exception("Method {$this->method} not allowed for uri {$this->uri}");
         }
 
         $args = new Collection($args);
 
-        if($this->class != null)
-        {
+        if ($this->class != null) {
             $class = $this->class;
             $method = isset($this->settings['method']) ? $this->settings['method'] : 'run';
 
             return $class->$method($args);
         }
 
-        if($this->callable != null)
-        {
+        if ($this->callable != null) {
             $func = $this->callable;
 
             return $func($args);

@@ -7,7 +7,8 @@ if (!function_exists('response')) {
 
     /**
      * @param null $message
-     * @param int $code
+     * @param int  $code
+     *
      * @return \Dan\Web\Response
      */
     function response($message = null, $code = 200)
@@ -19,9 +20,10 @@ if (!function_exists('response')) {
 if (!function_exists('parse_headers')) {
 
     /**
-     * Parses http headers
+     * Parses http headers.
      *
      * @param $raw_headers
+     *
      * @return array
      */
     function parse_headers($raw_headers)
@@ -32,14 +34,13 @@ if (!function_exists('parse_headers')) {
         $data = false;
 
         foreach (explode("\n", $raw_headers) as $i => $h) {
-
-            if(empty(trim($h))) {
+            if (empty(trim($h))) {
                 $data = true;
                 continue;
             }
 
-            if($data) {
-                $headers['data'] = trim(($headers['data'] ?? "\n") . $h);
+            if ($data) {
+                $headers['data'] = trim(($headers['data'] ?? "\n").$h);
                 continue;
             }
 
@@ -56,8 +57,9 @@ if (!function_exists('parse_headers')) {
 
                 $key = strtolower($h[0]);
             } else {
-                if (substr(strtolower($h[0]), 0, 1) == "\t") // [+]
-                {
+                if (substr(strtolower($h[0]), 0, 1) == "\t") {
+                    // [+]
+
                     $headers[$key] .= "\r\n\t".trim(strtolower($h[0]));
                 } elseif (!$key) {
                     $headers[0] = trim(strtolower($h[0]));
@@ -71,17 +73,18 @@ if (!function_exists('parse_headers')) {
     }
 }
 
-if (!function_exists("shortLink")) {
+if (!function_exists('shortLink')) {
 
     /**
-     * Creates a short link with the configured api
+     * Creates a short link with the configured api.
      *
      * @param $link
+     *
      * @return mixed
      */
     function shortLink($link)
     {
-        if(!config('dan.use_short_links')) {
+        if (!config('dan.use_short_links')) {
             return $link;
         }
 

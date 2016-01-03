@@ -1,12 +1,13 @@
-<?php namespace Dan\Console;
+<?php
+
+namespace Dan\Console;
 
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class OutputStyle extends SymfonyStyle {
-
-
+class OutputStyle extends SymfonyStyle
+{
     public function __construct($input, $output)
     {
         parent::__construct($input, $output);

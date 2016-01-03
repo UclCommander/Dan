@@ -1,13 +1,14 @@
-<?php namespace Dan\Web;
+<?php
 
+namespace Dan\Web;
 
 use Dan\Contracts\SocketContract;
 use Dan\Core\Dan;
 use Dan\Hooks\HookManager;
 use Illuminate\Support\Collection;
 
-class Listener implements SocketContract {
-
+class Listener implements SocketContract
+{
     protected $statusCodes = [
         200 => '200 OK',
         201 => '201 Created',
@@ -49,10 +50,10 @@ class Listener implements SocketContract {
             'command_prefix'   => '/',
         ]);
 
-        info("Starting socket listener on tcp://" . config('web.host') . ":" . config('web.port'));
-        $this->socket = stream_socket_server("tcp://" . config('web.host') . ":" . config('web.port'), $errno, $errstr);
+        info('Starting socket listener on tcp://'.config('web.host').':'.config('web.port'));
+        $this->socket = stream_socket_server('tcp://'.config('web.host').':'.config('web.port'), $errno, $errstr);
 
-        if($this->socket === false) {
+        if ($this->socket === false) {
             throw new \Exception($errstr);
         }
 
@@ -79,6 +80,7 @@ class Listener implements SocketContract {
      * Stops the current connection.
      *
      * @param string $reason
+     *
      * @return mixed
      */
     public function quit($reason = null)
@@ -102,28 +104,30 @@ class Listener implements SocketContract {
     {
         $this->client = stream_socket_accept($resource);
 
-        if($this->client === false)
+        if ($this->client === false) {
             return;
+        }
 
-        $socketData = stream_socket_recvfrom($this->client, (1024*32));
+        $socketData = stream_socket_recvfrom($this->client, (1024 * 32));
 
-        if($socketData === false) {
+        if ($socketData === false) {
             $this->write(response('Unable to complete request', 500));
             $this->close();
+
             return;
         }
 
         $headers = parse_headers($socketData);
-        $data    = $this->parseUriData($headers[0]);
+        $data = $this->parseUriData($headers[0]);
 
         info("Accepted new {$data['method']} client to {$data['path']}");
 
         if (isset($headers['content-type'])) {
             switch ($headers['content-type']) {
-                case "application/x-www-form-urlencoded":
+                case 'application/x-www-form-urlencoded':
                     $headers['data'] = $this->parseQuery($headers['data']);
                     break;
-                case "application/json":
+                case 'application/json':
                     $headers['data'] = json_decode($headers['data'], true);
                     break;
             }
@@ -131,10 +135,10 @@ class Listener implements SocketContract {
 
         try {
             $return = HookManager::data($data)->callHttpHooks(array_merge($headers, $data));
-        } catch(\Error $error) {
-            $return = response($error->getMessage() . " in " .  $error->getFile() . ":" . $error->getLine(), 500);
-        } catch(\Exception $exception) {
-            $return = response($exception->getMessage()." in ".$exception->getFile().":".$exception->getLine(), 500);
+        } catch (\Error $error) {
+            $return = response($error->getMessage().' in '.$error->getFile().':'.$error->getLine(), 500);
+        } catch (\Exception $exception) {
+            $return = response($exception->getMessage().' in '.$exception->getFile().':'.$exception->getLine(), 500);
         }
 
         $this->write($return);
@@ -162,13 +166,14 @@ class Listener implements SocketContract {
      * Parses URI header data.
      *
      * @param $header
+     *
      * @return array
      */
     protected function parseUriData($header)
     {
-        $data   = explode(' ', $header);
+        $data = explode(' ', $header);
         $method = strtolower($data[0]);
-        $path   = parse_url("http://127.0.0.1{$data[1]}");
+        $path = parse_url("http://127.0.0.1{$data[1]}");
 
         if (isset($path['query'])) {
             $path['query'] = $this->parseQuery($path['query']);
@@ -181,16 +186,19 @@ class Listener implements SocketContract {
      * Parses a query string.
      *
      * @param $query
+     *
      * @return mixed
      */
     protected function parseQuery($query)
     {
         parse_str($query, $data);
+
         return $data;
     }
 
     /**
      * @param $data
+     *
      * @return string
      */
     protected function makeResponse($data)
@@ -203,12 +211,12 @@ class Listener implements SocketContract {
             'content-type'      => 'text/html; charset=UTF-8',
             'date'              => date('r'),
             'expires'           => date('r', strtotime('+1 second')),
-            'server'            => "Dan " . Dan::VERSION,
-            'version'           => 'HTTP/1.1'
+            'server'            => 'Dan '.Dan::VERSION,
+            'version'           => 'HTTP/1.1',
         ];
 
-        if($data instanceof Response) {
-            $headers[0] = "HTTP/1.1 " . $this->statusCodes[$data->getCode()];
+        if ($data instanceof Response) {
+            $headers[0] = 'HTTP/1.1 '.$this->statusCodes[$data->getCode()];
             $headers['content-length'] = strlen($data->getMessage());
             $headers[] = '';
             $headers[] = $data->getMessage();
@@ -216,9 +224,8 @@ class Listener implements SocketContract {
 
         $compiled = [];
 
-        foreach($headers as $key => $header) {
-
-            if(is_int($key)) {
+        foreach ($headers as $key => $header) {
+            if (is_int($key)) {
                 $compiled[] = $header;
             } else {
                 $compiled[] = "{$key}: {$header}";

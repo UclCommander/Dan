@@ -1,4 +1,6 @@
-<?php namespace Dan\Setup;
+<?php
+
+namespace Dan\Setup;
 
 use Dan\Contracts\MigrationContract;
 use Dan\Setup\Migrations\Migrate_500;
@@ -7,12 +9,10 @@ use Dan\Setup\Migrations\Migrate_511;
 use Dan\Setup\Migrations\Migrate_512;
 use Dan\Setup\Migrations\Migrate_513;
 
-
-class Setup {
-
+class Setup
+{
     /**
      * @var array
-     *
      */
     protected static $migrations = [
         '5.0.0' => Migrate_500::class,
@@ -24,8 +24,7 @@ class Setup {
 
     public static function migrate()
     {
-        foreach(static::$migrations as $version => $migration)
-        {
+        foreach (static::$migrations as $version => $migration) {
             /** @var MigrationContract $class */
             $class = new $migration();
 
@@ -41,8 +40,7 @@ class Setup {
      */
     public static function populateDatabase($name)
     {
-        foreach(static::$migrations as $version => $migration)
-        {
+        foreach (static::$migrations as $version => $migration) {
             /** @var MigrationContract $class */
             $class = new $migration();
 

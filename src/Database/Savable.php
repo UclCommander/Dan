@@ -1,7 +1,8 @@
-<?php namespace Dan\Database; 
+<?php
 
+namespace Dan\Database;
 
-interface Savable {
-
+interface Savable
+{
     public function save();
 }

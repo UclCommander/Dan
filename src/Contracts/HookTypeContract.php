@@ -1,11 +1,14 @@
-<?php namespace Dan\Contracts;
+<?php
 
-interface HookTypeContract {
+namespace Dan\Contracts;
 
+interface HookTypeContract
+{
     /**
      * Registers an anonymous class to the hook.
      *
      * @param $anonymous
+     *
      * @return void
      */
     public function anon($anonymous);
@@ -14,6 +17,7 @@ interface HookTypeContract {
      * Registers an anonymous function to the hook.
      *
      * @param callable $callable
+     *
      * @return void
      */
     public function func(callable $callable);
@@ -22,6 +26,7 @@ interface HookTypeContract {
      * Runs the hook.
      *
      * @param $args
+     *
      * @return bool
      */
     public function run($args);

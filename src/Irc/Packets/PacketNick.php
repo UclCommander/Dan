@@ -1,12 +1,12 @@
-<?php namespace Dan\Irc\Packets; 
+<?php
 
+namespace Dan\Irc\Packets;
 
 use Dan\Contracts\PacketContract;
 use Dan\Irc\Connection;
 
-class PacketNick implements PacketContract {
-
-
+class PacketNick implements PacketContract
+{
     public function handle(Connection $connection, array $from, array $data)
     {
         $user = user($from);
@@ -23,8 +23,10 @@ class PacketNick implements PacketContract {
             'host'   => $user->host(),
         ]);
 
-        foreach($connection->channels as $channel)
-            if($channel->hasUser($user) != null)
+        foreach ($connection->channels as $channel) {
+            if ($channel->hasUser($user) != null) {
                 $channel->renameUser($user, $nick);
+            }
+        }
     }
 }

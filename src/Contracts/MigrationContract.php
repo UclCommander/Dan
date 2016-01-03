@@ -1,9 +1,12 @@
-<?php namespace Dan\Contracts;
+<?php
 
+namespace Dan\Contracts;
 
-interface MigrationContract {
-
+interface MigrationContract
+{
     public function migrate();
+
     public function migrateConfig();
+
     public function migrateDatabase($name);
 }

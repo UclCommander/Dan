@@ -1,12 +1,13 @@
-<?php namespace Dan\Core;
+<?php
 
+namespace Dan\Core;
 
 use Dan\Helpers\DotCollection;
 use Exception;
 use Illuminate\Support\Arr;
 
-class Config extends DotCollection {
-
+class Config extends DotCollection
+{
     /** @var static[]  */
     protected static $configs = [];
 
@@ -15,7 +16,8 @@ class Config extends DotCollection {
 
     /**
      * @param array|mixed $name
-     * @param array $data
+     * @param array       $data
+     *
      * @throws \Exception
      */
     public function __construct($name, $data = [])
@@ -23,14 +25,14 @@ class Config extends DotCollection {
         parent::__construct($data);
 
         $this->name = $name;
-        $this->file = CONFIG_DIR . '/' . $this->name . '.json';
+        $this->file = CONFIG_DIR.'/'.$this->name.'.json';
 
-        if(filesystem()->exists($this->file))
-        {
+        if (filesystem()->exists($this->file)) {
             $json = json_decode(filesystem()->get($this->file), true);
 
-            if(!is_array($json))
+            if (!is_array($json)) {
                 throw new Exception("Error loading JSON for '{$name}.json'. Please check and correct the file.");
+            }
 
             $this->items = $json;
         }
@@ -43,7 +45,7 @@ class Config extends DotCollection {
      */
     public function save()
     {
-        filesystem()->put(CONFIG_DIR . '/' . $this->name . '.json', json_encode($this->items, JSON_PRETTY_PRINT));
+        filesystem()->put(CONFIG_DIR.'/'.$this->name.'.json', json_encode($this->items, JSON_PRETTY_PRINT));
     }
 
     /**
@@ -51,8 +53,9 @@ class Config extends DotCollection {
      */
     public static function saveAll()
     {
-        foreach(static::$configs as $config)
+        foreach (static::$configs as $config) {
             $config->save();
+        }
     }
 
     /**
@@ -62,24 +65,25 @@ class Config extends DotCollection {
     {
         static::$configs = [];
 
-        foreach(filesystem()->glob(CONFIG_DIR . '/*.json') as $file)
-        {
+        foreach (filesystem()->glob(CONFIG_DIR.'/*.json') as $file) {
             $name = basename($file, '.json');
-            new Config($name);
+            new self($name);
         }
     }
 
     /**
-     * Creates a new config
+     * Creates a new config.
      *
      * @param $name
      * @param $default
+     *
      * @return Config
      */
     public static function create($name, $default)
     {
-        if(filesystem()->exists(CONFIG_DIR . '/' . $name . '.json'))
+        if (filesystem()->exists(CONFIG_DIR.'/'.$name.'.json')) {
             return static::$configs[$name];
+        }
 
         return new static($name, $default);
     }
@@ -88,21 +92,22 @@ class Config extends DotCollection {
      * Gets a config value by dot notation. Returns NULL if the config isn't found.
      *
      * @param mixed $name
+     *
      * @return Config|mixed
      */
     public static function fetchByKey($name)
     {
         $item = explode('.', $name, 2);
 
-        if(array_key_exists($item[0], static::$configs))
-        {
-            if(count($item) > 1)
+        if (array_key_exists($item[0], static::$configs)) {
+            if (count($item) > 1) {
                 return static::$configs[$item[0]]->get($item[1]);
+            }
 
             return static::$configs[$item[0]];
         }
 
-        return null;
+        return;
     }
 
     /**
@@ -113,10 +118,11 @@ class Config extends DotCollection {
     {
         $item = explode('.', $key, 2);
 
-        if(array_key_exists($item[0], static::$configs))
-            if(count($item) > 1)
+        if (array_key_exists($item[0], static::$configs)) {
+            if (count($item) > 1) {
                 static::$configs[$item[0]]->set($item[1], $value);
-
+            }
+        }
     }
 
     /**
@@ -148,9 +154,11 @@ class Config extends DotCollection {
 
         $items = Arr::get($config, $configs[1], []);
 
-        foreach($items as $i => $item)
-            if($item == $value)
+        foreach ($items as $i => $item) {
+            if ($item == $value) {
                 unset($items[$i]);
+            }
+        }
 
         Arr::set(static::$configs[$configs[0]], $configs[1], array_values($items));
     }

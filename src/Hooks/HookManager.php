@@ -1,4 +1,6 @@
-<?php namespace Dan\Hooks;
+<?php
+
+namespace Dan\Hooks;
 
 use Dan\Contracts\MessagingContract;
 use Dan\Core\Dan;
@@ -8,10 +10,10 @@ use Dan\Irc\Location\Location;
 use Dan\Irc\Location\User;
 use Dan\Web\Response;
 
-class HookManager {
-
+class HookManager
+{
     /**
-     * @var Hook[] $hooks
+     * @var Hook[]
      */
     protected static $hooks = [];
 
@@ -39,11 +41,12 @@ class HookManager {
      * Calls all hooks except the ones given.
      *
      * @param $items
+     *
      * @return $this
      */
     public function except($items)
     {
-        $this->except = (array)$items;
+        $this->except = (array) $items;
 
         return $this;
     }
@@ -52,28 +55,29 @@ class HookManager {
      * Calls the hooks by type.
      *
      * @param $name
+     *
      * @return bool
      */
     public function call($name)
     {
-        try
-        {
-            $name = 'call' . ucfirst(strtolower($name)) . 'Hooks';
+        try {
+            $name = 'call'.ucfirst(strtolower($name)).'Hooks';
 
-            if(method_exists($this, $name))
+            if (method_exists($this, $name)) {
                 return $this->$name($this->args);
-            else if(DEBUG)
+            } elseif (DEBUG) {
                 error("Method {$name} doesn't exist.");
-        }
-        catch(\Error $error)
-        {
+            }
+        } catch (\Error $error) {
             error($error->getMessage());
 
-            if(DEBUG)
-                error($error->getFile() . ":" . $error->getLine());
+            if (DEBUG) {
+                error($error->getFile().':'.$error->getLine());
+            }
 
-            if(isset($this->args['channel']) && $this->args['channel'] instanceof Location)
-                $this->args['channel']->message("Something unexpected has happened!");
+            if (isset($this->args['channel']) && $this->args['channel'] instanceof Location) {
+                $this->args['channel']->message('Something unexpected has happened!');
+            }
 
             return false;
         }
@@ -87,75 +91,82 @@ class HookManager {
         $prefix = connection()->config->get('command_prefix');
         $command = explode(' ', $args['message'], 2);
 
-        if(strpos($command[0], $prefix) !== 0)
+        if (strpos($command[0], $prefix) !== 0) {
             return false;
+        }
 
         $name = substr($command[0], strlen($prefix));
         $args['message'] = count($command) > 1 ? $command[1] : null;
 
-        foreach(static::getHooks('command', $this->except) as $hook)
-            if($this->runCommandHook($hook, $name, $args))
+        foreach (static::getHooks('command', $this->except) as $hook) {
+            if ($this->runCommandHook($hook, $name, $args)) {
                 return true;
+            }
+        }
 
         return false;
     }
 
     /**
      * @param $args
+     *
      * @return bool
      */
     public function callRegexHooks($args)
     {
-        foreach(static::getHooks('regex', $this->except) as $hook)
-            if($this->runRegexHook($hook, $args))
+        foreach (static::getHooks('regex', $this->except) as $hook) {
+            if ($this->runRegexHook($hook, $args)) {
                 return true;
+            }
+        }
 
         return false;
     }
+
     /**
      * Runs all the http hooks.
      *
      * @param $args
+     *
      * @return bool
      */
     public function callHttpHooks($args)
     {
-        foreach(static::getHooks('http', $this->except) as $hook) {
+        foreach (static::getHooks('http', $this->except) as $hook) {
             $value = $this->runHttpHook($hook, $args);
 
-            if($value instanceof Response || $value === true) {
+            if ($value instanceof Response || $value === true) {
                 return $value;
             }
 
-            if($value === null) {
+            if ($value === null) {
                 return response();
             }
         }
 
-        return response("404 Route Not Found", 404);
+        return response('404 Route Not Found', 404);
     }
-
 
     /**
      * @param \Dan\Hooks\Hook $hook
      * @param $args
+     *
      * @return bool
      */
     public function runRegexHook(Hook $hook, $args)
     {
-        try
-        {
+        try {
             return $hook->hook()->run($args);
-        }
-        catch(\Error $error)
-        {
+        } catch (\Error $error) {
             error($error->getMessage());
 
-            if(DEBUG)
-                error($error->getFile() . ":" . $error->getLine());
+            if (DEBUG) {
+                error($error->getFile().':'.$error->getLine());
+            }
 
-            if(isset($this->args['channel']) && $this->args['channel'] instanceof Location)
-                $this->args['channel']->message("Something unexpected has happened!");
+            if (isset($this->args['channel']) && $this->args['channel'] instanceof Location) {
+                $this->args['channel']->message('Something unexpected has happened!');
+            }
 
             return false;
         }
@@ -164,6 +175,7 @@ class HookManager {
     /**
      * @param \Dan\Hooks\Hook $hook
      * @param $args
+     *
      * @return bool
      */
     public function runCommandHook(Hook $hook, $name, $args)
@@ -171,8 +183,9 @@ class HookManager {
         /** @var CommandHook $command */
         $command = $hook->hook();
 
-        if(!in_array($name, $command->commands))
+        if (!in_array($name, $command->commands)) {
             return false;
+        }
 
         /** @var Channel $channel */
         $channel = $args['channel'];
@@ -182,30 +195,28 @@ class HookManager {
 
         $console = isset($args['console']) && $args['console'];
 
-        if(!$console)
-        {
-            if(!$this->hasPermission($command, $user))
-            {
+        if (!$console) {
+            if (!$this->hasPermission($command, $user)) {
                 $channel->message("You can't use this command!");
+
                 return true;
             }
 
             controlLog("{$user->nick()} used {$command->commands[0]} in {$channel->getLocation()}");
         }
 
-        try
-        {
+        try {
             $command->run($args);
-        }
-        catch(\Error $error)
-        {
+        } catch (\Error $error) {
             error($error->getMessage());
 
-            if(DEBUG)
-                error($error->getFile() . ":" . $error->getLine());
+            if (DEBUG) {
+                error($error->getFile().':'.$error->getLine());
+            }
 
-            if(isset($this->args['channel']) && $this->args['channel'] instanceof MessagingContract)
-                $this->args['channel']->message("Something unexpected has happened!");
+            if (isset($this->args['channel']) && $this->args['channel'] instanceof MessagingContract) {
+                $this->args['channel']->message('Something unexpected has happened!');
+            }
         }
 
         return true;
@@ -216,6 +227,7 @@ class HookManager {
      *
      * @param \Dan\Hooks\Hook $hook
      * @param $args
+     *
      * @return bool|void
      */
     public function runHttpHook(Hook $hook, $args)
@@ -225,39 +237,46 @@ class HookManager {
 
     /**
      * @param \Dan\Hooks\Types\CommandHook $command
-     * @param \Dan\Irc\Location\User $user
+     * @param \Dan\Irc\Location\User       $user
+     *
      * @return bool
      */
     protected function hasPermission(CommandHook $command, User $user)
     {
-        if(Dan::isOwner($user))
+        if (Dan::isOwner($user)) {
             return true;
+        }
 
         $rank = $this->getRank($command);
 
-        if(strpos($rank, 'A') !== false)
-            if(Dan::isAdmin($user))
+        if (strpos($rank, 'A') !== false) {
+            if (Dan::isAdmin($user)) {
                 return true;
+            }
+        }
 
         return $user->hasOneOf($rank);
     }
 
-
     /**
      * @param \Dan\Hooks\Types\CommandHook $command
+     *
      * @return array|\Dan\Core\Config|mixed|string
      */
     protected function getRank(CommandHook $command)
     {
-        $ranks      = config("commands.permissions");
-        $commands   = $command->commands;
+        $ranks = config('commands.permissions');
+        $commands = $command->commands;
 
-        foreach($commands as $cmd)
-            if(array_key_exists($cmd, $ranks))
+        foreach ($commands as $cmd) {
+            if (array_key_exists($cmd, $ranks)) {
                 return $ranks[$cmd];
+            }
+        }
 
-        if($command->rank != null)
+        if ($command->rank != null) {
             return $command->rank;
+        }
 
         return config('commands.default_permissions');
     }
@@ -266,36 +285,36 @@ class HookManager {
      * Sets hook data.
      *
      * @param $args
+     *
      * @return $this
      */
     public static function data($args)
     {
-        return new HookManager($args);
+        return new self($args);
     }
 
     /**
-     * Loads all hooks
+     * Loads all hooks.
      */
     public static function loadHooks()
     {
-        foreach(static::getHooks('event') as $hook)
-            foreach($hook->hook()->events() as $event)
+        foreach (static::getHooks('event') as $hook) {
+            foreach ($hook->hook()->events() as $event) {
                 $event->destroy();
+            }
+        }
 
         static::$hooks = [];
 
-        foreach(filesystem()->allFiles(HOOK_DIR) as $file)
-        {
+        foreach (filesystem()->allFiles(HOOK_DIR) as $file) {
             // This hook was disabled, ignore it.
-            if(strpos(basename($file), '_') === 0)
+            if (strpos(basename($file), '_') === 0) {
                 continue;
-
-            try
-            {
-                include($file);
             }
-            catch(\Error $error)
-            {
+
+            try {
+                include $file;
+            } catch (\Error $error) {
                 error($error->getMessage());
             }
         }
@@ -303,6 +322,7 @@ class HookManager {
 
     /**
      * @param $name
+     *
      * @return \Dan\Hooks\Hook
      */
     public static function registerHook($name) : Hook
@@ -314,25 +334,29 @@ class HookManager {
         return static::$hooks[$name];
     }
 
-
     /**
      * @param string $type
-     * @param array $except
+     * @param array  $except
+     *
      * @return \Dan\Hooks\Hook[]
      */
     public static function getHooks($type = null, $except = [])
     {
         $hooks = static::$hooks;
 
-        foreach($except as $e)
+        foreach ($except as $e) {
             unset($hooks[$e]);
+        }
 
-        if($type == null)
+        if ($type == null) {
             return $hooks;
+        }
 
-        foreach($hooks as $name => $hook)
-            if($hook->getType() != $type)
+        foreach ($hooks as $name => $hook) {
+            if ($hook->getType() != $type) {
                 unset($hooks[$name]);
+            }
+        }
 
         ksort($hooks);
 

@@ -1,10 +1,11 @@
-<?php namespace Dan\Irc\Formatter;
+<?php
 
+namespace Dan\Irc\Formatter;
 
 use Symfony\Component\Console\Formatter\OutputFormatterStyleInterface;
 
-class IrcOutputFormatterStyle implements OutputFormatterStyleInterface {
-
+class IrcOutputFormatterStyle implements OutputFormatterStyleInterface
+{
     protected $char = "\x03";
 
     private static $availableForegroundColors = [
@@ -52,7 +53,7 @@ class IrcOutputFormatterStyle implements OutputFormatterStyleInterface {
 
     private $foreground;
     private $background;
-    private $options = array();
+    private $options = [];
 
     /**
      * Initializes output formatter style.
@@ -63,7 +64,7 @@ class IrcOutputFormatterStyle implements OutputFormatterStyleInterface {
      *
      * @api
      */
-    public function __construct($foreground = null, $background = null, array $options = array())
+    public function __construct($foreground = null, $background = null, array $options = [])
     {
         if (null !== $foreground) {
             $this->setForeground($foreground);
@@ -186,7 +187,7 @@ class IrcOutputFormatterStyle implements OutputFormatterStyleInterface {
      */
     public function setOptions(array $options)
     {
-        $this->options = array();
+        $this->options = [];
 
         foreach ($options as $option) {
             $this->setOption($option);
@@ -202,25 +203,21 @@ class IrcOutputFormatterStyle implements OutputFormatterStyleInterface {
      */
     public function apply($text)
     {
-        $setCodes = array();
-        $unsetCodes = array();
+        $setCodes = [];
+        $unsetCodes = [];
 
-        if($this->foreground !== null)
-        {
-            $setCodes[]     = $this->char.$this->foreground['set'];
-            $unsetCodes[]   = $this->foreground['unset'];
+        if ($this->foreground !== null) {
+            $setCodes[] = $this->char.$this->foreground['set'];
+            $unsetCodes[] = $this->foreground['unset'];
         }
 
-        if($this->background !== null)
-        {
-            $setCodes[]     = $this->char.$this->background['set'];
-            $unsetCodes[]   = $this->background['unset'];
+        if ($this->background !== null) {
+            $setCodes[] = $this->char.$this->background['set'];
+            $unsetCodes[] = $this->background['unset'];
         }
 
-        if(count($this->options))
-        {
-            foreach ($this->options as $option)
-            {
+        if (count($this->options)) {
+            foreach ($this->options as $option) {
                 $setCodes[] = $option['set'];
                 $unsetCodes[] = $option['unset'];
             }
@@ -228,8 +225,9 @@ class IrcOutputFormatterStyle implements OutputFormatterStyleInterface {
             return sprintf("%s%s\x0F", implode('', $setCodes), $text);
         }
 
-        if (count($setCodes) === 0)
+        if (count($setCodes) === 0) {
             return $text;
+        }
 
         return sprintf("%s%s\x03", implode(',', $setCodes), $text);
     }

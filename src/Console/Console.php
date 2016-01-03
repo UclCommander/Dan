@@ -1,4 +1,6 @@
-<?php namespace Dan\Console;
+<?php
+
+namespace Dan\Console;
 
 use Dan\Contracts\MessagingContract;
 use Dan\Contracts\SocketContract;
@@ -11,8 +13,8 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 
-class Console implements SocketContract, MessagingContract {
-
+class Console implements SocketContract, MessagingContract
+{
     /**
      * @var Console
      */
@@ -52,8 +54,8 @@ class Console implements SocketContract, MessagingContract {
             'command_prefix'   => '/',
         ]);
 
-        $this->input    = new ArrayInput([]);
-        $this->output   = new OutputStyle($this->input, new ConsoleOutput());
+        $this->input = new ArrayInput([]);
+        $this->output = new OutputStyle($this->input, new ConsoleOutput());
 
         $this->stream = fopen('php://stdin', 'r');
         stream_set_blocking($this->stream, 0);
@@ -64,8 +66,9 @@ class Console implements SocketContract, MessagingContract {
      */
     public static function factory()
     {
-        if(is_null(static::$self))
+        if (is_null(static::$self)) {
             static::$self = new static();
+        }
 
         return static::$self;
     }
@@ -98,9 +101,12 @@ class Console implements SocketContract, MessagingContract {
      * Stops the current connection.
      *
      * @param string $reason
+     *
      * @return mixed
      */
-    public function quit($reason = null) { }
+    public function quit($reason = null)
+    {
+    }
 
     /**
      * @param resource $resource
@@ -114,18 +120,19 @@ class Console implements SocketContract, MessagingContract {
             'user'          => $this,
             'channel'       => $this,
             'message'       => $message,
-            'console'       => true
+            'console'       => true,
         ];
 
-        if(HookManager::data($hookData)->call('command'))
+        if (HookManager::data($hookData)->call('command')) {
             return;
+        }
     }
-
 
     /**
      * Get the value of a command argument.
      *
-     * @param  string  $key
+     * @param string $key
+     *
      * @return string|array
      */
     public function argument($key = null)
@@ -140,7 +147,8 @@ class Console implements SocketContract, MessagingContract {
     /**
      * Get the value of a command option.
      *
-     * @param  string  $key
+     * @param string $key
+     *
      * @return string|array
      */
     public function option($key = null)
@@ -155,8 +163,9 @@ class Console implements SocketContract, MessagingContract {
     /**
      * Confirm a question with the user.
      *
-     * @param  string  $question
-     * @param  bool    $default
+     * @param string $question
+     * @param bool   $default
+     *
      * @return bool
      */
     public function confirm($question, $default = false)
@@ -167,8 +176,9 @@ class Console implements SocketContract, MessagingContract {
     /**
      * Prompt the user for input.
      *
-     * @param  string  $question
-     * @param  string  $default
+     * @param string $question
+     * @param string $default
+     *
      * @return string
      */
     public function ask($question, $default = null)
@@ -179,9 +189,10 @@ class Console implements SocketContract, MessagingContract {
     /**
      * Prompt the user for input with auto completion.
      *
-     * @param  string  $question
-     * @param  array   $choices
-     * @param  string  $default
+     * @param string $question
+     * @param array  $choices
+     * @param string $default
+     *
      * @return string
      */
     public function anticipate($question, array $choices, $default = null)
@@ -192,9 +203,10 @@ class Console implements SocketContract, MessagingContract {
     /**
      * Prompt the user for input with auto completion.
      *
-     * @param  string  $question
-     * @param  array   $choices
-     * @param  string  $default
+     * @param string $question
+     * @param array  $choices
+     * @param string $default
+     *
      * @return string
      */
     public function askWithCompletion($question, array $choices, $default = null)
@@ -209,8 +221,9 @@ class Console implements SocketContract, MessagingContract {
     /**
      * Prompt the user for input but hide the answer from the console.
      *
-     * @param  string  $question
-     * @param  bool    $fallback
+     * @param string $question
+     * @param bool   $fallback
+     *
      * @return string
      */
     public function secret($question, $fallback = true)
@@ -225,11 +238,12 @@ class Console implements SocketContract, MessagingContract {
     /**
      * Give the user a single choice from an array of answers.
      *
-     * @param  string  $question
-     * @param  array   $choices
-     * @param  string  $default
-     * @param  mixed   $attempts
-     * @param  bool    $multiple
+     * @param string $question
+     * @param array  $choices
+     * @param string $default
+     * @param mixed  $attempts
+     * @param bool   $multiple
+     *
      * @return bool
      */
     public function choice($question, array $choices, $default = null, $attempts = null, $multiple = null)
@@ -244,9 +258,10 @@ class Console implements SocketContract, MessagingContract {
     /**
      * Format input to textual table.
      *
-     * @param  array   $headers
-     * @param  array|\Illuminate\Contracts\Support\Arrayable  $rows
-     * @param  string  $style
+     * @param array                                         $headers
+     * @param array|\Illuminate\Contracts\Support\Arrayable $rows
+     * @param string                                        $style
+     *
      * @return void
      */
     public function table(array $headers, $rows, $style = 'default')
@@ -263,7 +278,8 @@ class Console implements SocketContract, MessagingContract {
     /**
      * Write a string as information output.
      *
-     * @param  string  $string
+     * @param string $string
+     *
      * @return void
      */
     public function info($string)
@@ -274,7 +290,8 @@ class Console implements SocketContract, MessagingContract {
     /**
      * Write a string as standard output.
      *
-     * @param  string  $string
+     * @param string $string
+     *
      * @return void
      */
     public function line($string)
@@ -285,13 +302,15 @@ class Console implements SocketContract, MessagingContract {
     /**
      * Write a string as comment output.
      *
-     * @param  string  $string
+     * @param string $string
+     *
      * @return void
      */
     public function debug($string)
     {
-        if(!DEBUG)
+        if (!DEBUG) {
             return;
+        }
 
         $this->output->writeln("[<magenta>DEBUG</magenta>] <debug>$string</debug>");
     }
@@ -299,7 +318,8 @@ class Console implements SocketContract, MessagingContract {
     /**
      * Write a string as comment output.
      *
-     * @param  string  $string
+     * @param string $string
+     *
      * @return void
      */
     public function comment($string)
@@ -310,7 +330,8 @@ class Console implements SocketContract, MessagingContract {
     /**
      * Write a string as question output.
      *
-     * @param  string  $string
+     * @param string $string
+     *
      * @return void
      */
     public function question($string)
@@ -321,7 +342,8 @@ class Console implements SocketContract, MessagingContract {
     /**
      * Write a string as error output.
      *
-     * @param  string  $string
+     * @param string $string
+     *
      * @return void
      */
     public function error($string)
@@ -332,17 +354,20 @@ class Console implements SocketContract, MessagingContract {
     /**
      * Write a string as warning output.
      *
-     * @param  string  $string
+     * @param string $string
+     *
      * @return void
      */
     public function warn($string)
     {
         $this->output->writeln("[<yellow>WARN</yellow>] <warning>$string</warning>");
     }
+
     /**
      * Write a string as warning output.
      *
-     * @param  string  $string
+     * @param string $string
+     *
      * @return void
      */
     public function success($string)
@@ -386,6 +411,13 @@ class Console implements SocketContract, MessagingContract {
      *
      * @return string
      */
-    public function nick()          { return 'console'; }
-    public function getLocation()   { return 'console'; }
+    public function nick()
+    {
+        return 'console';
+    }
+
+    public function getLocation()
+    {
+        return 'console';
+    }
 }

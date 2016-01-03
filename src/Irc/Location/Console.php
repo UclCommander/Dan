@@ -1,7 +1,8 @@
-<?php namespace Dan\Irc\Location;
+<?php
 
-class Console extends Location {
+namespace Dan\Irc\Location;
 
+class Console extends Location
+{
     protected $location = 'CONSOLE';
 }
-

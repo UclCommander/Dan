@@ -1,16 +1,16 @@
-<?php namespace Dan;
+<?php
 
+namespace Dan;
 
 use Symfony\Component\Console\Application as SymfonyApplication;
-use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Application extends SymfonyApplication {
-
+class Application extends SymfonyApplication
+{
     /**
      * Gets the name of the command based on input.
      *
@@ -32,24 +32,25 @@ class Application extends SymfonyApplication {
     {
         $defaultCommands = parent::getDefaultCommands();
 
-        $defaultCommands[] = new class() extends Command {
-            protected function configure()
-            {
-                $this->setName('dan')
+        $defaultCommands[] = new class() extends Command
+ {
+     protected function configure()
+     {
+         $this->setName('dan')
                      ->setDefinition(new InputDefinition([
-                         new InputOption('debug', 'd', InputOption::VALUE_NONE, "Turn debug on"),
-                         new InputOption('clear-config', 'cc', InputOption::VALUE_NONE, "Clear all config on boot"),
-                         new InputOption('clear-storage', 'cs', InputOption::VALUE_NONE, "Clear all storage (including databases) on boot"),
-                         new InputOption('from-update', '', InputOption::VALUE_NONE, "Trigger from-update mode"),
-                         new InputOption('channel', '', InputOption::VALUE_REQUIRED, "Only used in conjunction with --from-update"),
+                         new InputOption('debug', 'd', InputOption::VALUE_NONE, 'Turn debug on'),
+                         new InputOption('clear-config', 'cc', InputOption::VALUE_NONE, 'Clear all config on boot'),
+                         new InputOption('clear-storage', 'cs', InputOption::VALUE_NONE, 'Clear all storage (including databases) on boot'),
+                         new InputOption('from-update', '', InputOption::VALUE_NONE, 'Trigger from-update mode'),
+                         new InputOption('channel', '', InputOption::VALUE_REQUIRED, 'Only used in conjunction with --from-update'),
                      ]));
-            }
+     }
 
-            protected function execute(InputInterface $input, OutputInterface $output)
-            {
-                (new \Dan\Core\Dan($input, $output))->boot();
-            }
-        };
+     protected function execute(InputInterface $input, OutputInterface $output)
+     {
+         (new \Dan\Core\Dan($input, $output))->boot();
+     }
+ };
 
         return $defaultCommands;
     }

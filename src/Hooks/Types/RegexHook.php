@@ -1,10 +1,12 @@
-<?php namespace Dan\Hooks\Types;
+<?php
+
+namespace Dan\Hooks\Types;
 
 use Dan\Contracts\HookTypeContract;
 use Illuminate\Support\Collection;
 
-class RegexHook implements HookTypeContract {
-
+class RegexHook implements HookTypeContract
+{
     /**
      * @var object
      */
@@ -39,6 +41,7 @@ class RegexHook implements HookTypeContract {
      * Registers an anonymous class to the hook.
      *
      * @param $anonymous
+     *
      * @return void
      */
     public function anon($anonymous)
@@ -50,6 +53,7 @@ class RegexHook implements HookTypeContract {
      * Registers an anonymous function to the hook.
      *
      * @param callable $callable
+     *
      * @return void
      */
     public function func(callable $callable)
@@ -61,32 +65,32 @@ class RegexHook implements HookTypeContract {
      * Runs the hook.
      *
      * @param $args
+     *
      * @return bool
      */
     public function run($args)
     {
-        if(!preg_match_all($this->regex, $args['message'], $matches))
+        if (!preg_match_all($this->regex, $args['message'], $matches)) {
             return false;
+        }
 
         $args['matches'] = $matches;
 
         $args = new Collection($args);
 
-        if($this->class != null)
-        {
+        if ($this->class != null) {
             $class = $this->class;
             $method = isset($this->settings['method']) ? $this->settings['method'] : 'run';
 
             return $class->$method($args);
         }
 
-        if($this->callable != null)
-        {
+        if ($this->callable != null) {
             $func = $this->callable;
 
             return $func($args);
         }
 
-        return null;
+        return;
     }
 }

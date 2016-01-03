@@ -3,7 +3,6 @@
 /**
  * Slowly migrating functions to new functions.php for better formatting.
  */
-
 namespace {
 
     use Dan\Console\Console;
@@ -37,6 +36,7 @@ namespace {
      * Returns the database instance.
      *
      * @param string $name
+     *
      * @return \Dan\Database\Database
      */
     function database($name = null) : Database
@@ -58,6 +58,7 @@ namespace {
      * Gets a config item.
      *
      * @param $name
+     *
      * @return \Dan\Core\Config|array|string|mixed
      */
     function config($name)
@@ -111,6 +112,7 @@ namespace {
 
     /**
      * @param $text
+     *
      * @deprecated use warn()
      */
     function alert($text)
@@ -132,6 +134,7 @@ namespace {
      * Sends a CRITICAL message to console.
      *
      * @deprecated
+     *
      * @param $text
      * @param bool $die
      */
@@ -158,9 +161,9 @@ namespace {
      */
     function vd(...$params)
     {
-        Console::factory()->line("----- VAR DUMP -----");
+        Console::factory()->line('----- VAR DUMP -----');
         var_dump(...$params);
-        Console::factory()->line("----- END VAR DUMP -----");
+        Console::factory()->line('----- END VAR DUMP -----');
     }
 
     /**
@@ -194,6 +197,7 @@ namespace {
 
     /**
      * @param null $name
+     *
      * @return \Dan\Irc\Connection|SocketContract|MessagingContract
      */
     function connection($name = null)
@@ -220,7 +224,6 @@ namespace {
     {
         Dan::connection()->raw($line);
     }
-
 
     /**
      * Sends a message.
@@ -261,6 +264,7 @@ namespace {
      *
      * @param $data
      * @param bool $save
+     *
      * @return \Dan\Irc\Location\User
      */
     function user($data, $save = true)
@@ -282,6 +286,7 @@ namespace {
      *
      * @param $channel
      * @param null $connection
+     *
      * @return bool
      */
     function isChannel($channel, $connection = null) : bool
@@ -303,6 +308,7 @@ namespace {
      * Checks to see if the given user is the server.
      *
      * @param $user
+     *
      * @return bool
      */
     function isServer($user)
@@ -326,6 +332,7 @@ namespace {
      * Checks to see if it matches the user pattern.
      *
      * @param $pattern
+     *
      * @return bool
      */
     function isUser($pattern)
@@ -342,7 +349,7 @@ namespace {
             $pattern = reset($pattern);
         }
 
-        if (fnmatch("*!*@*", $pattern)) {
+        if (fnmatch('*!*@*', $pattern)) {
             return true;
         }
 
@@ -358,6 +365,7 @@ namespace {
      *
      * @param $name
      * @param $data
+     *
      * @return mixed
      */
     function event($name, $data = null)
@@ -371,6 +379,7 @@ namespace {
      * @param $name
      * @param $function
      * @param int $priority
+     *
      * @return Event
      */
     function subscribe($name, $function, $priority = EventPriority::Normal)
@@ -390,11 +399,11 @@ namespace {
 
     #region utility
 
-
     /**
      * Removes line breaks and double spaces from string.
      *
      * @param $string
+     *
      * @return mixed
      */
     function cleanString($string)
@@ -403,10 +412,11 @@ namespace {
     }
 
     /**
-     * Adds 's' if count isn't 1
+     * Adds 's' if count isn't 1.
      *
      * @param $word
      * @param $count
+     *
      * @return string
      */
     function pluralize($word, $count)
@@ -418,6 +428,7 @@ namespace {
      * Coverts a number to a human readable size.
      *
      * @param $size
+     *
      * @return string
      */
     function convert($size)
@@ -431,6 +442,7 @@ namespace {
      * Gets relative path from executable.
      *
      * @param $path
+     *
      * @return mixed
      */
     function relative($path)
@@ -442,6 +454,7 @@ namespace {
      * Checks to if the command exists.
      *
      * @param $cmd
+     *
      * @return bool
      */
     function commandExists($cmd)
@@ -454,7 +467,7 @@ namespace {
 
         $returnVal = shell_exec("which {$cmd}");
 
-        return (empty($returnVal) ? false : true);
+        return empty($returnVal) ? false : true;
     }
 
     /**
@@ -470,12 +483,13 @@ namespace {
      *
      * @param $format
      * @param array $data
+     *
      * @return mixed
      */
     function parseFormat($format, array $data)
     {
         foreach ($data as $key => $value) {
-            $format = str_replace("{".strtoupper($key)."}", $value, $format);
+            $format = str_replace('{'.strtoupper($key).'}', $value, $format);
         }
 
         return $format;
@@ -485,6 +499,7 @@ namespace {
      * Gets webpage headers and normalizes the keys.
      *
      * @param $url
+     *
      * @return array
      */
     function getHeaders($url)
@@ -504,6 +519,7 @@ namespace {
      * Because array_rand doesn't do what's expected of it.
      *
      * @param $array
+     *
      * @return mixed
      */
     function array_random($array)
@@ -528,6 +544,7 @@ namespace {
      * or FALSE if there's no redirect.
      *
      * @param string $url
+     *
      * @return string
      */
     function get_redirect_url($url)
@@ -549,7 +566,7 @@ namespace {
 
         $sock = fsockopen(
             $url_parts['host'],
-            (isset($url_parts['port']) ? (int)$url_parts['port'] : 80),
+            (isset($url_parts['port']) ? (int) $url_parts['port'] : 80),
             $errno,
             $errstr,
             30
@@ -559,7 +576,7 @@ namespace {
             return false;
         }
 
-        $request = "HEAD ".$url_parts['path'].(isset($url_parts['query']) ? '?'.$url_parts['query'] : '')." HTTP/1.1\r\n";
+        $request = 'HEAD '.$url_parts['path'].(isset($url_parts['query']) ? '?'.$url_parts['query'] : '')." HTTP/1.1\r\n";
         $request .= 'Host: '.$url_parts['host']."\r\n";
         $request .= "Connection: Close\r\n\r\n";
 
@@ -574,8 +591,8 @@ namespace {
         fclose($sock);
 
         if (preg_match('/^Location: (.+?)$/m', $response, $matches)) {
-            if (substr($matches[1], 0, 1) == "/") {
-                return $url_parts['scheme']."://".$url_parts['host'].trim($matches[1]);
+            if (substr($matches[1], 0, 1) == '/') {
+                return $url_parts['scheme'].'://'.$url_parts['host'].trim($matches[1]);
             }
 
             return trim($matches[1]);
@@ -589,6 +606,7 @@ namespace {
      * Follows and collects all redirects, in order, for the given URL.
      *
      * @param string $url
+     *
      * @return array
      */
     function get_all_redirects($url)
@@ -613,6 +631,7 @@ namespace {
      * Returns $url itself if it isn't a redirect.
      *
      * @param string $url
+     *
      * @return string
      */
     function get_final_url($url)
@@ -627,6 +646,5 @@ namespace {
     }
 
     #endregion
-
 
 }
