@@ -4,7 +4,7 @@ use Dan\Hooks\HookManager;
 use Illuminate\Support\Collection;
 
 hook('help')
-    ->command(['help'])
+    ->command(['help', 'commands'])
     ->console()
     ->help('Gets help')
     ->func(function(Collection $args) {
