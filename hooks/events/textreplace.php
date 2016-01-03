@@ -5,8 +5,8 @@ use Dan\Irc\Location\User;
 
 hook('textreplace')
     ->on('irc.packets.message.public')
-    ->anon(new class {
-
+    ->anon(new class
+    {
         protected $messages = [];
 
         /**
@@ -20,14 +20,15 @@ hook('textreplace')
             /** @var Channel $channel */
             $channel = $eventArgs->get('channel');
 
-            if(!preg_match("/s\/([^\/]+)\/([^\/]+)?(?:\/(g)?)?/i", $message, $matches))
-            {
+            if (!preg_match("/s\/([^\/]+)\/([^\/]+)?(?:\/(g)?)?/i", $message, $matches)) {
                 $this->addLine($channel, $eventArgs->get('user'), $message);
+
                 return null;
             }
 
-            if(count($matches) < 2)
+            if (count($matches) < 2) {
                 return false;
+            }
 
             $messages = $this->messages[$channel->getLocation()];
 
@@ -35,16 +36,21 @@ hook('textreplace')
 
             $global = isset($matches[3]) ? $matches[3] == 'g' : false;
 
-            foreach($messages as $time => $data)
-            {
-                $new = preg_replace("/{$matches[1]}/", $matches[2], $data['message'], ($global ? -1 : 1));
+            foreach ($messages as $time => $data) {
+                $new = preg_replace("/{$matches[1]}/", ($matches[2] ?? ''), $data['message'], ($global ? -1 : 1));
 
-                if($new == $data['message'])
+                if ($new == $data['message']) {
                     continue;
+                }
 
-                $messages[$time]['message'] = $new;
+                $this->messages[$channel->getLocation()][$time]['message'] = $new;
 
-                $channel->message("[{$data['user']}] {$new}");
+                $carbon = new \Carbon\Carbon();
+                $carbon->setTimestamp($time);
+                $ago = $carbon->diffForHumans();
+
+                $channel->message("[<cyan>{$ago}</cyan>] {$data['user']}: {$new}");
+
                 return false;
             }
         }
@@ -56,13 +62,15 @@ hook('textreplace')
          */
         public function addLine(Channel $channel, User $user, $message)
         {
-            foreach($this->messages as $chan => $lines)
-                if (count($lines) > 30)
+            foreach ($this->messages as $chan => $lines) {
+                if (count($lines) > 30) {
                     array_shift($this->messages[$chan]);
+                }
+            }
 
             $this->messages[$channel->getLocation()][time()] = [
-                'message'   => $message,
-                'user'      => $user->getLocation(),
+                'message' => $message,
+                'user'    => $user->getLocation(),
             ];
         }
     });
