@@ -1,9 +1,9 @@
-<?php namespace Dan\Web;
+<?php
 
+namespace Dan\Web;
 
 class Response
 {
-
     /**
      * @var mixed
      */

@@ -1,7 +1,9 @@
-<?php namespace Dan\Network;
+<?php
 
-class Socket {
+namespace Dan\Network;
 
+class Socket
+{
     /** @var resource $socket  */
     protected $socket;
 
@@ -19,17 +21,18 @@ class Socket {
      * Connects to the given server.
      *
      * @param string $server
-     * @param int $port
+     * @param int    $port
+     *
      * @throws \Exception
      */
     public function connect($server, $port)
     {
         $this->socket = fsockopen($server, $port, $errno, $errstr);
 
-        if($this->socket == false)
+        if ($this->socket == false) {
             throw new \Exception($errstr);
+        }
     }
-
 
     /**
      * Writes to the socket.
@@ -41,7 +44,6 @@ class Socket {
         fwrite($this->socket, $line);
     }
 
-
     /**
      * Reads from the socket.
      *
@@ -49,10 +51,11 @@ class Socket {
      */
     public function read()
     {
-        $lines = fread($this->socket, (1024*30));
+        $lines = fread($this->socket, (1024 * 30));
 
-        if($lines === false)
-            critical("Failed reading from socket.", true);
+        if ($lines === false) {
+            critical('Failed reading from socket.', true);
+        }
 
         return explode("\n", $lines);
     }

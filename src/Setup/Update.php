@@ -1,12 +1,13 @@
-<?php namespace Dan\Setup;
+<?php
 
+namespace Dan\Setup;
 
 use Dan\Contracts\MessagingContract;
 use Dan\Core\Dan;
 use Dan\Hooks\HookManager;
 
-class Update {
-
+class Update
+{
     protected static $repo = 'dan5.1';
 
     /**
@@ -20,9 +21,8 @@ class Update {
 
         $status = shell_exec("git remote update && git status {$repo}");
 
-        return (strpos($status, "up-to-date") === false) === true;
+        return (strpos($status, 'up-to-date') === false) === true;
     }
-
 
     /**
      * Updates the bot.
@@ -35,30 +35,28 @@ class Update {
 
         $shell = shell_exec(sprintf("cd %s && git pull origin {$repo}", ROOT_DIR));
 
-        if(strpos($shell, 'composer.lock'))
-        {
-            $messagingContract->message("composer.lock changed, installing new packages.");
-            shell_exec(sprintf("cd %s && composer install", ROOT_DIR));
+        if (strpos($shell, 'composer.lock')) {
+            $messagingContract->message('composer.lock changed, installing new packages.');
+            shell_exec(sprintf('cd %s && composer install', ROOT_DIR));
         }
 
-        if(strpos($shell, 'src/'))
-        {
-            if(!function_exists('pcntl_exec'))
-            {
-                $messagingContract->message("Core files have been changed, but was unable to restart. PHP needs to be compiled with --enable-pcntl for automatic restarts.");
+        if (strpos($shell, 'src/')) {
+            if (!function_exists('pcntl_exec')) {
+                $messagingContract->message('Core files have been changed, but was unable to restart. PHP needs to be compiled with --enable-pcntl for automatic restarts.');
+
                 return;
             }
 
-            $messagingContract->message("Core files changed, restarting bot.");
+            $messagingContract->message('Core files changed, restarting bot.');
 
-            Dan::quit("Updating bot.", true);
-            pcntl_exec(ROOT_DIR . '/dan');
+            Dan::quit('Updating bot.', true);
+            pcntl_exec(ROOT_DIR.'/dan');
+
             return;
         }
 
-        if(strpos($shell, 'hooks/'))
-        {
-            $messagingContract->message("Hooks changed, reloading.");
+        if (strpos($shell, 'hooks/')) {
+            $messagingContract->message('Hooks changed, reloading.');
             HookManager::loadHooks();
         }
     }
@@ -68,16 +66,19 @@ class Update {
      */
     public static function autoUpdate()
     {
-        if(!config('dan.auto_check_for_updates'))
+        if (!config('dan.auto_check_for_updates')) {
             return;
+        }
 
-        if(!static::check())
+        if (!static::check()) {
             return;
+        }
 
         controlLog('Update found!');
 
-        if(!config('dan.auto_install_updates'))
+        if (!config('dan.auto_install_updates')) {
             return;
+        }
 
         controlLog('Running automatic update...');
 

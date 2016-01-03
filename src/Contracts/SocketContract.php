@@ -1,8 +1,9 @@
-<?php namespace Dan\Contracts;
+<?php
 
+namespace Dan\Contracts;
 
-interface SocketContract {
-
+interface SocketContract
+{
     /**
      * Gets the socket name.
      *
@@ -28,6 +29,7 @@ interface SocketContract {
      * Stops the current connection.
      *
      * @param string $reason
+     *
      * @return mixed
      */
     public function quit($reason = null);

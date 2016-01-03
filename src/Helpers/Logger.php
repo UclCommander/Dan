@@ -1,7 +1,9 @@
-<?php namespace Dan\Helpers;
+<?php
 
-class Logger {
+namespace Dan\Helpers;
 
+class Logger
+{
     /**
      * Logs to a file.
      *
@@ -12,12 +14,13 @@ class Logger {
     {
         $date = date('Ymd');
 
-        $path = LOGS_DIR . "/{$date}/";
+        $path = LOGS_DIR."/{$date}/";
 
-        if(!filesystem()->exists($path))
+        if (!filesystem()->exists($path)) {
             filesystem()->makeDirectory($path, 0755, true);
+        }
 
-        $timestamp = "[" . date('m-d-Y H:m:s') . "] ";
+        $timestamp = '['.date('m-d-Y H:m:s').'] ';
 
         filesystem()->append($path.$file.'.log', $timestamp.PHP_EOL);
     }
@@ -29,7 +32,7 @@ class Logger {
      */
     public static function logChat($line)
     {
-        static::log("chatlog", $line);
+        static::log('chatlog', $line);
     }
 
     /**
@@ -39,7 +42,7 @@ class Logger {
      */
     public static function logDebug($line)
     {
-        static::log("debug", $line);
+        static::log('debug', $line);
     }
 
     /**
@@ -47,11 +50,11 @@ class Logger {
      */
     public static function defineSession()
     {
-        static::log('chatlog', "-------------------------");
-        static::log('chatlog', "------SESSION START------");
-        static::log('chatlog', "-------------------------");
-        static::log('debug', "-------------------------");
-        static::log('debug', "------SESSION START------");
-        static::log('debug', "-------------------------");
+        static::log('chatlog', '-------------------------');
+        static::log('chatlog', '------SESSION START------');
+        static::log('chatlog', '-------------------------');
+        static::log('debug', '-------------------------');
+        static::log('debug', '------SESSION START------');
+        static::log('debug', '-------------------------');
     }
 }

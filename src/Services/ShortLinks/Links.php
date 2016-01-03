@@ -1,5 +1,6 @@
-<?php namespace Dan\Services\ShortLinks;
+<?php
 
+namespace Dan\Services\ShortLinks;
 
 use Dan\Contracts\ShortLinkContract;
 use Dan\Helpers\Web;
@@ -7,9 +8,10 @@ use Dan\Helpers\Web;
 class Links implements ShortLinkContract
 {
     /**
-     * Create the short link
+     * Create the short link.
      *
      * @param $link
+     *
      * @return mixed
      */
     public function create($link)

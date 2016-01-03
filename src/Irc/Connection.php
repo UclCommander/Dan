@@ -1,4 +1,6 @@
-<?php namespace Dan\Irc;
+<?php
+
+namespace Dan\Irc;
 
 use Dan\Contracts\PacketContract;
 use Dan\Contracts\SocketContract;
@@ -12,8 +14,8 @@ use Dan\Irc\Location\User;
 use Dan\Network\Socket;
 use Illuminate\Support\Collection;
 
-class Connection implements SocketContract {
-
+class Connection implements SocketContract
+{
     /** @var string */
     protected $name;
 
@@ -30,7 +32,7 @@ class Connection implements SocketContract {
     public $support;
 
     /** @var User  */
-    public    $user;
+    public $user;
 
     /** @var bool  */
     protected $quitting;
@@ -44,10 +46,10 @@ class Connection implements SocketContract {
      */
     public function __construct($name, array $config)
     {
-        $this->name     = $name;
-        $this->config   = new DotCollection($config);
-        $this->support  = new DotCollection();
-        $this->socket   = new Socket();
+        $this->name = $name;
+        $this->config = new DotCollection($config);
+        $this->support = new DotCollection();
+        $this->socket = new Socket();
         $this->channels = new Collection();
 
         $this->user = new User([
@@ -75,20 +77,20 @@ class Connection implements SocketContract {
     public function connect()
     {
         $server = $this->config->get('server');
-        $port   = $this->config->get('port');
+        $port = $this->config->get('port');
 
         info("Connecting to {$server}:{$port}...");
 
         try {
             $this->socket->connect($server, $port);
-        }
-        catch(\Exception $e) {
+        } catch (\Exception $e) {
             return $this->reconnect();
         }
 
-        success("Connected.");
+        success('Connected.');
         $this->reconnectCount = 0;
         $this->login();
+
         return true;
     }
 
@@ -102,7 +104,8 @@ class Connection implements SocketContract {
 
             $this->reconnectCount++;
 
-            info("Reconnecting to IRC..");
+            info('Reconnecting to IRC..');
+
             return $this->connect();
         }
 
@@ -150,12 +153,12 @@ class Connection implements SocketContract {
         $data = $cmd;
         array_shift($data);
 
-        if ($cmd[0] == "ERROR") {
-            warn("Disconnected from IRC");
+        if ($cmd[0] == 'ERROR') {
+            warn('Disconnected from IRC');
 
             $this->socket->disconnect();
 
-            if(!$this->reconnect()) {
+            if (!$this->reconnect()) {
                 unset($this->socket);
                 Dan::self()->removeSocket($this->name);
             }
@@ -178,10 +181,8 @@ class Connection implements SocketContract {
             $handler->handle($this, $from, $data);
 
             unset($handler);
-
         } catch (\Exception $exception) {
             error($exception->getMessage());
-
         } catch (\Error $error) {
             error($error->getMessage());
         }
@@ -201,19 +202,20 @@ class Connection implements SocketContract {
         $real = $this->config->get('user.real');
 
         $this->send('USER', $name, $name, '*', $real);
-        $this->send("NICK", $nick);
+        $this->send('NICK', $nick);
     }
 
     /**
      * Stops the current connection.
      *
      * @param string $reason
+     *
      * @return mixed
      */
     public function quit($reason = null)
     {
         $this->quitting = true;
-        $this->send("QUIT", $reason);
+        $this->send('QUIT', $reason);
     }
 
     /**
@@ -221,12 +223,13 @@ class Connection implements SocketContract {
      *
      * @param $name
      * @param string $key
+     *
      * @throws \Exception
      */
     public function joinChannel($name, $key = '')
     {
         if (!in_array(substr($name, 0, 1), str_split($this->support->get('CHANTYPES')))) {
-            throw new \Exception("Invalid channel prefix ".substr($name, 0, 1));
+            throw new \Exception('Invalid channel prefix '.substr($name, 0, 1));
         }
 
         $this->send('JOIN', $name, $key);
@@ -238,7 +241,7 @@ class Connection implements SocketContract {
      * @param $name
      * @param string $reason
      */
-    public function partChannel($name, $reason = "Leaving")
+    public function partChannel($name, $reason = 'Leaving')
     {
         if (!$this->inChannel($name)) {
             return;
@@ -255,6 +258,7 @@ class Connection implements SocketContract {
      * Checks to see if the bot is in a channel.
      *
      * @param $channel
+     *
      * @return bool
      */
     public function inChannel($channel)
@@ -266,12 +270,13 @@ class Connection implements SocketContract {
      * Gets a channel if the bot is in it.
      *
      * @param $channel
+     *
      * @return \Dan\Irc\Location\Channel
      */
     public function getChannel($channel)
     {
         if (!$this->inChannel(strtolower($channel))) {
-            return null;
+            return;
         }
 
         return $this->channels->get(strtolower($channel));
@@ -281,6 +286,7 @@ class Connection implements SocketContract {
      * Gets a channel if the bot is in it.
      *
      * @param $channel
+     *
      * @return \Dan\Irc\Location\Channel
      */
     public function addChannel($channel)
@@ -293,10 +299,12 @@ class Connection implements SocketContract {
 
         $this->channels->put($name, new Channel($this, $channel));
     }
+
     /**
      * Removes a channel.
      *
      * @param $channel
+     *
      * @return \Dan\Irc\Location\Channel
      */
     public function removeChannel($channel)
@@ -314,12 +322,13 @@ class Connection implements SocketContract {
      * @param $location
      * @param $message
      * @param array $styles
+     *
      * @throws \Exception
      */
     public function message($location, $message, $styles = [])
     {
         if (isChannel($location, $this->getName())) {
-            if(!$this->inChannel($location)) {
+            if (!$this->inChannel($location)) {
                 throw new \Exception("This channel doesn't exist.");
             }
 
@@ -327,7 +336,7 @@ class Connection implements SocketContract {
                 'connection'    => $this,
                 'user'          => $this->user,
                 'channel'       => $location instanceof Channel ? $location : $this->getChannel($location),
-                'message'       => $message
+                'message'       => $message,
             ]);
         }
 
@@ -389,19 +398,19 @@ class Connection implements SocketContract {
         for ($i = 0; $i < count($params); $i++) {
             $add = $params[$i];
 
-            if(is_null($add)) {
+            if (is_null($add)) {
                 continue;
             }
 
-            if($add instanceof Location) {
+            if ($add instanceof Location) {
                 $add = $add->getLocation();
             }
 
-            if(is_array($add)) {
+            if (is_array($add)) {
                 $add = json_encode($add);
             }
 
-            if(strpos($add, ' ') !== false) {
+            if (strpos($add, ' ') !== false) {
                 $add = ":{$add}";
             }
 

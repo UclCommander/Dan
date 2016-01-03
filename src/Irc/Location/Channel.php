@@ -1,13 +1,14 @@
-<?php namespace Dan\Irc\Location;
+<?php
 
+namespace Dan\Irc\Location;
 
 use Dan\Helpers\DotCollection;
 use Dan\Irc\Connection;
 use Dan\Irc\ModeObject;
 use Illuminate\Support\Collection;
 
-class Channel extends Location {
-
+class Channel extends Location
+{
     protected static $who = [];
 
     /** @var Collection $users */
@@ -16,19 +17,20 @@ class Channel extends Location {
     /**
      * @param \Dan\Irc\Connection $connection
      * @param $name
+     *
      * @throws \Exception
      */
     public function __construct(Connection $connection, $name)
     {
         parent::__construct();
 
-        $this->users        = new Collection();
-        $this->name         = $name;
-        $this->location     = $name;
-        $this->connection   = $connection;
+        $this->users = new Collection();
+        $this->name = $name;
+        $this->location = $name;
+        $this->connection = $connection;
 
         database()->table('channels')->insertOrUpdate(['name', $name], [
-           'name'   => $name
+           'name'   => $name,
         ]);
     }
 
@@ -36,15 +38,18 @@ class Channel extends Location {
      * Gets the channels extra info.
      *
      * @param null $info
-     * @return \Dan\Helpers\DotCollection|mixed
+     *
      * @throws \Exception
+     *
+     * @return \Dan\Helpers\DotCollection|mixed
      */
     public function info($info = null)
     {
         $data = new DotCollection(database()->table('channels')->where('name', $this->name)->first()->get('info'));
 
-        if($info != null)
+        if ($info != null) {
             return $data->get($info);
+        }
 
         return $data;
     }
@@ -57,10 +62,11 @@ class Channel extends Location {
      */
     public function userMode($user, $mode)
     {
-        if($user instanceof User)
+        if ($user instanceof User) {
             $user = $user->getLocation();
+        }
 
-        connection()->send("MODE", $this->location, $mode, $user);
+        connection()->send('MODE', $this->location, $mode, $user);
     }
 
     /**
@@ -80,22 +86,25 @@ class Channel extends Location {
      */
     public function setTopic($topic)
     {
-        $this->connection->send("TOPIC", $this->name, $topic);
+        $this->connection->send('TOPIC', $this->name, $topic);
     }
 
     /**
      * Gets a user.
      *
      * @param $user
+     *
      * @return \Dan\Irc\Location\User|null
      */
     public function getUser($user)
     {
-        if($user instanceof User)
+        if ($user instanceof User) {
             $user = $user->getLocation();
+        }
 
-        if(!$this->users->has($user))
-            return null;
+        if (!$this->users->has($user)) {
+            return;
+        }
 
         $info = $this->users->get($user);
 
@@ -110,12 +119,14 @@ class Channel extends Location {
      * Checks to see if the channel has a user.
      *
      * @param $user
+     *
      * @return bool
      */
     public function hasUser($user)
     {
-        if($user instanceof User)
+        if ($user instanceof User) {
             $user = $user->getLocation();
+        }
 
         return $this->users->has($user);
     }
@@ -125,15 +136,18 @@ class Channel extends Location {
      *
      * @param $user
      * @param $new
+     *
      * @return null
      */
     public function renameUser($user, $new)
     {
-        if($user instanceof User)
+        if ($user instanceof User) {
             $user = $user->getLocation();
+        }
 
-        if(!$this->users->has($user))
-            return null;
+        if (!$this->users->has($user)) {
+            return;
+        }
 
         $old = $this->users->get($user);
 
@@ -150,8 +164,9 @@ class Channel extends Location {
      */
     public function removeUser($user)
     {
-        if($user instanceof User)
+        if ($user instanceof User) {
             $user = $user->nick();
+        }
 
         $this->users->forget($user);
     }
@@ -160,57 +175,53 @@ class Channel extends Location {
      * Sets users from 353.
      *
      * @param $users
+     *
      * @return array
      */
     public function setUsers($users)
     {
         $users = explode(' ', $users);
 
-        foreach($users as $user)
-        {
+        foreach ($users as $user) {
             $rank = '';
             $nick = $user;
 
-            if(!ctype_alnum(substr($user, 0, 1)))
-            {
+            if (!ctype_alnum(substr($user, 0, 1))) {
                 $rank = substr($user, 0, 1);
                 $nick = substr($user, 1);
             }
 
             $info = database()->table('users')->where('nick', $nick)->first();
 
-            if(!$info->count())
-            {
-                if(!in_array($nick, static::$who))
-                {
+            if (!$info->count()) {
+                if (!in_array($nick, static::$who)) {
                     static::$who[$nick] = $nick;
                     // Database has no info, request it from IRC.
-                    send("WHO", $nick);
+                    send('WHO', $nick);
                 }
 
                 // Set default
                 $info['nick'] = $nick;
                 $info['user'] = '';
                 $info['host'] = '';
-            }
-            else
+            } else {
                 unset(static::$who[$nick]);
+            }
 
             $mode = new ModeObject();
             $mode->setPrefix($rank);
 
-            $this->users->put($nick , ['nick' => $info['nick'], 'modes' => $mode]);
+            $this->users->put($nick, ['nick' => $info['nick'], 'modes' => $mode]);
         }
 
         $channel = database()->table('channels')->where('name', $this->name)->first();
 
-        if($channel['max_users'] < count($this->users))
-        {
+        if ($channel['max_users'] < count($this->users)) {
             database()
                 ->table('channels')
                 ->where('name', $this->name)
                 ->update([
-                    'max_users' => $this->users->count()
+                    'max_users' => $this->users->count(),
                 ]);
         }
 
@@ -224,13 +235,12 @@ class Channel extends Location {
      */
     public function updateUserModes(array $data)
     {
-        foreach($data as $modes)
-        {
-            if(!$this->users->has($modes[0]))
+        foreach ($data as $modes) {
+            if (!$this->users->has($modes[0])) {
                 continue;
+            }
 
             $this->users[$modes[0]]['modes']->setMode($modes[1]);
         }
     }
 }
-

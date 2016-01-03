@@ -1,20 +1,22 @@
-<?php namespace Dan\Setup\Migrations;
+<?php
+
+namespace Dan\Setup\Migrations;
 
 use Dan\Contracts\MigrationContract;
 use Dan\Core\Config;
 use Dan\Core\Dan;
 
-class Migrate_500 implements MigrationContract {
-
+class Migrate_500 implements MigrationContract
+{
     /**
      * @param $name
+     *
      * @throws \Exception
      */
     public function migrateDatabase($name)
     {
-        if(!database($name)->tableExists('users'))
-        {
-            info("Creating table users...");
+        if (!database($name)->tableExists('users')) {
+            info('Creating table users...');
 
             database($name)->schema('users')->create([
                 'nick'      => '',
@@ -25,9 +27,8 @@ class Migrate_500 implements MigrationContract {
             ]);
         }
 
-        if(!database($name)->tableExists('channels'))
-        {
-            info("Creating table channels...");
+        if (!database($name)->tableExists('channels')) {
+            info('Creating table channels...');
 
             database($name)->schema('channels')->create([
                 'name'      => '',
@@ -47,13 +48,13 @@ class Migrate_500 implements MigrationContract {
         $irc->putIfNull('enabled', []);
         $irc->putIfNull('servers', []);
         $irc->putIfNull('servers.byteirc', []);
-        $irc->putIfNull('servers.byteirc.server', Dan::args('--irc-server', "irc.byteirc.org"));
+        $irc->putIfNull('servers.byteirc.server', Dan::args('--irc-server', 'irc.byteirc.org'));
         $irc->putIfNull('servers.byteirc.port', Dan::args('--irc-port', 6667));
-        $irc->putIfNull('servers.byteirc.user.nick', "Example");
-        $irc->putIfNull('servers.byteirc.user.name', "Example");
-        $irc->putIfNull('servers.byteirc.user.real', "Example Real Name");
-        $irc->putIfNull('servers.byteirc.user.pass', "");
-        $irc->putIfNull('servers.byteirc.channels', ["#DanTesting"]);
+        $irc->putIfNull('servers.byteirc.user.nick', 'Example');
+        $irc->putIfNull('servers.byteirc.user.name', 'Example');
+        $irc->putIfNull('servers.byteirc.user.real', 'Example Real Name');
+        $irc->putIfNull('servers.byteirc.user.pass', '');
+        $irc->putIfNull('servers.byteirc.channels', ['#DanTesting']);
         $irc->putIfNull('servers.byteirc.nickserv_auth_command', 'PRIVMSG NickServ :IDENTIFY %s');
         $irc->putIfNull('servers.byteirc.autorun_commands', []);
         $irc->putIfNull('servers.byteirc.join_on_invite', false);

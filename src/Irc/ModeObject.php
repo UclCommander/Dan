@@ -1,10 +1,11 @@
-<?php namespace Dan\Irc;
+<?php
 
+namespace Dan\Irc;
 
 use Illuminate\Support\Collection;
 
-class ModeObject {
-
+class ModeObject
+{
     protected $modes;
 
     protected $prefixMap = [
@@ -35,25 +36,23 @@ class ModeObject {
      */
     public function setMode($m)
     {
-        if($m instanceof ModeObject)
+        if ($m instanceof self) {
             $data = $m->modes();
-        elseif ($m instanceof Collection)
+        } elseif ($m instanceof Collection) {
             $data = $m->toArray();
-        else
+        } else {
             $data = str_split($m);
+        }
 
         $add = true;
 
-        for($i = 0; $i < count($data); $i++)
-        {
-            if($data[$i] == '+' || $data[$i] == '-')
-            {
+        for ($i = 0; $i < count($data); $i++) {
+            if ($data[$i] == '+' || $data[$i] == '-') {
                 $add = ($data[$i] == '+');
                 continue;
             }
 
-            if(!$add)
-            {
+            if (!$add) {
                 $this->modes->forget($data[$i]);
                 continue;
             }
@@ -71,14 +70,16 @@ class ModeObject {
     {
         $mode = array_key_exists($prefix, $this->prefixMap) ? $this->prefixMap[$prefix] : '';
 
-        if($mode != '')
+        if ($mode != '') {
             $this->setMode("+{$mode}");
+        }
     }
 
     /**
      * Checks to see if this object has the given mode.
      *
      * @param $mode
+     *
      * @return bool
      */
     public function hasMode($mode)
@@ -90,15 +91,18 @@ class ModeObject {
      * Checks to see if this object has one of the givin modes.
      *
      * @param $mode
+     *
      * @return bool
      */
     public function hasOneOf($mode)
     {
         $modes = str_split($mode);
 
-        foreach($modes as $m)
-            if($this->modes->has($m))
+        foreach ($modes as $m) {
+            if ($this->modes->has($m)) {
                 return true;
+            }
+        }
 
         return false;
     }
@@ -107,6 +111,7 @@ class ModeObject {
      * Checks to see if a user has a mode by prefix.
      *
      * @param $prefix
+     *
      * @return bool
      */
     public function hasPrefix($prefix)

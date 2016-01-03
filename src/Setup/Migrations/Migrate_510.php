@@ -1,15 +1,20 @@
-<?php namespace Dan\Setup\Migrations;
+<?php
+
+namespace Dan\Setup\Migrations;
 
 use Dan\Contracts\MigrationContract;
 use Dan\Core\Config;
 
-class Migrate_510 implements MigrationContract {
-
+class Migrate_510 implements MigrationContract
+{
     /**
      * @param $name
+     *
      * @throws \Exception
      */
-    public function migrateDatabase($name) { }
+    public function migrateDatabase($name)
+    {
+    }
 
     /**
      *

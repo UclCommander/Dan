@@ -1,14 +1,17 @@
-<?php namespace Dan\Irc\Packets; 
+<?php
+
+namespace Dan\Irc\Packets;
 
 use Dan\Contracts\PacketContract;
 use Dan\Irc\Connection;
 
-class PacketTopic implements PacketContract {
-
+class PacketTopic implements PacketContract
+{
     public function handle(Connection $connection, array $from, array $data)
     {
-        if(!$connection->inChannel($data[0]))
+        if (!$connection->inChannel($data[0])) {
             return;
+        }
 
         $channel = $connection->getChannel($data[0]);
 
@@ -19,4 +22,3 @@ class PacketTopic implements PacketContract {
         ]);
     }
 }
-

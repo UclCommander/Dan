@@ -1,11 +1,12 @@
-<?php namespace Dan\Irc\Packets; 
+<?php
 
+namespace Dan\Irc\Packets;
 
 use Dan\Contracts\PacketContract;
 use Dan\Irc\Connection;
 
-class PacketJoin implements PacketContract {
-
+class PacketJoin implements PacketContract
+{
     public function handle(Connection $connection, array $from, array $data)
     {
         if ($from[0] != $connection->user->nick()) {
@@ -19,7 +20,7 @@ class PacketJoin implements PacketContract {
         event('irc.packets.join', [
             'user'          => user($from),
             'channel'       => $connection->getChannel($data[0]),
-            'connection'    => $connection
+            'connection'    => $connection,
         ]);
 
         if (!DEBUG) {

@@ -1,10 +1,11 @@
-<?php namespace Dan\Database;
+<?php
 
+namespace Dan\Database;
 
 use Exception;
 
-class TableSchema {
-
+class TableSchema
+{
     protected $table;
 
     /**
@@ -28,40 +29,47 @@ class TableSchema {
      * Creates a table.
      *
      * @param array $data
-     * @return bool
+     *
      * @throws \Exception
+     *
+     * @return bool
      */
     public function create(array $data)
     {
-        if($this->database->tableExists($this->table))
+        if ($this->database->tableExists($this->table)) {
             throw new \Exception("Table {$this->table} already exists.");
+        }
 
         $this->database->data[$this->table] = [];
 
         $this->database->config[$this->table] = [
             'auto_increment' => 1,
-            'columns' => []
+            'columns'        => [],
         ];
 
-        foreach($data as $column => $settings)
+        foreach ($data as $column => $settings) {
             $this->tableCreateColumn($column, $settings);
+        }
 
         $this->database->save();
-        return true;
 
+        return true;
     }
 
     /**
      * Checks to see if the column exists.
      *
      * @param $column
-     * @return bool
+     *
      * @throws \Exception
+     *
+     * @return bool
      */
     public function columnExists($column)
     {
-        if(!$this->database->tableExists($this->table))
+        if (!$this->database->tableExists($this->table)) {
             throw new Exception("Table {$this->table} doesn't exist.");
+        }
 
         return array_key_exists($column, $this->database->config[$this->table]['columns']);
     }
@@ -71,15 +79,18 @@ class TableSchema {
      *
      * @param $column
      * @param $default
-     * @return bool
+     *
      * @throws \Exception
+     *
+     * @return bool
      */
     public function addColumn($column, $default)
     {
         $this->tableCreateColumn($column, $default);
 
-        foreach($this->database->data[$this->table] as $id => $data)
+        foreach ($this->database->data[$this->table] as $id => $data) {
             $this->database->data[$this->table][$id][$column] = $default;
+        }
 
         $this->database->save();
 
@@ -91,15 +102,18 @@ class TableSchema {
      *
      * @param $column
      * @param null $default
+     *
      * @throws \Exception
      */
     protected function tableCreateColumn($column, $default = null)
     {
-        if(!$this->database->tableExists($this->table))
+        if (!$this->database->tableExists($this->table)) {
             throw new Exception("Table {$this->table} doesn't exist.");
+        }
 
-        if($this->columnExists($column))
+        if ($this->columnExists($column)) {
             throw new Exception("Column {$column} already exists.");
+        }
 
         $this->database->config[$this->table]['columns'][$column] = $default;
     }

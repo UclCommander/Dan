@@ -1,5 +1,6 @@
-<?php namespace Dan\Hooks;
+<?php
 
+namespace Dan\Hooks;
 
 use Dan\Contracts\HookTypeContract;
 use Dan\Hooks\Types\CommandHook;
@@ -7,8 +8,8 @@ use Dan\Hooks\Types\EventHook;
 use Dan\Hooks\Types\HttpHook;
 use Dan\Hooks\Types\RegexHook;
 
-class Hook {
-
+class Hook
+{
     /**
      * @var HookTypeContract
      */
@@ -67,12 +68,14 @@ class Hook {
      * Creates a command hook.
      *
      * @param $name
+     *
      * @return \Dan\Hooks\Types\CommandHook
      */
     public function command($name) : CommandHook
     {
         $this->type = 'command';
-        $this->hook = new CommandHook((array)$name);
+        $this->hook = new CommandHook((array) $name);
+
         return $this->hook;
     }
 
@@ -81,12 +84,14 @@ class Hook {
      *
      * @param $event
      * @param array $settings
+     *
      * @return \Dan\Hooks\Types\EventHook
      */
     public function on($event, array $settings = []) : EventHook
     {
         $this->type = 'event';
-        $this->hook = new EventHook($this->name, (array)$event, $settings);
+        $this->hook = new EventHook($this->name, (array) $event, $settings);
+
         return $this->hook;
     }
 
@@ -95,12 +100,14 @@ class Hook {
      *
      * @param $regex
      * @param array $settings
+     *
      * @return \Dan\Hooks\Types\RegexHook
      */
     public function regex($regex, array $settings = []) : RegexHook
     {
         $this->type = 'regex';
         $this->hook = new RegexHook($regex, $settings);
+
         return $this->hook;
     }
 
@@ -108,12 +115,14 @@ class Hook {
      * Creates a HTTP hook.
      *
      * @param array $settings
+     *
      * @return \Dan\Hooks\Types\HttpHook
      */
     public function http(array $settings = []) : HttpHook
     {
         $this->type = 'http';
         $this->hook = new HttpHook($settings);
+
         return $this->hook;
     }
 }

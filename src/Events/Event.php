@@ -1,10 +1,11 @@
-<?php namespace Dan\Events;
+<?php
 
+namespace Dan\Events;
 
 use Closure;
 
-class Event {
-
+class Event
+{
     protected static $events = [];
     protected $name;
     protected $priority;
@@ -13,7 +14,7 @@ class Event {
 
     public function __construct($name, $function, $priority = EventPriority::Normal)
     {
-        $this->name     = $name;
+        $this->name = $name;
         $this->function = $function;
         $this->priority = $priority;
 
@@ -26,6 +27,7 @@ class Event {
 
     /**
      * @param \Dan\Events\EventArgs $data
+     *
      * @return mixed
      */
     public function call(EventArgs $data)
@@ -44,6 +46,7 @@ class Event {
 
     /**
      * @param $event
+     *
      * @return bool
      */
     public static function has($event)
@@ -55,6 +58,7 @@ class Event {
      * @param $name
      * @param $function
      * @param int $priority
+     *
      * @return static
      */
     public static function subscribe($name, $function, $priority = EventPriority::Normal)
@@ -65,14 +69,16 @@ class Event {
     /**
      * @param $event
      * @param $data
+     *
      * @return mixed
      */
     public static function fire($name, $data = null)
     {
         debug("Firing event <info>{$name}</info>");
 
-        if(!static::has($name))
+        if (!static::has($name)) {
             return $data;
+        }
 
         $list = static::$events[$name];
 
@@ -80,31 +86,31 @@ class Event {
 
         $data = new EventArgs($data);
 
-        foreach($list as $priority => $events)
-        {
-            foreach($events as $id => $event)
-            {
+        foreach ($list as $priority => $events) {
+            foreach ($events as $id => $event) {
                 debug("Calling event ID {$id}");
 
                 $data->put('event', $name);
 
-                /** @var static $event */
+                /* @var static $event */
                 $return = $event->call($data);
 
-                if($return === false)
+                if ($return === false) {
                     return false;
+                }
 
-                if($return == null)
+                if ($return == null) {
                     continue;
+                }
 
-                if($return instanceof EventArgs)
-                {
+                if ($return instanceof EventArgs) {
                     $data = $return;
                     continue;
                 }
 
-                if(!empty($return))
+                if (!empty($return)) {
                     return $return;
+                }
             }
         }
 

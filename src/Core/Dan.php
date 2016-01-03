@@ -1,4 +1,6 @@
-<?php namespace Dan\Core;
+<?php
+
+namespace Dan\Core;
 
 use Dan\Console\Console;
 use Dan\Contracts\MessagingContract;
@@ -16,8 +18,8 @@ use Illuminate\Filesystem\Filesystem;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Dan {
-
+class Dan
+{
     /** @var string Current version */
     const VERSION = '5.1.3';
 
@@ -57,22 +59,26 @@ class Dan {
         $this->input = $input;
         $this->output = $output;
 
-        static::$dan    = $this;
+        static::$dan = $this;
 
-        $this->filesystem       = new Filesystem();
-        $this->databaseManager  = new DatabaseManager();
+        $this->filesystem = new Filesystem();
+        $this->databaseManager = new DatabaseManager();
 
-        if(!filesystem()->exists(CONFIG_DIR))
+        if (!filesystem()->exists(CONFIG_DIR)) {
             filesystem()->makeDirectory(CONFIG_DIR);
+        }
 
-        if(!filesystem()->exists(STORAGE_DIR))
+        if (!filesystem()->exists(STORAGE_DIR)) {
             filesystem()->makeDirectory(STORAGE_DIR);
+        }
 
-        if(!filesystem()->exists(DATABASE_DIR))
+        if (!filesystem()->exists(DATABASE_DIR)) {
             filesystem()->makeDirectory(DATABASE_DIR);
+        }
 
-        if(!filesystem()->exists(HOOK_DIR))
+        if (!filesystem()->exists(HOOK_DIR)) {
             filesystem()->makeDirectory(HOOK_DIR);
+        }
     }
 
     /**
@@ -82,26 +88,25 @@ class Dan {
     {
         define('DEBUG', $this->input->getOption('debug'));
 
-        if(DEBUG)
-            debug("!!!DEBUG MODE ACTIVATED!!!");
+        if (DEBUG) {
+            debug('!!!DEBUG MODE ACTIVATED!!!');
+        }
 
-        if(array_key_exists('--clear-config', static::$args))
+        if (array_key_exists('--clear-config', static::$args)) {
             filesystem()->deleteDirectory(CONFIG_DIR, true);
+        }
 
-        if(array_key_exists('--clear-storage', static::$args))
+        if (array_key_exists('--clear-storage', static::$args)) {
             filesystem()->deleteDirectory(STORAGE_DIR, true);
+        }
 
         Logger::defineSession();
 
         info('Loading bot..');
 
-        try
-        {
+        try {
             Config::load();
-        }
-        catch(\Exception $exception)
-        {
-
+        } catch (\Exception $exception) {
             error($exception->getMessage());
             die;
         }
@@ -109,23 +114,24 @@ class Dan {
         Setup::migrate();
         HookManager::loadHooks();
 
-        success("Bot loaded.");
+        success('Bot loaded.');
 
-        if(empty(config('irc.enabled')))
-            warn("There are no IRC servers enabled. Please add and/or enable one or use /connect <server>");
+        if (empty(config('irc.enabled'))) {
+            warn('There are no IRC servers enabled. Please add and/or enable one or use /connect <server>');
+        }
 
         $this->fromUpdate();
 
         $this->addSocket('console', new Console());
 
-        if(config('web.enabled')) {
+        if (config('web.enabled')) {
             $this->addSocket('listener', new Listener());
         }
 
-        foreach(config('irc.servers') as $name => $config)
-        {
-            if(!in_array($name, config('irc.enabled')))
+        foreach (config('irc.servers') as $name => $config) {
+            if (!in_array($name, config('irc.enabled'))) {
                 continue;
+            }
 
             $irc = new Connection($name, $config);
             $irc->connect();
@@ -141,16 +147,20 @@ class Dan {
      * Connects to a network.
      *
      * @param $name
-     * @return bool
+     *
      * @throws \Exception
+     *
+     * @return bool
      */
     public function connect($name)
     {
-        if(!array_key_exists($name, config('irc.servers')))
+        if (!array_key_exists($name, config('irc.servers'))) {
             throw new \Exception("Sever {$name} does not exist.");
+        }
 
-        if(array_key_exists($name, $this->connections))
-            throw new \Exception("Already connected to this server.");
+        if (array_key_exists($name, $this->connections)) {
+            throw new \Exception('Already connected to this server.');
+        }
 
         $irc = new Connection($name, config("irc.servers.{$name}"));
         $irc->connect();
@@ -167,8 +177,7 @@ class Dan {
      */
     public function addSocket($name, SocketContract $connection)
     {
-        if(!$this->databaseManager->exists($name))
-        {
+        if (!$this->databaseManager->exists($name)) {
             $this->databaseManager->create($name);
             Setup::populateDatabase($name);
         }
@@ -191,22 +200,17 @@ class Dan {
      */
     public function startSockets()
     {
-        while($this->running)
-        {
+        while ($this->running) {
             usleep(200000);
 
-            $inputs     = $this->getStreams();
-            $write      = null;
-            $except     = null;
+            $inputs = $this->getStreams();
+            $write = null;
+            $except = null;
 
-            if(stream_select($inputs, $write, $except, 0) > 0)
-            {
-                foreach($inputs as $input)
-                {
-                    foreach($this->connections as $connection)
-                    {
-                        if($input == $connection->getStream())
-                        {
+            if (stream_select($inputs, $write, $except, 0) > 0) {
+                foreach ($inputs as $input) {
+                    foreach ($this->connections as $connection) {
+                        if ($input == $connection->getStream()) {
                             static::$currentConnection = $connection->getName();
                             $connection->handle($input);
                         }
@@ -220,6 +224,7 @@ class Dan {
      * Disconnects from a network.
      *
      * @param $name
+     *
      * @throws \Exception
      */
     public static function disconnect($name)
@@ -231,22 +236,23 @@ class Dan {
         $connection = static::$dan->connections[$name];
 
         if ($connection instanceof Connection) {
-            $connection->send("QUIT", "Disconnecting");
+            $connection->send('QUIT', 'Disconnecting');
 
             return;
         }
 
-        throw new \Exception("This connection cannot be closed.");
+        throw new \Exception('This connection cannot be closed.');
     }
 
     /**
      * Safely closes the bot.
      *
      * @param string $reason
-     * @param bool $reboot
+     * @param bool   $reboot
+     *
      * @return bool
      */
-    public static function quit($reason = "Bot shutting down", $reboot = false)
+    public static function quit($reason = 'Bot shutting down', $reboot = false)
     {
         if (event('dan.quitting') === false) {
             return false;
@@ -280,26 +286,26 @@ class Dan {
     {
         $streams = [];
 
-        foreach($this->connections as $connection)
+        foreach ($this->connections as $connection) {
             $streams[] = $connection->getStream();
+        }
 
         return $streams;
     }
-
 
     /**
      * Does from-update checks.
      */
     public function fromUpdate()
     {
-        if($this->input->getOption('from-update'))
-        {
-            subscribe('irc.packets.join', function(EventArgs $eventArgs) {
+        if ($this->input->getOption('from-update')) {
+            subscribe('irc.packets.join', function (EventArgs $eventArgs) {
 
                 $channel = $this->input->getOption('channel');
 
-                if($eventArgs->get('channel')->getLocation() != $channel)
+                if ($eventArgs->get('channel')->getLocation() != $channel) {
                     return;
+                }
 
                 $v = static::getCurrentGitVersion();
                 message($channel, "{reset}[ {green}Up to date {reset}| Currently on {yellow}{$v['id']}{reset} | {cyan}{$v['message']} {reset}]");
@@ -322,16 +328,20 @@ class Dan {
      * Gets the database driver.
      *
      * @param string $name
-     * @return \Dan\Database\Database
+     *
      * @throws \Exception
+     *
+     * @return \Dan\Database\Database
      */
     public static function database($name = null) : Database
     {
-        if($name == null)
+        if ($name == null) {
             $name = static::$currentConnection;
+        }
 
-        if($name == null)
+        if ($name == null) {
             $name = 'console';
+        }
 
         return static::$dan->databaseManager->get($name);
     }
@@ -339,8 +349,9 @@ class Dan {
     /**
      * Gets the database manager.
      *
-     * @return \Dan\Database\DatabaseManager
      * @throws \Exception
+     *
+     * @return \Dan\Database\DatabaseManager
      */
     public static function databaseManager() : DatabaseManager
     {
@@ -351,6 +362,7 @@ class Dan {
      * Checks to see if a connection exists.
      *
      * @param $name
+     *
      * @return bool
      */
     public static function hasConnection($name)
@@ -362,18 +374,22 @@ class Dan {
      * Gets the IRC connection.
      *
      * @param null $name
+     *
      * @return \Dan\Irc\Connection|SocketContract|MessagingContract
      */
     public static function connection($name = null)
     {
-        if($name == null)
+        if ($name == null) {
             $name = static::$currentConnection;
+        }
 
-        if($name == null)
+        if ($name == null) {
             $name = 'console';
+        }
 
-        if(!static::hasConnection($name))
-            return null;
+        if (!static::hasConnection($name)) {
+            return;
+        }
 
         return static::$dan->connections[$name];
     }
@@ -382,13 +398,16 @@ class Dan {
      * Checks to see if a user is an owner.
      *
      * @param \Dan\Irc\Location\User $user
+     *
      * @return bool
      */
     public static function isOwner(User $user)
     {
-        foreach(config('dan.owners') as $usr)
-            if (fnmatch($usr, $user->string()))
+        foreach (config('dan.owners') as $usr) {
+            if (fnmatch($usr, $user->string())) {
                 return true;
+            }
+        }
 
         return false;
     }
@@ -397,13 +416,16 @@ class Dan {
      * Checks to see if a user is an admin.
      *
      * @param \Dan\Irc\Location\User $user
+     *
      * @return bool
      */
     public static function isAdmin(User $user)
     {
-        foreach(config('dan.admins') as $usr)
-            if (fnmatch($usr, $user->string()))
+        foreach (config('dan.admins') as $usr) {
+            if (fnmatch($usr, $user->string())) {
                 return true;
+            }
+        }
 
         return false;
     }
@@ -412,11 +434,12 @@ class Dan {
      * Checks to see if a user is an admin or owner.
      *
      * @param \Dan\Irc\Location\User $user
+     *
      * @return bool
      */
     public static function isAdminOrOwner(User $user)
     {
-        return (static::isOwner($user) || static::isAdmin($user));
+        return static::isOwner($user) || static::isAdmin($user);
     }
 
     /**
@@ -424,15 +447,18 @@ class Dan {
      *
      * @param null $arg
      * @param null $default
+     *
      * @return array|null
      */
     public static function args($arg = null, $default = null)
     {
-        if($arg == null)
+        if ($arg == null) {
             return static::$args;
+        }
 
-        if(isset(static::$args[$arg]))
+        if (isset(static::$args[$arg])) {
             return static::$args[$arg];
+        }
 
         return $default;
     }
@@ -444,14 +470,13 @@ class Dan {
      */
     public static function getCurrentGitVersion() : array
     {
-        $commitId       = trim(shell_exec('git rev-parse --short HEAD'));
-        $data           = shell_exec('git log -1');
-        $messages       = array_filter(explode(PHP_EOL, $data));
-        $commitMessage  = trim(last($messages));
+        $commitId = trim(shell_exec('git rev-parse --short HEAD'));
+        $data = shell_exec('git log -1');
+        $messages = array_filter(explode(PHP_EOL, $data));
+        $commitMessage = trim(last($messages));
 
         return ['id' => $commitId, 'message' => $commitMessage];
     }
-
 
     /**
      * Gets the Dan instance.
