@@ -56,4 +56,12 @@ class Socket {
 
         return explode("\n", $lines);
     }
+
+    /**
+     * @return bool
+     */
+    public function disconnect()
+    {
+        return fclose($this->socket);
+    }
 }

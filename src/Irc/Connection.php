@@ -30,7 +30,13 @@ class Connection implements SocketContract {
     public $support;
 
     /** @var User  */
-    public $user;
+    public    $user;
+
+    /** @var bool  */
+    protected $quitting;
+
+    /** @var int  */
+    protected $reconnectCount = 0;
 
     /**
      * @param $name
@@ -72,11 +78,35 @@ class Connection implements SocketContract {
         $port   = $this->config->get('port');
 
         info("Connecting to {$server}:{$port}...");
-        $this->socket->connect($server, $port);
-        success("Connected.");
 
+        try {
+            $this->socket->connect($server, $port);
+        }
+        catch(\Exception $e) {
+            return $this->reconnect();
+        }
+
+        success("Connected.");
+        $this->reconnectCount = 0;
         $this->login();
         return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function reconnect()
+    {
+        if (!$this->quitting && $this->reconnectCount < 3) {
+            sleep(5);
+
+            $this->reconnectCount++;
+
+            info("Reconnecting to IRC..");
+            return $this->connect();
+        }
+
+        return false;
     }
 
     /**
@@ -122,8 +152,14 @@ class Connection implements SocketContract {
 
         if ($cmd[0] == "ERROR") {
             warn("Disconnected from IRC");
-            unset($this->socket);
-            Dan::self()->removeSocket($this->name);
+
+            $this->socket->disconnect();
+
+            if(!$this->reconnect()) {
+                unset($this->socket);
+                Dan::self()->removeSocket($this->name);
+            }
+
             return;
         }
 
@@ -176,6 +212,7 @@ class Connection implements SocketContract {
      */
     public function quit($reason = null)
     {
+        $this->quitting = true;
         $this->send("QUIT", $reason);
     }
 
