@@ -20,7 +20,7 @@ hook('textreplace')
             /** @var Channel $channel */
             $channel = $eventArgs->get('channel');
 
-            if (!preg_match("/s\/([^\/]+)\/([^\/]+)?(?:\/(g)?)?/i", $message, $matches)) {
+            if (!preg_match("/^s\/([^\/]+)\/([^\/]+)?(?:\/(g)?)?/i", $message, $matches)) {
                 $this->addLine($channel, $eventArgs->get('user'), $message);
 
                 return null;
