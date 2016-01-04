@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
@@ -45,9 +46,9 @@ hook('textreplace')
 
                 $this->messages[$channel->getLocation()][$time]['message'] = $new;
 
-                $carbon = new \Carbon\Carbon();
-                $carbon->setTimestamp($time);
-                $ago = $carbon->diffForHumans();
+                /** @var Carbon $carbon */
+                $carbon = $data['carbon'];
+                $ago    = $carbon->diffForHumans();
 
                 $channel->message("[<cyan>{$ago}</cyan>] {$data['user']}: {$new}");
 
@@ -69,8 +70,9 @@ hook('textreplace')
             }
 
             $this->messages[$channel->getLocation()][time()] = [
-                'message' => $message,
-                'user'    => $user->getLocation(),
+                'message'   => $message,
+                'user'      => $user->getLocation(),
+                'carbon'    => new Carbon(),
             ];
         }
     });
