@@ -39,8 +39,10 @@ hook('twitter_tweets')
                 continue;
             }
 
+            $text = cleanString($data->text);
+
             $connection->getChannel($user['channel'])
-                ->message("[ Twitter ] <cyan>@{$data->user->screen_name}:</cyan> {$data->text} - " . shortLink("https://twitter.com/{$data->user->screen_name}/status/{$data->id_str}"));
+                ->message("[ Twitter ] <cyan>@{$data->user->screen_name}:</cyan> {$text} - " . shortLink("https://twitter.com/{$data->user->screen_name}/status/{$data->id_str}"));
 
             $cache[] = $data->id_str;
         }
