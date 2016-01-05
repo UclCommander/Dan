@@ -5,6 +5,7 @@ namespace Dan\Irc\Packets;
 use Dan\Contracts\PacketContract;
 use Dan\Core\Dan;
 use Dan\Events\EventArgs;
+use Dan\Helpers\Logger;
 use Dan\Hooks\HookManager;
 use Dan\Irc\Connection;
 
@@ -15,6 +16,8 @@ class PacketPrivmsg implements PacketContract
         if (!DEBUG) {
             console("[<magenta>{$connection->getName()}</magenta>][<cyan>{$data[0]}</cyan>][<yellow>{$from[0]}</yellow>] {$data[1]}");
         }
+
+        Logger::logChat("[{$connection->getName()}][{$data[0]}][{$from[0]}] {$data[1]}");
 
         if (isChannel($data[0])) {
             $channel = $connection->getChannel($data[0]);

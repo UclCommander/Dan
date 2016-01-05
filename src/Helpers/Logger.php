@@ -22,7 +22,7 @@ class Logger
 
         $timestamp = '['.date('m-d-Y H:m:s').'] ';
 
-        filesystem()->append($path.$file.'.log', $timestamp.PHP_EOL);
+        filesystem()->append($path.$file.'.log', $timestamp.$text.PHP_EOL);
     }
 
     /**

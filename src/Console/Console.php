@@ -4,6 +4,7 @@ namespace Dan\Console;
 
 use Dan\Contracts\MessagingContract;
 use Dan\Contracts\SocketContract;
+use Dan\Helpers\Logger;
 use Dan\Hooks\HookManager;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Collection;
@@ -308,6 +309,8 @@ class Console implements SocketContract, MessagingContract
      */
     public function debug($string)
     {
+        Logger::logDebug($string);
+
         if (!DEBUG) {
             return;
         }
