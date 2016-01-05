@@ -34,7 +34,6 @@ hook('github_push')
 
             $compiled = [
                 "[ Github - New Commit ] <cyan>{$repo['full_name']}</cyan>",
-                "<light_cyan>" . cleanString($repo['description']) . "</light_cyan>",
                 "<orange>{$branch}</orange>",
                 "<yellow>" . substr($commit['id'], 0, 8) . "</yellow>",
                 "<cyan>{$commit['author']['name']}</cyan>",
@@ -60,7 +59,6 @@ hook('github_push')
 
             $compiled = [
                 "[ Github - " . ucfirst($data['action']) . " Issue ] <cyan>{$repo['full_name']}</cyan>",
-                "<light_cyan>" . cleanString($repo['description']) . "</light_cyan>",
                 "Created by <cyan>{$issue['assignee']['login']}</cyan>",
                 "<light_cyan>{$issue['title']}</light_cyan>",
                 shortLink($issue['url']),
