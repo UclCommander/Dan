@@ -26,7 +26,6 @@ hook('stats')
             return;
         }
 
-
         if($message && isChannel($message))
             $channel = $message;
 

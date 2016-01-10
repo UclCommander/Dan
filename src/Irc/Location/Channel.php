@@ -45,13 +45,27 @@ class Channel extends Location
      */
     public function info($info = null)
     {
-        $data = new DotCollection(database()->table('channels')->where('name', $this->name)->first()->get('info'));
+        $data = new DotCollection(database()->table('channels')->where('name', $this->location)->first()->get('info'));
 
         if ($info != null) {
             return $data->get($info);
         }
 
         return $data;
+    }
+
+    /**
+     * Sets the channel info.
+     *
+     * @param $key
+     * @param $value
+     *
+     * @throws \Exception
+     */
+    public function setInfo($key, $value)
+    {
+        $db = database()->table('channels')->where('name', $this->location);
+        $db->update(['info' => [$key => $value]]);
     }
 
     /**
@@ -103,7 +117,7 @@ class Channel extends Location
         }
 
         if (!$this->users->has($user)) {
-            return;
+            return false;
         }
 
         $info = $this->users->get($user);
