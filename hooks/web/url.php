@@ -46,8 +46,7 @@ hook('title')
             {
                 $html = Web::get($url);
 
-                $str = trim(preg_replace('/\s+/', ' ', $html));
-                preg_match("/\<title\>(.*)\<\/title\>/i", $str, $title);
+                preg_match("/\<title.*?\>(.*?)\<\/title\>/i", $html, $title);
 
                 $title = $title[1];
                 $title = str_replace("\n", '', str_replace("\r", '', $title));
