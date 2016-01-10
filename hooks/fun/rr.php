@@ -12,6 +12,10 @@ hook('roulette')
     ->command(['roulette', 'rr'])
     ->help("yeah, you know what this is.")
     ->func(function(Collection $args) use (&$bullets, &$shots) {
+        if ($shots > 6) {
+            $shots = 0;
+        }
+
         /** @var User $user */
         $user = $args->get('user');
 
