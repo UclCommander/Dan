@@ -44,13 +44,9 @@ hook('roulette')
             shuffle($bullets);
             $shots = 0;
 
-            $prev = $channel->info("rr.deaths.{$user->nick()}") ?? 0;
-
-            $channel->setInfo('rr', [
-                'deaths' => [
-                    $user->nick() => $prev + 1
-                ]
-            ]);
+            $prev = $channel->info("rr.deaths") ?? 0;
+            $prev[$user->nick()] += $prev[$user->nick()] + 1;
+            $channel->setInfo('rr', ['deaths' => $prev]);
         }
 
         $channel->action(sprintf("<i>points the gun at %s</i>  -  <i>*pulls the trigger*</i>  -  <i>%s</i>", $user->nick(), $response));
