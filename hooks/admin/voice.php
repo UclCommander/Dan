@@ -6,7 +6,7 @@ use Illuminate\Support\Collection;
 hook('voice')
     ->command(['voice'])
     ->console()
-    ->rank('hoaq')
+    ->rank('hoaqAS')
     ->help("Voices a user")
     ->func(function(Collection $args) {
         /** @var Channel $channel */

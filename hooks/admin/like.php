@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 
 hook('like')
     ->command(['clones', 'like'])
-    ->rank('vhoaq')
+    ->rank('vhoaqAS')
     ->help([
         "Searches users for same or similar hosts",
     ])

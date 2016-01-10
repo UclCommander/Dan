@@ -13,7 +13,7 @@ use Illuminate\Support\Collection;
 hook('kick')
     ->command(['kick', 'k'])
     ->console()
-    ->rank('oaq')
+    ->rank('oaqAS')
     ->help([
         'kick <user> [reason] - Kicks <user> with an optional [reason]',
         'kick <channel> <user> [reason] - Kicks <user> from <channel> with an optional [reason]',

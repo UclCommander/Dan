@@ -6,7 +6,7 @@ use Illuminate\Support\Collection;
 hook('op')
     ->command(['op'])
     ->console()
-    ->rank('aq')
+    ->rank('aqAS')
     ->help("Ops a user")
     ->func(function(Collection $args) {
         /** @var Channel $channel */
