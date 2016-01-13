@@ -21,7 +21,15 @@ hook('twitter_tweets')
         }
 
         foreach($config['users'] as $user) {
-            $data = $twitter->getTimeline(['screen_name' => $user['name'], 'count' => 1]);
+            $data = $twitter->getTimeline([
+                'screen_name'       => $user['name'],
+                'count'             => 1,
+                'exclude_replies'   => $user['replies'] ?? true
+            ]);
+
+            if (count($data) == 0) {
+                continue;
+            }
 
             $data = $data[0];
 
