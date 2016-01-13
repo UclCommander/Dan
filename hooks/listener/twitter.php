@@ -24,7 +24,7 @@ hook('twitter_tweets')
             $data = $twitter->getTimeline([
                 'screen_name'       => $user['name'],
                 'count'             => 1,
-                'exclude_replies'   => $user['replies'] ?? true
+                'exclude_replies'   => !($user['replies'] ?? true)
             ]);
 
             if (count($data) == 0) {
