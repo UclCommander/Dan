@@ -97,6 +97,7 @@ class CommandHook implements HookTypeContract
 
     /**
      * @param $args
+     * @return void
      */
     public function run($args)
     {

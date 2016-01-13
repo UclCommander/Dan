@@ -2,16 +2,22 @@
 
 namespace Dan\Irc\Location;
 
+use Dan\Database\Savable;
 use Dan\Helpers\DotCollection;
 use Dan\Irc\Connection;
 use Dan\Irc\ModeObject;
 use Illuminate\Support\Collection;
 
-class Channel extends Location
+class Channel extends Location implements Savable
 {
+
+    /** @var \Illuminate\Support\Collection  */
+    public $data;
+
+    /** @var array  */
     protected static $who = [];
 
-    /** @var Collection $users */
+    /** @var DotCollection $users */
     protected $users;
 
     /**
@@ -32,13 +38,15 @@ class Channel extends Location
         database()->table('channels')->insertOrUpdate(['name', $name], [
            'name'   => $name,
         ]);
+
+        $this->data = new DotCollection(database()->table('channels')->where('name', $this->location)->first()->get('data'));
     }
 
     /**
      * Gets the channels extra info.
      *
      * @param null $info
-     *
+     * @deprecated use $data
      * @throws \Exception
      *
      * @return \Dan\Helpers\DotCollection|mixed
@@ -256,5 +264,20 @@ class Channel extends Location
 
             $this->users[$modes[0]]['modes']->setMode($modes[1]);
         }
+    }
+
+    /**
+     * Saves the channel data.
+     *
+     * @throws \Exception
+     */
+    public function save()
+    {
+        database()->table('channels')
+            ->where('name', $this->location)
+            ->update([
+                'name'  => $this->location,
+                'data'  => $this->data->toArray()
+            ]);
     }
 }

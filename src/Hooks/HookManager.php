@@ -196,6 +196,12 @@ class HookManager
         $console = isset($args['console']) && $args['console'];
 
         if (!$console) {
+            $disabled = $channel->data->get('disabled_commands', []);
+
+            if (in_array($hook->getName(), $disabled)) {
+                return true;
+            }
+
             if (!$this->hasPermission($command, $user)) {
                 $channel->message("You can't use this command!");
 
