@@ -3,7 +3,6 @@
 namespace Dan\Setup\Migrations;
 
 use Dan\Contracts\MigrationContract;
-use Dan\Core\Config;
 
 class Migrate_514 implements MigrationContract
 {

@@ -69,7 +69,7 @@ class Connection implements SocketContract
         return $this->name;
     }
 
-    #region socket things
+    //region socket things
 
     /**
      * @throws \Exception
@@ -188,9 +188,9 @@ class Connection implements SocketContract
         }
     }
 
-    #endregion
+    //endregion
 
-    #region irc things
+    //region irc things
 
     /**
      *
@@ -434,5 +434,5 @@ class Connection implements SocketContract
         $this->socket->write("{$raw}\r\n");
     }
 
-    #endregion
+    //endregion
 }

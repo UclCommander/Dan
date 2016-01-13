@@ -20,7 +20,7 @@ namespace {
     use Dan\Irc\Location\User;
     use Illuminate\Filesystem\Filesystem;
 
-    #region class fetchers
+    //region class fetchers
 
     /**
      * Gets the filesystem class.
@@ -66,9 +66,9 @@ namespace {
         return Config::fetchByKey($name);
     }
 
-    #endregion
+    //endregion
 
-    #region console
+    //region console
 
     /**
      * Sends a DEBUG message to console.
@@ -191,9 +191,9 @@ namespace {
         }
     }
 
-    #endregion
+    //endregion
 
-    #region irc
+    //region irc
 
     /**
      * @param null $name
@@ -356,9 +356,9 @@ namespace {
         return database()->table('users')->where('nick', $pattern)->count() != 0;
     }
 
-    #endregion
+    //endregion
 
-    #region events
+    //region events
 
     /**
      * Fires an event.
@@ -395,9 +395,9 @@ namespace {
         return HookManager::registerHook($name);
     }
 
-    #endregion
+    //endregion
 
-    #region utility
+    //region utility
 
     /**
      * Removes line breaks and double spaces from string.
@@ -532,9 +532,9 @@ namespace {
         return json_decode(json_encode($data), true);
     }
 
-    #endregion
+    //endregion
 
-    #region url
+    //region url
 
     // ALL code below found here because im lazy: http://stackoverflow.com/a/4102293
 
@@ -645,6 +645,6 @@ namespace {
         return $url;
     }
 
-    #endregion
+    //endregion
 
 }
