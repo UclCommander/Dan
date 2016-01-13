@@ -10,7 +10,6 @@ use Illuminate\Support\Collection;
 
 class Channel extends Location implements Savable
 {
-
     /** @var \Illuminate\Support\Collection  */
     public $data;
 
@@ -46,7 +45,9 @@ class Channel extends Location implements Savable
      * Gets the channels extra info.
      *
      * @param null $info
+     *
      * @deprecated use $data
+     *
      * @throws \Exception
      *
      * @return \Dan\Helpers\DotCollection|mixed
@@ -277,7 +278,7 @@ class Channel extends Location implements Savable
             ->where('name', $this->location)
             ->update([
                 'name'  => $this->location,
-                'data'  => $this->data->toArray()
+                'data'  => $this->data->toArray(),
             ]);
     }
 }
