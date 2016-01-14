@@ -23,7 +23,29 @@ hook('github_push')
 
         $message = '';
 
-        if(isset($data['commits'])) {
+        if (isset($data['deleted']) && $data['deleted']) {
+            $branch = last(explode('/', $data['ref']));
+
+            $compiled = [
+                "[ Github - Deleted Branch ] <cyan>{$repo['full_name']}</cyan>",
+                "<orange>{$branch}</orange>",
+                "<light_cyan>{$data['sender']['login']}</light_cyan>",
+            ];
+
+            $message = implode(' - ', array_filter($compiled));
+
+        } elseif (isset($data['created']) && $data['created']) {
+            $branch = last(explode('/', $data['ref']));
+
+            $compiled = [
+                "[ Github - Created Branch ] <cyan>{$repo['full_name']}</cyan>",
+                "<orange>{$branch}</orange>",
+                "<light_cyan>{$data['sender']['login']}</light_cyan>",
+            ];
+
+            $message = implode(' - ', array_filter($compiled));
+
+        } elseif (isset($data['commits'])) {
             $commit = head($data['commits']);
 
             $added = "+".count($commit['added']);
