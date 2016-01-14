@@ -1,59 +1,51 @@
 <?php
 
-use Dan\Irc\Location\Channel;
-use Dan\Irc\Location\User;
 use Illuminate\Support\Collection;
-
-$bullets = [false, false, false, true, false, false];
-shuffle($bullets);
-$shots = 0;
 
 hook('roulette')
     ->command(['roulette', 'rr'])
     ->help("yeah, you know what this is.")
-    ->func(function(Collection $args) use (&$bullets, &$shots) {
-        if ($shots > 6) {
-            $shots = 0;
-        }
-
-        /** @var User $user */
-        $user = $args->get('user');
-
-        /** @var Channel $channel */
+    ->func(function(Collection $args) {
+        /** @var \Dan\Irc\Location\Channel $channel */
         $channel = $args->get('channel');
+
+        /** @var \Dan\Irc\Location\User $user */
+        $user = $args->get('user');
 
         $message = $args->get('message');
 
-        if ($message == 'stats') {
-            $stats = $channel->info('rr.deaths');
-            $count = count($stats);
+        $round = $channel->data->get('rr.round', 0);
+        $bullets = $channel->data->get('rr.bullets', [false, false, false, true, false, false]);
 
-            asort($stats);
-            reset($stats);
-            $key = key($stats);
+        $shuffle = function($reset = false) use ($channel, &$bullets) {
+            shuffle($bullets);
+            $channel->data->put('rr.bullets', $bullets);
 
-            $channel->message("A total of {$count} people have died playing russian roulette. {$key} has died the most with {$stats[$key]} deaths.");
+            if ($reset) {
+                $channel->data->put('rr.round', 0);
+            }
+        };
+
+        if ($message == 'reload') {
+            $shuffle(true);
             return;
         }
 
-        if ($channel->hasUser($message)) {
-            $user = $channel->getUser($message);
+        if ($round > 5) {
+            $round = 0;
+            $shuffle();
         }
 
         $response = "The gun clicks";
+        $fire = $bullets[$round];
 
-        if ($bullets[$shots]) {
+        if ($fire) {
             $response = sprintf("<red>%s dies! D:</red>", $user->nick());
-
-            shuffle($bullets);
-            $shots = 0;
-
-            $prev = $channel->info("rr.deaths") ?? 0;
-            $prev[$user->nick()] += $prev[$user->nick()] + 1;
-            $channel->setInfo('rr', ['deaths' => $prev]);
+            $shuffle(true);
+        } else {
+            $channel->data->put('rr.round', ($round + 1));
         }
 
         $channel->action(sprintf("<i>points the gun at %s</i>  -  <i>*pulls the trigger*</i>  -  <i>%s</i>", $user->nick(), $response));
 
-        $shots++;
     });
