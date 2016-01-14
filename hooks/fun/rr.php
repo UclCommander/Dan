@@ -17,22 +17,19 @@ hook('roulette')
         $round = $channel->data->get('rr.round', 0);
         $bullets = $channel->data->get('rr.bullets', [false, false, false, true, false, false]);
 
-        $shuffle = function($reset = false) use ($channel, &$bullets) {
+        $shuffle = function() use ($channel, &$bullets) {
             shuffle($bullets);
             $channel->data->put('rr.bullets', $bullets);
-
-            if ($reset) {
-                $channel->data->put('rr.round', 0);
-            }
+            $channel->data->put('rr.round', 0);
+            $channel->save();
         };
 
         if ($message == 'reload') {
-            $shuffle(true);
+            $shuffle();
             return;
         }
 
         if ($round > 5) {
-            $round = 0;
             $shuffle();
         }
 
@@ -41,7 +38,7 @@ hook('roulette')
 
         if ($fire) {
             $response = sprintf("<red>%s dies! D:</red>", $user->nick());
-            $shuffle(true);
+            $shuffle();
         } else {
             $channel->data->put('rr.round', ($round + 1));
         }
