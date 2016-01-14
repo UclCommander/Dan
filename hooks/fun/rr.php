@@ -48,4 +48,5 @@ hook('roulette')
 
         $channel->action(sprintf("<i>points the gun at %s</i>  -  <i>*pulls the trigger*</i>  -  <i>%s</i>", $user->nick(), $response));
 
+        $channel->save();
     });
