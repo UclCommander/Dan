@@ -23,8 +23,11 @@ hook('like')
 
         $matches = [];
 
-        foreach($users as $nick => $cuser)
-        {
+        if($channel->hasUser($host)) {
+            $host = "*" . $channel->getUser($host)->host() . "*";
+        }
+
+        foreach ($users as $nick => $cuser) {
             $cuser = user($nick);
 
             if(fnmatch($host, $cuser->host()))
@@ -41,6 +44,7 @@ hook('like')
             $matches[] = "and " . ($count - 8) . ' more...';
         }
 
-        foreach($matches as $match)
+        foreach($matches as $match) {
             $user->notice($match);
+        }
     });
