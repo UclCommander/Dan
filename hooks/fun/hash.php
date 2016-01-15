@@ -25,22 +25,22 @@ hook('hash')
 
         if (count($msg) != 2) {
             if (in_array($msg[0], array_merge(hash_algos(), ['bcrypt']))) {
-                $channel->message($channel, "Please specify text to hash.");
+                $channel->message("Please specify text to hash.");
                 return;
             }
-            $channel->message($channel, "Please specify a valid algorithm.");
+            $channel->message("Please specify a valid algorithm.");
             return;
         }
 
         if ($msg[0] == 'bcrypt') {
-            $channel->message($channel, password_hash($msg[1], PASSWORD_BCRYPT));
+            $channel->message(password_hash($msg[1], PASSWORD_BCRYPT));
             return;
         }
 
         if (in_array($msg[0], hash_algos())) {
-            $channel->message($channel, hash($msg[0], $msg[1]));
+            $channel->message(hash($msg[0], $msg[1]));
             return;
         }
 
-        $channel->message($channel, "Please specify a valid algorithm.");
+        $channel->message("Please specify a valid algorithm.");
     });
