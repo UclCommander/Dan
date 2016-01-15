@@ -19,7 +19,7 @@ hook('like')
         $user    = $args->get('user');
 
         /** @var array $users */
-        $users = $channel->getUsers();
+        $users = database()->table('users')->get();
 
         $matches = [];
 
@@ -28,10 +28,9 @@ hook('like')
         }
 
         foreach ($users as $nick => $cuser) {
-            $cuser = user($nick);
-
-            if(fnmatch($host, $cuser->host()))
-                $matches[] = "{$cuser->nick()} [{$cuser->host()}]";
+            if(fnmatch($host, $cuser['host'])) {
+                $matches[] = "{$cuser['nick']} [{$cuser['host']}]";
+            }
         }
 
         if(count($matches) == 0) {
