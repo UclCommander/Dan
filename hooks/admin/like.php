@@ -23,7 +23,11 @@ hook('like')
 
         $matches = [];
 
-        if($channel->hasUser($host)) {
+        if ($host == null) {
+            $host = $user->nick();
+        }
+
+        if ($channel->hasUser($host)) {
             $host = "*" . $channel->getUser($host)->host() . "*";
         }
 
@@ -33,17 +37,17 @@ hook('like')
             }
         }
 
-        if(count($matches) == 0) {
+        if (count($matches) == 0) {
             $user->notice("No matches found!");
         }
 
-        if(count($matches) > 8){
+        if (count($matches) > 8){
             $count = count($matches);
             $matches = array_splice($matches, 0, 7);
             $matches[] = "and " . ($count - 8) . ' more...';
         }
 
-        foreach($matches as $match) {
+        foreach ($matches as $match) {
             $user->notice($match);
         }
     });
