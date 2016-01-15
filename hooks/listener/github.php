@@ -81,7 +81,7 @@ hook('github_push')
 
             $compiled = [
                 "[ Github - " . ucfirst($data['action']) . " Issue ] <cyan>{$repo['full_name']}</cyan>",
-                "Created by <cyan>{$issue['assignee']['login']}</cyan>",
+                "Created by <cyan>{$issue['sender']['login']}</cyan>",
                 "<light_cyan>{$issue['title']}</light_cyan>",
                 shortLink($issue['url']),
             ];
