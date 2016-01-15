@@ -50,7 +50,7 @@ hook('textreplace')
                 $carbon = $data['carbon'];
                 $ago    = $carbon->diffForHumans();
 
-                $channel->message("[<cyan>{$ago}</cyan>] {$data['user']}: {$new}");
+                $channel->message("[ <cyan>{$ago}</cyan> ] {$data['user']}: {$new}");
 
                 return false;
             }
