@@ -54,12 +54,14 @@ hook('github_push')
 
             $branch = last(explode('/', $data['ref']));
 
+            $commitMessage = cleanString($commit['message']);
+
             $compiled = [
                 "[ Github - New Commit ] <cyan>{$repo['full_name']}</cyan>",
                 "<orange>{$branch}</orange>",
                 "<yellow>" . substr($commit['id'], 0, 8) . "</yellow>",
                 "<cyan>{$commit['author']['name']}</cyan>",
-                "<light_cyan>{$commit['message']}</light_cyan>",
+                "<light_cyan>{$commitMessage}</light_cyan>",
                 "<green>$added</green>/<red>$removed</red>/<orange>$changed</orange>",
                 shortLink($commit['url']),
             ];
