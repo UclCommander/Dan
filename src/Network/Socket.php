@@ -40,11 +40,12 @@ class Socket
      * Writes to the socket.
      *
      * @param $line
+     *
      * @throws \Dan\Network\Exceptions\BrokenPipeException
      */
     public function write($line)
     {
-        if(fwrite($this->socket, $line) === false) {
+        if (fwrite($this->socket, $line) === false) {
             throw new BrokenPipeException();
         }
     }

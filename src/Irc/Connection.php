@@ -434,7 +434,7 @@ class Connection implements SocketContract
 
         try {
             $this->socket->write("{$raw}\r\n");
-        } catch(BrokenPipeException $e) {
+        } catch (BrokenPipeException $e) {
             $this->reconnect();
         }
     }
