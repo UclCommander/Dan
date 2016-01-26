@@ -112,6 +112,15 @@ class Database
      */
     public function save()
     {
-        filesystem()->put(DATABASE_DIR."/{$this->file}.json", json_encode(['data' => $this->data, 'config' => $this->config], JSON_PRETTY_PRINT));
+        $json = json_encode(['data' => $this->data, 'config' => $this->config], JSON_PRETTY_PRINT);
+
+        if($json === false) {
+            return;
+        }
+
+        $date = date("Ymd-His");
+        filesystem()->copy(DATABASE_DIR."/{$this->file}.json", DATABASE_DIR."/../backups/{$this->file}-{$date}.json");
+
+        filesystem()->put(DATABASE_DIR."/{$this->file}.json", $json);
     }
 }
