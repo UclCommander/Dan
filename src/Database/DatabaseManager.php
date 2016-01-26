@@ -93,4 +93,14 @@ class DatabaseManager
     {
         return array_key_exists($database, static::$databases);
     }
+
+    /**
+     *
+     */
+    public function backupAll()
+    {
+        foreach (static::$databases as $name => $database) {
+            $database->save(true);
+        }
+    }
 }

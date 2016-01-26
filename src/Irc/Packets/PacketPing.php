@@ -3,6 +3,7 @@
 namespace Dan\Irc\Packets;
 
 use Dan\Contracts\PacketContract;
+use Dan\Core\Dan;
 use Dan\Irc\Connection;
 use Dan\Setup\Update;
 
@@ -15,6 +16,8 @@ class PacketPing implements PacketContract
         event('irc.packets.ping');
 
         debug("Saving database information");
+
+        Dan::databaseManager()->backupAll();
 
         foreach ($connection->channels as $channel) {
             $channel->save();

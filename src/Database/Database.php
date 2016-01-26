@@ -109,8 +109,10 @@ class Database
 
     /**
      * Saves the database.
+     *
+     * @param bool $backup
      */
-    public function save()
+    public function save($backup = false)
     {
         $json = json_encode(['data' => $this->data, 'config' => $this->config], JSON_PRETTY_PRINT);
 
@@ -118,8 +120,10 @@ class Database
             return;
         }
 
-        $date = date("Ymd-His");
-        filesystem()->copy(DATABASE_DIR."/{$this->file}.json", BACKUP_DIR."/{$this->file}-{$date}.json");
+        if ($backup) {
+            $date = date("Ymd-His");
+            filesystem()->copy(DATABASE_DIR."/{$this->file}.json", BACKUP_DIR."/{$this->file}-{$date}.json");
+        }
 
         filesystem()->put(DATABASE_DIR."/{$this->file}.json", $json);
     }
