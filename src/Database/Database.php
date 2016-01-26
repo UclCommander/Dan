@@ -116,12 +116,12 @@ class Database
     {
         $json = json_encode(['data' => $this->data, 'config' => $this->config], JSON_PRETTY_PRINT);
 
-        if($json === false) {
+        if ($json === false) {
             return;
         }
 
         if ($backup) {
-            $date = date("Ymd-His");
+            $date = date('Ymd-His');
             filesystem()->copy(DATABASE_DIR."/{$this->file}.json", BACKUP_DIR."/{$this->file}-{$date}.json");
         }
 

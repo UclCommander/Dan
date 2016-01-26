@@ -1,7 +1,7 @@
-<?php namespace Dan\Network\Exceptions;
+<?php
 
+namespace Dan\Network\Exceptions;
 
 class BrokenPipeException extends \Exception
 {
-
 }

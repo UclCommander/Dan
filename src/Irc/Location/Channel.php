@@ -290,19 +290,19 @@ class Channel extends Location implements Savable
      */
     public function kick(User $user, $reason = '')
     {
-        $this->connection->send("KICK", $this, $user, $reason);
+        $this->connection->send('KICK', $this, $user, $reason);
     }
 
     /**
      * Sets +b on a user and optionally kicks.
      *
      * @param \Dan\Irc\Location\User $user
-     * @param bool $kick
-     * @param string $reason
+     * @param bool                   $kick
+     * @param string                 $reason
      */
     public function ban(User $user, $kick = false, $reason = '')
     {
-        $this->connection->send("MODE", $this, '+b', $user->host());
+        $this->connection->send('MODE', $this, '+b', $user->host());
 
         if ($kick) {
             $this->kick($user, $reason);
