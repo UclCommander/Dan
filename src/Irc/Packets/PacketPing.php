@@ -14,6 +14,8 @@ class PacketPing implements PacketContract
 
         event('irc.packets.ping');
 
+        debug("Saving database information");
+
         foreach ($connection->channels as $channel) {
             $channel->save();
         }

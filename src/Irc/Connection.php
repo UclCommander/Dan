@@ -11,6 +11,7 @@ use Dan\Irc\Formatter\IrcOutputFormatterStyle;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\Location;
 use Dan\Irc\Location\User;
+use Dan\Network\Exceptions\BrokenPipeException;
 use Dan\Network\Socket;
 use Illuminate\Support\Collection;
 
@@ -431,7 +432,11 @@ class Connection implements SocketContract
 
         debug("[<magenta>{$this->name}</magenta>] << {$raw}");
 
-        $this->socket->write("{$raw}\r\n");
+        try {
+            $this->socket->write("{$raw}\r\n");
+        } catch(BrokenPipeException $e) {
+            $this->reconnect();
+        }
     }
 
     //endregion

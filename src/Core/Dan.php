@@ -230,7 +230,7 @@ class Dan
     public static function disconnect($name)
     {
         if (!array_key_exists($name, config('irc.servers'))) {
-            throw new \Exception("Not connection to server {$name}.");
+            throw new \Exception("Not connected to the server {$name}.");
         }
 
         $connection = static::$dan->connections[$name];
