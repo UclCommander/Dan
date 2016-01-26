@@ -119,7 +119,7 @@ class Database
         }
 
         $date = date("Ymd-His");
-        filesystem()->copy(DATABASE_DIR."/{$this->file}.json", DATABASE_DIR."/../backups/{$this->file}-{$date}.json");
+        filesystem()->copy(DATABASE_DIR."/{$this->file}.json", BACKUP_DIR."/{$this->file}-{$date}.json");
 
         filesystem()->put(DATABASE_DIR."/{$this->file}.json", $json);
     }

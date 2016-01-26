@@ -76,6 +76,10 @@ class Dan
             filesystem()->makeDirectory(DATABASE_DIR);
         }
 
+        if (!filesystem()->exists(BACKUP_DIR)) {
+            filesystem()->makeDirectory(BACKUP_DIR);
+        }
+
         if (!filesystem()->exists(HOOK_DIR)) {
             filesystem()->makeDirectory(HOOK_DIR);
         }
