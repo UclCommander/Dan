@@ -2,10 +2,14 @@
 
 namespace Dan\Database;
 
+use Carbon\Carbon;
+
 class DatabaseManager
 {
     /** @var Database[] */
     protected static $databases = [];
+
+    protected $lastBackup;
 
     /**
      * Loads a database.
@@ -99,8 +103,16 @@ class DatabaseManager
      */
     public function backupAll()
     {
+        if ($this->lastBackup instanceof Carbon) {
+            if ($this->lastBackup->diffInMinutes(new Carbon(), true) < config('dan.database_backup_interval')) {
+                return;
+            }
+        }
+
         foreach (static::$databases as $name => $database) {
             $database->save(true);
         }
+
+        $this->lastBackup = new Carbon();
     }
 }
