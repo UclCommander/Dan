@@ -37,7 +37,7 @@ hook('rpsls')
         }
 
         if (!in_array($rand, $items[$message])) {
-            $args->get('channel')->message("You <red>LOOSE!</red> >:) - I chose <orange>{$rand}</orange>");
+            $args->get('channel')->message("You <red>LOST!</red> >:) - I chose <orange>{$rand}</orange>");
             return;
         }
 
