@@ -26,7 +26,7 @@ hook('chaninfo')
         "cinfo hooks enable/disable <hook> - Enables or disables the given hook",
         "cinfo hooks disabled - View all disabled hooks",
         "cinfo hooks list - View all available hooks",
-        "cinfo commands enable/disable <command> - Enables or disables the given hook",
+        "cinfo commands enable/disable <command> - Enables or disables the given command",
         "cinfo commands disabled - View all disabled commands",
     ])
     ->func(function(Collection $args) {
