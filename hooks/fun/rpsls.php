@@ -16,10 +16,10 @@ hook('rpsls')
     ->func(function(Collection $args) {
 
         $items = [
-            'rock' => ['scissors', 'lizzard'],
+            'rock' => ['scissors', 'lizard'],
             'paper' => ['rock', 'spock'],
-            'scissors' => ['paper', 'lizzard'],
-            'lizard' => ['spock', 'papeer'],
+            'scissors' => ['paper', 'lizard'],
+            'lizard' => ['spock', 'paper'],
             'spock' => ['rock', 'scissors'],
         ];
 
