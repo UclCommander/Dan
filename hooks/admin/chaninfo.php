@@ -191,7 +191,7 @@ hook('chaninfo')
             }
 
             default: {
-                $user->notice("Available sub-commands: hooks");
+                $user->notice("Available sub-commands: hooks, commands");
                 break;
             }
         }
