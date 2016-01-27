@@ -10,10 +10,11 @@
 use Illuminate\Support\Collection;
 
 hook('rpsls')
-    ->command(['rpsls'])
+    ->command(['rpsls', 'rock', 'paper', 'scissors', 'lizard', 'spock'])
     ->console()
     ->help('Rock Paper Scissors Lizard Spock')
     ->func(function(Collection $args) {
+
         $items = [
             'rock' => ['scissors', 'lizzard'],
             'paper' => ['rock', 'spock'],
@@ -23,6 +24,10 @@ hook('rpsls')
         ];
 
         $message = $args->get('message');
+
+        if (in_array($args->get('command'), array_keys($items))) {
+            $message = $args->get('command');
+        }
 
         if (!array_key_exists($message, $items)) {
             $args->get('channel')->message('Invalid choice. Pick from: ' . implode(', ', array_keys($items)));
