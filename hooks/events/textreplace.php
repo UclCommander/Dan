@@ -6,8 +6,8 @@ use Dan\Irc\Location\User;
 
 hook('textreplace')
     ->on('irc.packets.message.public')
-    ->anon(new class
-    {
+    ->anon(new class {
+        /** @var array  */
         protected $messages = [];
 
         /**
@@ -31,7 +31,9 @@ hook('textreplace')
                 return false;
             }
 
-            $messages = $this->messages[$channel->getLocation()];
+            $key = connection()->getName() . ':' . $channel->getLocation();
+
+            $messages = $this->messages[$key];
 
             krsort($messages);
 
@@ -44,7 +46,7 @@ hook('textreplace')
                     continue;
                 }
 
-                $this->messages[$channel->getLocation()][$time]['message'] = $new;
+                $this->messages[$key][$time]['message'] = $new;
 
                 /** @var Carbon $carbon */
                 $carbon = $data['carbon'];
@@ -63,13 +65,15 @@ hook('textreplace')
          */
         public function addLine(Channel $channel, User $user, $message)
         {
+            $key = connection()->getName() . ':' . $channel->getLocation();
+
             foreach ($this->messages as $chan => $lines) {
                 if (count($lines) > 30) {
                     array_shift($this->messages[$chan]);
                 }
             }
 
-            $this->messages[$channel->getLocation()][time()] = [
+            $this->messages[$key][time()] = [
                 'message'   => $message,
                 'user'      => $user->getLocation(),
                 'carbon'    => new Carbon(),
