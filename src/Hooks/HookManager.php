@@ -211,6 +211,8 @@ class HookManager
             controlLog("{$user->nick()} used {$command->commands[0]} in {$channel->getLocation()}");
         }
 
+        $args['command'] = $name;
+
         try {
             $command->run($args);
         } catch (\Error $error) {
