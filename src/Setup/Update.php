@@ -21,6 +21,11 @@ class Update
 
         $status = shell_exec("git remote update && git status {$repo}");
 
+        // RIP GitHub Jan 27th, 2016
+        if (strpos($status, 'remote error')) {
+            return false;
+        }
+
         return (strpos($status, 'up-to-date') === false) === true;
     }
 
@@ -34,6 +39,12 @@ class Update
         $repo = static::$repo;
 
         $shell = shell_exec(sprintf("cd %s && git pull origin {$repo}", ROOT_DIR));
+
+        // RIP GitHub Jan 27th, 2016
+        if (strpos($shell, 'remote error')) {
+            $messagingContract->message("Unable to connect to GitHub");
+            return;
+        }
 
         if (strpos($shell, 'composer.lock')) {
             $messagingContract->message('composer.lock changed, installing new packages.');
