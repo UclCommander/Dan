@@ -1,10 +1,11 @@
-<?php namespace Dan\Config;
+<?php
+
+namespace Dan\Config;
 
 use Illuminate\Support\ServiceProvider;
 
 class ConfigServiceProvider extends ServiceProvider
 {
-
     /**
      * Register the service provider.
      *
