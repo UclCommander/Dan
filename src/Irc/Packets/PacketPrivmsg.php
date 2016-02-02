@@ -23,17 +23,6 @@ class PacketPrivmsg implements PacketContract
      */
     public function handle(Connection $connection, array $from, array $data)
     {
-        // TODO: TEMP
-        // -------------------------------------------------------------------------------------------------------------
-        if ($data[1] === '.memory') {
-            $memory = convert(memory_get_usage());
-            $peak = convert(memory_get_peak_usage());
-            $connection->message($data[0], "[ <cyan>Memory Usage:</cyan> <yellow>{$memory}</yellow> | <cyan>Peak Usage:</cyan> <yellow>{$peak}</yellow> ]");
-
-            return;
-        }
-        // -------------------------------------------------------------------------------------------------------------
-
         $user = new User($connection, $from);
         $message = $data[1];
 
