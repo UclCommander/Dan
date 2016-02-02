@@ -60,7 +60,7 @@ class DatabaseManager
      */
     public function exists($name) : bool
     {
-        return filesystem()->exists(DATABASE_DIR."{$name}.json");
+        return filesystem()->exists(databasePath("{$name}.json"));
     }
 
     /**

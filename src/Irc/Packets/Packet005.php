@@ -13,13 +13,13 @@ class Packet005 implements PacketContract
 
         foreach ($data as $support) {
             if (strpos($support, '=') === false) {
-                $connection->support->put($support, true);
+                $connection->supported->put($support, true);
                 continue;
             }
 
             list($name, $value) = explode('=', $support);
 
-            $connection->support->put($name, $value);
+            $connection->supported->put($name, $value);
         }
     }
 }

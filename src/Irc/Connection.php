@@ -2,93 +2,123 @@
 
 namespace Dan\Irc;
 
+use Dan\Contracts\ConnectionContract;
+use Dan\Contracts\DatabaseContract;
 use Dan\Contracts\PacketContract;
-use Dan\Contracts\SocketContract;
-use Dan\Core\Dan;
-use Dan\Helpers\DotCollection;
+use Dan\Events\Traits\EventTrigger;
 use Dan\Irc\Formatter\IrcOutputFormatter;
 use Dan\Irc\Formatter\IrcOutputFormatterStyle;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\Location;
 use Dan\Irc\Location\User;
+use Dan\Irc\Traits\Helpers;
+use Dan\Irc\Traits\IrcDatabase;
+use Dan\Irc\Traits\Parser;
 use Dan\Network\Exceptions\BrokenPipeException;
 use Dan\Network\Socket;
 use Illuminate\Support\Collection;
 
-class Connection implements SocketContract
+class Connection implements ConnectionContract, DatabaseContract
 {
-    /** @var string */
-    protected $name;
+    use Parser, IrcDatabase, Helpers, EventTrigger;
 
-    /** @var Socket $socket */
-    protected $socket;
-
-    /** @var Collection|Channel[] */
-    public $channels = [];
-
-    /** @var DotCollection  */
+    /**
+     * @var \Illuminate\Support\Collection
+     */
     public $config;
 
-    /** @var DotCollection  */
-    public $support;
+    /**
+     * @var \Illuminate\Support\Collection
+     */
+    public $serverInfo;
 
-    /** @var User  */
+    /**
+     * @var \Illuminate\Support\Collection
+     */
+    public $supported;
+
+    /**
+     * @var User
+     */
     public $user;
 
-    /** @var bool  */
-    protected $quitting;
+    /**
+     * @var string
+     */
+    protected $name;
 
-    /** @var int  */
+    /**
+     * @var \Dan\Network\Socket
+     */
+    protected $socket;
+
+    /**
+     * @var int
+     */
     protected $reconnectCount = 0;
 
     /**
-     * @param $name
-     * @param array $config
+     * @var bool
      */
-    public function __construct($name, array $config)
+    protected $quitting = false;
+
+    /**
+     * @var Collection
+     */
+    protected $channels;
+
+    /**
+     * Connection constructor.
+     *
+     * @param $name
+     * @param $config
+     */
+    public function __construct($name, $config)
     {
         $this->name = $name;
-        $this->config = new DotCollection($config);
-        $this->support = new DotCollection();
+        $this->config = dotcollect($config);
+        $this->user = new User($this, $this->config->get('user.nick'), $this->config->get('user.name'), null, $this->config->get('user.real'));
         $this->socket = new Socket();
+        $this->supported = new Collection();
+        $this->serverInfo = new Collection();
         $this->channels = new Collection();
-
-        $this->user = new User([
-            'nick'  => $this->config->get('user.nick'),
-            'user'  => $this->config->get('user.name'),
-            'real'  => $this->config->get('user.real'),
-        ]);
     }
 
     /**
-     * Gets the connection name.
+     * The name of the connection.
      *
-     * @return \Dan\Irc\string|string
+     * @return string
      */
     public function getName() : string
     {
         return $this->name;
     }
 
-    //region socket things
-
     /**
-     * @throws \Exception
+     * Connects to the connection.
+     *
+     * @return mixed
      */
-    public function connect()
+    public function connect() : bool
     {
         $server = $this->config->get('server');
         $port = $this->config->get('port');
 
-        info("Connecting to {$server}:{$port}...");
+        console()->info("Connecting to {$server}:{$port}...");
 
         try {
             $this->socket->connect($server, $port);
         } catch (\Exception $e) {
-            return $this->reconnect();
+            console()->error("Failed to connect to the IRC server: {$e->getMessage()}");
+
+            if (!$this->reconnect()) {
+                connection()->removeConnection($this);
+
+                return false;
+            }
         }
 
-        success('Connected.');
+        console()->success('Connected.');
         $this->reconnectCount = 0;
         $this->login();
 
@@ -96,35 +126,23 @@ class Connection implements SocketContract
     }
 
     /**
+     * Disconnects from the connection.
+     *
      * @return bool
      */
-    public function reconnect()
+    public function disconnect() : bool
     {
-        if (!$this->quitting && $this->reconnectCount < 3) {
-            sleep(5);
-
-            $this->reconnectCount++;
-
-            info('Reconnecting to IRC..');
-
-            return $this->connect();
-        }
-
-        return false;
+        return $this->socket->disconnect();
     }
 
     /**
+     * Reads the resource.
      *
+     * @param resource $resource
+     *
+     * @return void
      */
-    public function getStream()
-    {
-        return $this->socket->getSocket();
-    }
-
-    /**
-     * @param $resource
-     */
-    public function handle($resource)
+    public function read($resource)
     {
         $lines = $this->socket->read();
 
@@ -135,18 +153,20 @@ class Connection implements SocketContract
                 continue;
             }
 
-            debug("[<magenta>{$this->name}</magenta>] >> {$line}");
+            console()->debug("[<magenta>{$this->name}</magenta>] >> {$line}");
 
             $this->handleLine($line);
         }
     }
 
     /**
+     * Handles a line from the socket.
+     *
      * @param $line
      */
     protected function handleLine($line)
     {
-        $data = Parser::parseLine($line);
+        $data = $this->parseLine($line);
 
         $from = $data['from'];
         $cmd = $data['command'];
@@ -155,13 +175,12 @@ class Connection implements SocketContract
         array_shift($data);
 
         if ($cmd[0] == 'ERROR') {
-            warn('Disconnected from IRC');
+            console()->warn('Disconnected from IRC');
 
             $this->socket->disconnect();
 
             if (!$this->reconnect()) {
-                unset($this->socket);
-                Dan::self()->removeSocket($this->name);
+                connection()->removeConnection($this);
             }
 
             return;
@@ -171,7 +190,7 @@ class Connection implements SocketContract
         $class = "Dan\\Irc\\Packets\\Packet{$normal}";
 
         if (!class_exists($class)) {
-            debug("<default>[ERROR]</default> [<red>{$this->name}</red>] <error>Unable to find packet handler for {$normal}</error>");
+            console()->debug("<default>[ERROR]</default> [<red>{$this->name}</red>] <error>Unable to find packet handler for {$normal}</error>");
 
             return;
         }
@@ -183,18 +202,73 @@ class Connection implements SocketContract
 
             unset($handler);
         } catch (\Exception $exception) {
-            error($exception->getMessage());
+            console()->error($exception->getMessage()." | File: {$exception->getFile()}:{$exception->getLine()}");
+            var_dump($exception->getTraceAsString());
         } catch (\Error $error) {
-            error($error->getMessage());
+            console()->error($error->getMessage()." | File: {$error->getFile()}:{$error->getLine()}");
+            var_dump($error->getTraceAsString());
         }
     }
 
-    //endregion
+    /**
+     * Writes to the resource.
+     *
+     * @param $line
+     *
+     * @return void
+     */
+    public function write($line)
+    {
+        if (empty($line)) {
+            return;
+        }
 
-    //region irc things
+        $raw = substr($line, 0, 510);
+
+        console()->debug("[<magenta>{$this->name}</magenta>] << {$raw}");
+
+        try {
+            $this->socket->write("{$raw}\r\n");
+        } catch (BrokenPipeException $e) {
+            $this->reconnect();
+        }
+    }
 
     /**
+     * Gets the stream resource for the connection.
      *
+     * @return resource
+     */
+    public function getStream()
+    {
+        return $this->socket->getSocket();
+    }
+
+    /**
+     * Reconnects to the network on failure.
+     *
+     * @return bool
+     */
+    protected function reconnect() : bool
+    {
+        if (!$this->quitting && $this->reconnectCount < 3) {
+            $human = $this->reconnectCount + 1;
+
+            console()->warn("Disconnected from IRC. Retry {$human} of 3 in 5 seconds..");
+            sleep(5);
+
+            $this->reconnectCount++;
+
+            console()->info('Reconnecting to IRC..');
+
+            return $this->connect();
+        }
+
+        return false;
+    }
+
+    /**
+     * Sends the required USER and NICK for login.
      */
     public function login()
     {
@@ -229,7 +303,7 @@ class Connection implements SocketContract
      */
     public function joinChannel($name, $key = '')
     {
-        if (!in_array(substr($name, 0, 1), str_split($this->support->get('CHANTYPES')))) {
+        if (!in_array(substr($name, 0, 1), str_split($this->supported->get('CHANTYPES')))) {
             throw new \Exception('Invalid channel prefix '.substr($name, 0, 1));
         }
 
@@ -262,7 +336,7 @@ class Connection implements SocketContract
      *
      * @return bool
      */
-    public function inChannel($channel)
+    public function inChannel($channel) : bool
     {
         return $this->channels->has(strtolower($channel));
     }
@@ -320,6 +394,8 @@ class Connection implements SocketContract
     }
 
     /**
+     * Sends a message (PRIVMSG) to the given location.
+     *
      * @param $location
      * @param $message
      * @param array $styles
@@ -328,12 +404,14 @@ class Connection implements SocketContract
      */
     public function message($location, $message, $styles = [])
     {
-        if (isChannel($location, $this->getName())) {
+        if ($this->isChannel($location)) {
+            {
             if (!$this->inChannel($location)) {
                 throw new \Exception("This channel doesn't exist.");
             }
+            }
 
-            event('irc.bot.message.public', [
+            $this->triggerEvent('irc.bot.message.public', [
                 'connection'    => $this,
                 'user'          => $this->user,
                 'channel'       => $location instanceof Channel ? $location : $this->getChannel($location),
@@ -341,8 +419,8 @@ class Connection implements SocketContract
             ]);
         }
 
-        if (!DEBUG) {
-            console("[<magenta>{$this->name}</magenta>][[<cyan>{$location}</cyan>]][<yellow>{$this->user->nick()}</yellow>] {$message}");
+        if (!config('dan.debug')) {
+            console()->line("[<magenta>{$this->name}</magenta>][[<cyan>{$location}</cyan>]][<yellow>{$this->user->nick}</yellow>] {$message}");
         }
 
         $formatter = new IrcOutputFormatter(true);
@@ -359,6 +437,8 @@ class Connection implements SocketContract
     }
 
     /**
+     * Sends an ACTION to the given location.
+     *
      * @param $location
      * @param $message
      * @param array $styles
@@ -379,6 +459,8 @@ class Connection implements SocketContract
     }
 
     /**
+     * Sends a NOTICE to the given location.
+     *
      * @param $location
      * @param $message
      */
@@ -418,26 +500,16 @@ class Connection implements SocketContract
             $compiled[] = $add;
         }
 
-        $this->raw(implode(' ', $compiled));
+        $this->write(implode(' ', $compiled));
     }
 
     /**
-     * Sends a RAW line to the server.
+     * Sends a RAW line to IRC.
      *
-     * @param $raw
+     * @param $line
      */
-    public function raw($raw)
+    public function raw($line)
     {
-        $raw = substr($raw, 0, 510);
-
-        debug("[<magenta>{$this->name}</magenta>] << {$raw}");
-
-        try {
-            $this->socket->write("{$raw}\r\n");
-        } catch (BrokenPipeException $e) {
-            $this->reconnect();
-        }
+        $this->write($line);
     }
-
-    //endregion
 }

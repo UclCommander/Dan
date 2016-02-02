@@ -2,131 +2,22 @@
 
 namespace Dan\Console;
 
-use Dan\Contracts\MessagingContract;
-use Dan\Contracts\SocketContract;
-use Dan\Helpers\Logger;
-use Dan\Hooks\HookManager;
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Support\Collection;
+use InvalidArgumentException;
 use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 
-class Console implements SocketContract, MessagingContract
+class Console
 {
     /**
-     * @var Console
+     * @var Connection
      */
-    protected static $self;
+    protected $connection;
 
-    /**
-     * @var resource
-     */
-    protected $stream;
-
-    /**
-     * @var string
-     */
-    protected $attached;
-
-    /**
-     * @var \Symfony\Component\Console\Output\OutputInterface
-     */
-    protected $output;
-
-    /**
-     * @var \Symfony\Component\Console\Input\ArrayInput
-     */
-    protected $input;
-
-    /**
-     * @var \Illuminate\Support\Collection
-     */
-    public $config;
-
-    /**
-     *
-     */
-    public function __construct()
+    public function __construct(Connection $connection)
     {
-        $this->config = new Collection([
-            'command_prefix'   => '/',
-        ]);
-
-        $this->input = new ArrayInput([]);
-        $this->output = new OutputStyle($this->input, new ConsoleOutput());
-
-        $this->stream = fopen('php://stdin', 'r');
-        stream_set_blocking($this->stream, 0);
-    }
-
-    /**
-     * @return Console
-     */
-    public static function factory()
-    {
-        if (is_null(static::$self)) {
-            static::$self = new static();
-        }
-
-        return static::$self;
-    }
-
-    /**
-     * @return array|string
-     */
-    public static function arguments()
-    {
-        return static::factory()->argument();
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return 'console';
-    }
-
-    /**
-     * @return resource
-     */
-    public function getStream()
-    {
-        return $this->stream;
-    }
-
-    /**
-     * Stops the current connection.
-     *
-     * @param string $reason
-     *
-     * @return mixed
-     */
-    public function quit($reason = null)
-    {
-    }
-
-    /**
-     * @param resource $resource
-     */
-    public function handle($resource)
-    {
-        $message = trim(fgets($resource));
-
-        $hookData = [
-            'connection'    => $this,
-            'user'          => $this,
-            'channel'       => $this,
-            'message'       => $message,
-            'console'       => true,
-        ];
-
-        if (HookManager::data($hookData)->call('command')) {
-            return;
-        }
+        $this->connection = $connection;
     }
 
     /**
@@ -139,26 +30,31 @@ class Console implements SocketContract, MessagingContract
     public function argument($key = null)
     {
         if (is_null($key)) {
-            return $this->input->getArguments();
+            return $this->connection->input->getArguments();
         }
 
-        return $this->input->getArgument($key);
+        return $this->connection->input->getArgument($key);
     }
 
     /**
      * Get the value of a command option.
      *
      * @param string $key
+     * @param null   $default
      *
-     * @return string|array
+     * @return array|string
      */
-    public function option($key = null)
+    public function option($key = null, $default = null)
     {
         if (is_null($key)) {
-            return $this->input->getOptions();
+            return $this->connection->input->getOptions();
         }
 
-        return $this->input->getOption($key);
+        try {
+            return $this->connection->input->getOption($key);
+        } catch (InvalidArgumentException $e) {
+            return $default;
+        }
     }
 
     /**
@@ -171,7 +67,7 @@ class Console implements SocketContract, MessagingContract
      */
     public function confirm($question, $default = false)
     {
-        return $this->output->confirm($question, $default);
+        return $this->connection->output->confirm($question, $default);
     }
 
     /**
@@ -184,7 +80,7 @@ class Console implements SocketContract, MessagingContract
      */
     public function ask($question, $default = null)
     {
-        return $this->output->ask($question, $default);
+        return $this->connection->output->ask($question, $default);
     }
 
     /**
@@ -216,7 +112,7 @@ class Console implements SocketContract, MessagingContract
 
         $question->setAutocompleterValues($choices);
 
-        return $this->output->askQuestion($question);
+        return $this->connection->output->askQuestion($question);
     }
 
     /**
@@ -233,7 +129,7 @@ class Console implements SocketContract, MessagingContract
 
         $question->setHidden(true)->setHiddenFallback($fallback);
 
-        return $this->output->askQuestion($question);
+        return $this->connection->output->askQuestion($question);
     }
 
     /**
@@ -253,7 +149,7 @@ class Console implements SocketContract, MessagingContract
 
         $question->setMaxAttempts($attempts)->setMultiselect($multiple);
 
-        return $this->output->askQuestion($question);
+        return $this->connection->output->askQuestion($question);
     }
 
     /**
@@ -267,7 +163,7 @@ class Console implements SocketContract, MessagingContract
      */
     public function table(array $headers, $rows, $style = 'default')
     {
-        $table = new Table($this->output);
+        $table = new Table($this->connection->output);
 
         if ($rows instanceof Arrayable) {
             $rows = $rows->toArray();
@@ -285,7 +181,7 @@ class Console implements SocketContract, MessagingContract
      */
     public function info($string)
     {
-        $this->output->writeln("[<cyan>INFO</cyan>] <info>$string</info>");
+        $this->connection->write("[<cyan>INFO</cyan>] <info>$string</info>");
     }
 
     /**
@@ -297,7 +193,7 @@ class Console implements SocketContract, MessagingContract
      */
     public function line($string)
     {
-        $this->output->writeln($string);
+        $this->connection->write($string);
     }
 
     /**
@@ -309,13 +205,11 @@ class Console implements SocketContract, MessagingContract
      */
     public function debug($string)
     {
-        Logger::logDebug($string);
-
-        if (!DEBUG) {
+        if (!config('dan.debug')) {
             return;
         }
 
-        $this->output->writeln("[<magenta>DEBUG</magenta>] <debug>$string</debug>");
+        $this->connection->write("[<magenta>DEBUG</magenta>] <debug>$string</debug>");
     }
 
     /**
@@ -327,7 +221,7 @@ class Console implements SocketContract, MessagingContract
      */
     public function comment($string)
     {
-        $this->output->writeln("[COMMENT] <comment>$string</comment>");
+        $this->connection->write("[COMMENT] <comment>$string</comment>");
     }
 
     /**
@@ -339,7 +233,7 @@ class Console implements SocketContract, MessagingContract
      */
     public function question($string)
     {
-        $this->output->writeln("[QUEST] <question>$string</question>");
+        $this->connection->write("[QUEST] <question>$string</question>");
     }
 
     /**
@@ -351,7 +245,7 @@ class Console implements SocketContract, MessagingContract
      */
     public function error($string)
     {
-        $this->output->writeln("[<red>ERROR</red>] <error>$string</error>");
+        $this->connection->write("[<red>ERROR</red>] <error>$string</error>");
     }
 
     /**
@@ -363,7 +257,7 @@ class Console implements SocketContract, MessagingContract
      */
     public function warn($string)
     {
-        $this->output->writeln("[<yellow>WARN</yellow>] <warning>$string</warning>");
+        $this->connection->write("[<yellow>WARN</yellow>] <warning>$string</warning>");
     }
 
     /**
@@ -375,7 +269,7 @@ class Console implements SocketContract, MessagingContract
      */
     public function success($string)
     {
-        $this->output->writeln("[<green>OK</green>] <success>$string</success>");
+        $this->connection->write("[<green>OK</green>] <success>$string</success>");
     }
 
     /**
@@ -386,7 +280,7 @@ class Console implements SocketContract, MessagingContract
      */
     public function message($message, $styles = [])
     {
-        $this->output->writeln($message);
+        $this->connection->write($message);
     }
 
     /**
@@ -407,20 +301,5 @@ class Console implements SocketContract, MessagingContract
     public function notice($message)
     {
         $this->info($message);
-    }
-
-    /**
-     * Backwards compatibility.
-     *
-     * @return string
-     */
-    public function nick()
-    {
-        return 'console';
-    }
-
-    public function getLocation()
-    {
-        return 'console';
     }
 }

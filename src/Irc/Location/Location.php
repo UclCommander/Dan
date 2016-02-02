@@ -2,48 +2,34 @@
 
 namespace Dan\Irc\Location;
 
-use Dan\Contracts\MessagingContract;
 use Dan\Irc\Connection;
-use Dan\Irc\ModeObject;
+use Dan\Irc\Traits\Mode;
 
-class Location extends ModeObject implements MessagingContract
+abstract class Location
 {
+    use Mode;
+
+    /**
+     * @var string
+     */
+    protected $location;
+
     /**
      * @var Connection
      */
     protected $connection;
 
-    protected $location;
-
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     /**
-     * Sends a message to this location.
-     *
      * @param $message
-     * @param array $styles
+     *
+     * @throws \Exception
      */
-    public function message($message, $styles = [])
+    public function message($message)
     {
-        $this->connection->message($this, $message, $styles);
+        $this->connection->message($this, $message);
     }
 
     /**
-     * Sends an action to this location.
-     *
-     * @param $message
-     */
-    public function action($message)
-    {
-        $this->connection->action($this, $message);
-    }
-
-    /**
-     * Sends a notice to this location.
-     *
      * @param $message
      */
     public function notice($message)
@@ -52,21 +38,7 @@ class Location extends ModeObject implements MessagingContract
     }
 
     /**
-     * Sets a mode on this location.
-     *
-     * @param $mode
-     *
-     * @internal param $message
-     */
-    public function mode($mode)
-    {
-        $this->connection->send('MODE', $this->location, $mode);
-    }
-
-    /**
-     * Returns a IRC compatible endpoint location.
-     *
-     * @return mixed
+     * @return string
      */
     public function getLocation()
     {
@@ -74,7 +46,7 @@ class Location extends ModeObject implements MessagingContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function __toString()
     {

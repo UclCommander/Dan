@@ -29,7 +29,7 @@ class Socket
      */
     public function connect($server, $port)
     {
-        $this->socket = fsockopen($server, $port, $errno, $errstr);
+        $this->socket = @fsockopen($server, $port, $errno, $errstr);
 
         if ($this->socket == false) {
             throw new \Exception($errstr);
@@ -60,7 +60,7 @@ class Socket
         $lines = fread($this->socket, (1024 * 30));
 
         if ($lines === false) {
-            critical('Failed reading from socket.', true);
+            console()->warn('Failed reading from socket.');
         }
 
         return explode("\n", $lines);
@@ -71,6 +71,10 @@ class Socket
      */
     public function disconnect()
     {
+        if (!is_resource($this->socket)) {
+            return false;
+        }
+
         return fclose($this->socket);
     }
 }

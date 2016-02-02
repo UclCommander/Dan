@@ -1,98 +1,276 @@
 <?php
 
+use Dan\Commands\Command;
+use Dan\Console\Console;
+use Dan\Core\Dan;
+use Dan\Support\DotCollection;
 
-use Dan\Web\Response;
-
-if (!function_exists('response')) {
-
-    /**
-     * @param null $message
-     * @param int  $code
-     *
-     * @return \Dan\Web\Response
-     */
-    function response($message = null, $code = 200)
-    {
-        return new Response($message, $code);
-    }
-}
-
-if (!function_exists('parse_headers')) {
+if (!function_exists('dan')) {
 
     /**
-     * Parses http headers.
+     * Main Dan Container fetcher.
      *
-     * @param $raw_headers
+     * @param null  $make
+     * @param array $parameters
      *
-     * @return array
+     * @return Dan|mixed
      */
-    function parse_headers($raw_headers)
+    function dan($make = null, $parameters = [])
     {
-        $headers = [];
-        $key = '';
-
-        $data = false;
-
-        foreach (explode("\n", $raw_headers) as $i => $h) {
-            if (empty(trim($h))) {
-                $data = true;
-                continue;
-            }
-
-            if ($data) {
-                $headers['data'] = trim(($headers['data'] ?? "\n").$h);
-                continue;
-            }
-
-            $h = explode(':', $h, 2);
-
-            if (isset($h[1])) {
-                if (!isset($headers[strtolower($h[0])])) {
-                    $headers[strtolower($h[0])] = trim($h[1]);
-                } elseif (is_array($headers[strtolower($h[0])])) {
-                    $headers[strtolower($h[0])] = array_merge($headers[strtolower($h[0])], [trim($h[1])]);
-                } else {
-                    $headers[strtolower($h[0])] = array_merge([$headers[strtolower($h[0])]], [trim($h[1])]);
-                }
-
-                $key = strtolower($h[0]);
-            } else {
-                if (substr(strtolower($h[0]), 0, 1) == "\t") {
-                    // [+]
-
-                    $headers[$key] .= "\r\n\t".trim(strtolower($h[0]));
-                } elseif (!$key) {
-                    $headers[0] = trim(strtolower($h[0]));
-                }
-
-                trim(strtolower($h[0]));
-            }
+        if (is_null($make)) {
+            return Dan::getInstance();
         }
 
-        return $headers;
+        return Dan::getInstance()->make($make, $parameters);
     }
 }
 
-if (!function_exists('shortLink')) {
+if (!function_exists('connection')) {
 
     /**
-     * Creates a short link with the configured api.
+     * Gets an active connection.
      *
-     * @param $link
+     * @param null $name
+     *
+     * @return \Dan\Connection\Handler|\Dan\Contracts\ConnectionContract
+     */
+    function connection($name = null)
+    {
+        if (is_null($name)) {
+            return dan('connections');
+        }
+
+        return dan('connections')->connections($name);
+    }
+}
+
+if (!function_exists('console')) {
+
+    /**
+     * Gets the console object.
+     *
+     * @return Console
+     */
+    function console()
+    {
+        return Dan::getInstance()->make('console');
+    }
+}
+
+if (!function_exists('config')) {
+
+    /**
+     * Gets the console object.
+     *
+     * @param string $key
+     * @param string $default
+     *
+     * @return \Dan\Config\Config|mixed
+     */
+    function config($key = null, $default = null)
+    {
+        if (is_null($key)) {
+            return dan('config');
+        }
+
+        return dan('config')->get($key, $default);
+    }
+}
+
+if (!function_exists('rootPath')) {
+
+    /**
+     * Gets the config path.
+     *
+     * @param string $path
      *
      * @return mixed
      */
-    function shortLink($link)
+    function rootPath($path = '')
     {
-        if (!config('dan.use_short_links')) {
-            return $link;
+        return dan()->make('path.root').($path ? '/'.$path : null);
+    }
+}
+
+if (!function_exists('basePath')) {
+
+    /**
+     * Gets the config path.
+     *
+     * @param string $path
+     *
+     * @return mixed
+     */
+    function basePath($path = '')
+    {
+        return dan()->make('path.base').($path ? '/'.$path : null);
+    }
+}
+
+if (!function_exists('configPath')) {
+
+    /**
+     * Gets the config path.
+     *
+     * @param string $path
+     *
+     * @return mixed
+     */
+    function configPath($path = '')
+    {
+        return dan()->make('path.config').($path ? '/'.$path : null);
+    }
+}
+
+if (!function_exists('hooksPath')) {
+
+    /**
+     * Gets the config path.
+     *
+     * @param string $path
+     *
+     * @return mixed
+     */
+    function addonsPath($path = '')
+    {
+        return dan()->make('path.addons').($path ? '/'.$path : null);
+    }
+}
+
+if (!function_exists('srcPath')) {
+
+    /**
+     * Gets the config path.
+     *
+     * @param string $path
+     *
+     * @return mixed
+     */
+    function srcPath($path = '')
+    {
+        return dan()->make('path.src').($path ? '/'.$path : null);
+    }
+}
+
+if (!function_exists('databasePath')) {
+
+    /**
+     * Gets the config path.
+     *
+     * @param string $path
+     *
+     * @return mixed
+     */
+    function databasePath($path = '')
+    {
+        return dan()->make('path.database').($path ? '/'.$path : null);
+    }
+}
+
+if (!function_exists('storagePath')) {
+
+    /**
+     * Gets the config path.
+     *
+     * @param string $path
+     *
+     * @return mixed
+     */
+    function storagePath($path = '')
+    {
+        return dan()->make('path.storage').($path ? '/'.$path : null);
+    }
+}
+
+if (!function_exists('dotcollect')) {
+
+    /**
+     * Gets the config path.
+     *
+     * @param array $items
+     *
+     * @return mixed
+     */
+    function dotcollect($items = [])
+    {
+        return new DotCollection($items);
+    }
+}
+
+if (!function_exists('events')) {
+
+    /**
+     * Gets the config path.
+     *
+     * @return \Dan\Events\Handler
+     */
+    function events()
+    {
+        return dan('events');
+    }
+}
+
+if (!function_exists('filesystem')) {
+
+    /**
+     * Gets the config path.
+     *
+     * @return \Illuminate\Filesystem\Filesystem
+     */
+    function filesystem()
+    {
+        return dan('filesystem');
+    }
+}
+
+if (!function_exists('database')) {
+
+    /**
+     * Grabs the given database or returns the manager if none is given.
+     *
+     * @param string $name
+     *
+     * @return \Dan\Database\Database|\Dan\Database\DatabaseManager
+     */
+    function database($name = null)
+    {
+        /** @var \Dan\Database\DatabaseManager $database */
+        $database = dan('database');
+
+        if (!is_null($name)) {
+            return $database->get($name);
         }
 
-        $class = config('dan.short_link_api');
+        return $database;
+    }
+}
 
-        /** @var \Dan\Contracts\ShortLinkContract $creator */
-        $creator = new $class();
+if (!function_exists('convert')) {
 
-        return $creator->create($link);
+    /**
+     * Coverts a number to a human readable amount.
+     *
+     * @param $size
+     *
+     * @return string
+     */
+    function convert($size)
+    {
+        $unit = ['b', 'kb', 'mb', 'gb', 'tb', 'pb'];
+
+        return @round($size / pow(1024, ($i = floor(log($size, 1024)))), 2).' '.$unit[$i];
+    }
+}
+
+if (!function_exists('command')) {
+
+    /**
+     * @param $names
+     *
+     * @return \Dan\Commands\Command
+     */
+    function command($names) : Command
+    {
+        return dan('commands')->registerCommand((array) $names);
     }
 }

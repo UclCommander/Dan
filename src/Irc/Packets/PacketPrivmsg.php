@@ -3,118 +3,99 @@
 namespace Dan\Irc\Packets;
 
 use Dan\Contracts\PacketContract;
-use Dan\Core\Dan;
-use Dan\Events\EventArgs;
-use Dan\Helpers\Logger;
-use Dan\Hooks\HookManager;
+use Dan\Events\Traits\EventTrigger;
 use Dan\Irc\Connection;
+use Dan\Irc\Location\User;
+use Dan\Irc\Traits\CTCP;
 
 class PacketPrivmsg implements PacketContract
 {
+    use EventTrigger, CTCP;
+
+    /**
+     * Handles the PRIVMSG Packet.
+     *
+     * @param \Dan\Irc\Connection $connection
+     * @param array               $from
+     * @param array               $data
+     *
+     * @throws \Exception
+     */
     public function handle(Connection $connection, array $from, array $data)
     {
-        if (!DEBUG) {
-            console("[<magenta>{$connection->getName()}</magenta>][<cyan>{$data[0]}</cyan>][<yellow>{$from[0]}</yellow>] {$data[1]}");
+        // TODO: TEMP
+        // -------------------------------------------------------------------------------------------------------------
+        if ($data[1] === '.memory') {
+            $memory = convert(memory_get_usage());
+            $peak = convert(memory_get_peak_usage());
+            $connection->message($data[0], "[ <cyan>Memory Usage:</cyan> <yellow>{$memory}</yellow> | <cyan>Peak Usage:</cyan> <yellow>{$peak}</yellow> ]");
+
+            return;
+        }
+        // -------------------------------------------------------------------------------------------------------------
+
+        $user = new User($connection, $from);
+        $message = $data[1];
+
+        if ($this->hasCTCP($message)) {
+            if (!empty(($return = $this->handleCTCP($connection, $user, $message)))) {
+                $connection->notice($user, $this->prepareCTCP(...$return));
+            }
+
+            return;
         }
 
-        Logger::logChat("[{$connection->getName()}][{$data[0]}][{$from[0]}] {$data[1]}");
+        if ($connection->isChannel($data[0])) {
+            if (!$connection->inChannel($data[0])) {
+                return;
+            }
 
-        if (isChannel($data[0])) {
             $channel = $connection->getChannel($data[0]);
-            $user = $channel->getUser(user($from));
-            $message = $data[1] ?? null;
 
-            if ($user == null) {
-                return;
-            }
-
-            $hookData = [
-                'connection'    => $connection,
-                'user'          => $user,
-                'channel'       => $channel,
-                'message'       => $message,
-            ];
-
-            if (strpos($message, "\001") === 0) {
-                $ctcp = explode(' ', trim($message, " \t\n\r\0\x0B\001"), 2);
-
-                if ($ctcp[0] == 'ACTION') {
-                    $hookData['message'] = $ctcp[1];
-                    event('irc.packets.action.public', $hookData);
-
-                    return;
-                }
-
-                return;
-            }
-
-            $event = event('irc.packets.message.public', $hookData);
-
-            if ($event === false) {
-                return;
-            }
-
-            if ($event instanceof EventArgs) {
-                $hookData['user'] = $event->get('user');
-                $hookData['channel'] = $event->get('channel');
-                $hookData['message'] = $event->get('message');
-            }
-
-            $info = database()->table('channels')->where('name', $channel->getLocation())->first()->get('info');
-            $except = isset($info['disabled_hooks']) ? $info['disabled_hooks'] : [];
-
-            if (HookManager::data($hookData)->except($except)->call('regex')) {
-                return;
-            }
-
-            if (HookManager::data($hookData)->except($except)->call('command')) {
-                return;
-            }
+            $this->triggerEvent('irc.message.public', [
+                'connection' => $connection,
+                'channel'    => $channel,
+                'user'       => $user,
+                'message'    => $message,
+            ]);
         } else {
-            $user = user($from);
-            $message = $data[1];
-
-            $hookData = [
-                'connection'    => $connection,
-                'user'          => $user,
-                'message'       => $message,
-            ];
-
-            if (strpos($message, "\001") === 0) {
-                $ctcp = explode(' ', trim($message, " \t\n\r\0\x0B\001"), 2);
-
-                if ($ctcp[0] == 'ACTION') {
-                    $hookData['message'] = $ctcp[1];
-                    event('irc.packets.action.private', $hookData);
-
-                    return;
-                }
-
-                $send = '';
-
-                if ($ctcp[0] == 'VERSION') {
-                    $v = Dan::getCurrentGitVersion();
-                    $send = 'Dan the PHP Bot v'.Dan::VERSION."({$v['id']}) by UclCommander, running on PHP ".phpversion().' - http://skycld.co/dan';
-                }
-
-                if ($ctcp[0] == 'TIME') {
-                    $send = date('r');
-                }
-
-                if ($ctcp[0] == 'PING') {
-                    $send = time();
-                }
-
-                if (!empty($send)) {
-                    $connection->notice($user, "\001{$ctcp[0]} {$send}\001");
-                }
-
-                return;
-            }
-
-            if (event('irc.packets.message.private', $hookData) === false) {
-                return;
-            }
+            $this->triggerEvent('irc.message.private', [
+                'connection' => $connection,
+                'user'       => $user,
+                'message'    => $message,
+            ]);
         }
+    }
+
+    /**
+     * Handles a CTCP event.
+     *
+     * @param \Dan\Irc\Connection    $connection
+     * @param \Dan\Irc\Location\User $user
+     * @param $message
+     *
+     * @return array
+     */
+    protected function handleCTCP(Connection $connection, User $user, $message) : array
+    {
+        $ctcp = $this->parseCTCP($message);
+
+        $normalized = ucfirst(strtolower($ctcp['command']));
+
+        if (method_exists($this, 'ctcp'.$normalized)) {
+            return [$ctcp['command'], $this->{'ctcp'.$normalized}()];
+        }
+
+        $response = $this->triggerEvent('irc.ctcp.'.strtolower($ctcp['command']), [
+            'connection' => $connection,
+            'user'       => $user,
+            'message'    => $ctcp['message'],
+        ]);
+
+        if (!is_string($response)) {
+            return [];
+        }
+
+        return [$ctcp['command'], $response];
     }
 }

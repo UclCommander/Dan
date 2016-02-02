@@ -1,48 +1,22 @@
 #! /usr/bin/env php7
 <?php
 
+if (phpversion() < '7') {
+    die('PHP 7 is REQUIRED. Please update your php installation to at least PHP 7');
+}
+
+if (!defined('STDIN')) {
+    throw new Exception("CLI Only");
+}
+
 error_reporting(E_ALL);
 ini_set("display_errors", true);
-
-if (phpversion() < '7')
-    die('PHP 7 is REQUIRED. Please update your php installation to at least PHP 7');
-
-if (!defined('STDIN'))
-    throw new Exception("CLI Only");
-
 libxml_use_internal_errors(true);
 date_default_timezone_set("UTC");
 
 define("ROOT_DIR", __DIR__);
-define("BASE_DIR", __DIR__);
-define('LOGS_DIR', ROOT_DIR . '/logs');
-define('CONFIG_DIR', ROOT_DIR . '/config');
-define('STORAGE_DIR', ROOT_DIR . '/storage');
-define('DATABASE_DIR', STORAGE_DIR . '/database');
-define('BACKUP_DIR', STORAGE_DIR . '/backups');
-define('HOOK_DIR', ROOT_DIR . '/hooks');
 
-require(ROOT_DIR . '/src/functions.old.php');
-require(ROOT_DIR . '/src/functions.php');
+require(ROOT_DIR . '/vendor/autoload.php');
 
-if(!file_exists(ROOT_DIR . '/vendor/autoload.php'))
-{
-    $exists = commandExists('composer');
-
-    if(!$exists)
-        file_put_contents(ROOT_DIR . '/composer', file_get_contents('https://getcomposer.org/composer.phar'));
-
-    shell_exec(($exists ? '' : (isWin() ? 'php ' : '') . ROOT_DIR . '/') . "composer install");
-}
-
-require(BASE_DIR . '/vendor/autoload.php');
-
-set_error_handler(function($severity, $message, $filename, $lineno)
-{
-    error("-------------------------");
-    controlLog("<error>[{$severity}] PHP ERROR: {$message} in " . relative($filename) . " on line {$lineno}</error>");
-    error("-------------------------");
-});
-
-$dan = new \Dan\Application();
-$dan->run();
+$app = new \Dan\Application();
+$app->run();

@@ -3,78 +3,81 @@
 namespace Dan\Irc\Location;
 
 use Dan\Database\Savable;
+use Dan\Database\Traits\Data;
 use Dan\Irc\Connection;
 use Illuminate\Contracts\Support\Arrayable;
 
 class User extends Location implements Savable, Arrayable
 {
+    use Data;
+
+    /**
+     * @var string
+     */
     protected $nick;
+
+    /**
+     * @var string
+     */
     protected $user;
+
+    /**
+     * @var string
+     */
     protected $host;
+
+    /**
+     * @var string
+     */
     protected $real;
-    protected $rank;
 
-    protected $save = true;
+    /**
+     * @var \Dan\Irc\Connection
+     */
+    protected $connection;
 
-    public function __construct(array $data, Connection $connection = null, $save = true)
+    /**
+     * User constructor.
+     *
+     * @param \Dan\Irc\Connection $connection
+     * @param $nick
+     * @param null $user
+     * @param null $host
+     * @param null $real
+     */
+    public function __construct(Connection $connection, $nick, $user = null, $host = null, $real = null)
     {
-        parent::__construct();
-
-        $this->connection = $connection ?? connection();
-
-        $this->nick = isset($data['nick']) ? $data['nick'] : null;
-        $this->user = isset($data['user']) ? $data['user'] : null;
-        $this->host = isset($data['host']) ? $data['host'] : null;
-        $this->real = isset($data['real']) ? $data['real'] : null;
-        $this->location = isset($data['nick']) ? $data['nick'] : null;
-        $this->rank = isset($data['rank']) ? $data['rank'] : null;
-        $this->save = $save;
-
-        if ($this->rank != null) {
-            $this->setPrefix($this->rank);
+        if (is_array($nick)) {
+            $real = $nick[3] ?? null;
+            $host = $host[2] ?? null;
+            $user = $user[1] ?? null;
+            $nick = $nick[0] ?? null;
         }
+
+        $this->location = $nick;
+        $this->nick = $nick;
+        $this->user = $user;
+        $this->host = $host;
+        $this->real = $real;
+        $this->connection = $connection;
 
         $this->save();
     }
 
     /**
-     * Gets the user as a Nick!User@Host string.
+     * Gets a user property.
      *
-     * @return string
+     * @param $name
+     *
+     * @return string|Connection
      */
-    public function string()
+    public function __get($name)
     {
-        return "{$this->nick}!{$this->user}@{$this->host}";
-    }
+        if (property_exists($this, $name)) {
+            return $this->{$name};
+        }
 
-    /**
-     * Gets the users nickname.
-     *
-     * @return string
-     */
-    public function nick()
-    {
-        return $this->nick;
-    }
-
-    /**
-     * Gets the users username.
-     *
-     * @return string
-     */
-    public function user()
-    {
-        return $this->user;
-    }
-
-    /**
-     * Gets the users host.
-     *
-     * @return string
-     */
-    public function host()
-    {
-        return $this->host;
+        throw new \InvalidArgumentException("Property {$name} doesn't exist.");
     }
 
     /**
@@ -82,16 +85,11 @@ class User extends Location implements Savable, Arrayable
      */
     public function save()
     {
-        if (!$this->save) {
-            return;
-        }
-
-        database()->table('users')->insertOrUpdate(['nick', $this->nick], [
-           'nick' => $this->nick,
-           'user' => $this->user,
-           'host' => $this->host,
-           'real' => $this->real,
-        ]);
+        database($this->connection->getName())
+            ->table('users')
+            ->insertOrUpdate([
+                'nick', '=', $this->nick,
+            ], $this->toArray());
     }
 
     /**
@@ -106,7 +104,7 @@ class User extends Location implements Savable, Arrayable
             'user' => $this->user,
             'host' => $this->host,
             'real' => $this->real,
-            'rank' => $this->modes->implode(''),
+            'data' => $this->data,
         ];
     }
 }

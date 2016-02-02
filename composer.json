@@ -1,20 +1,21 @@
 {
     "autoload": {
         "psr-4": {
-            "Dan\\"         : "src/",
-            "Plugins\\"     : "plugins/",
-            "PluginTemp\\"  : "storage/plugins"
-        }
+            "Dan\\": "src/"
+        },
+        "files": [
+            "src/functions.php"
+        ]
     },
     "require": {
-        "php": ">=7.0",
-        "illuminate/support": "5.x",
-        "illuminate/filesystem": "5.x",
-        "rap2hpoutre/similar-text-finder": "^0.1.2",
-        "symfony/console": "^2.7",
-        "symfony/var-dumper": "^2.7",
-        "knplabs/github-api": "~1.4",
+        "illuminate/container": "^5.2",
+        "illuminate/filesystem": "^5.2",
+        "illuminate/support": "^5.2",
+        "symfony/console": "^3.0",
+        "symfony/var-dumper": "^3.0",
+        "knplabs/github-api": "^1.5",
         "endroid/twitter": "^1.1",
-        "nesbot/carbon": "~1.19"
+        "nesbot/carbon": "^1.21",
+        "illuminate/config": "^5.2"
     }
 }

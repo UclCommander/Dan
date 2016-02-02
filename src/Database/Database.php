@@ -91,11 +91,11 @@ class Database
      */
     public function load()
     {
-        if (!file_exists(DATABASE_DIR."/{$this->file}.json")) {
+        if (!file_exists(databasePath("{$this->file}.json"))) {
             $this->save();
         }
 
-        $database = json_decode(filesystem()->get(DATABASE_DIR."/{$this->file}.json"), true);
+        $database = json_decode(filesystem()->get(databasePath("{$this->file}.json")), true);
 
         if (!is_array($database)) {
             throw new Exception("Database {$this->file} is corrupted.");
@@ -122,9 +122,9 @@ class Database
 
         if ($backup) {
             $date = date('Ymd-His');
-            filesystem()->copy(DATABASE_DIR."/{$this->file}.json", BACKUP_DIR."/{$this->file}-{$date}.json");
+            filesystem()->copy(databasePath("{$this->file}.json"), storagePath("backups/{$this->file}-{$date}.json"));
         }
 
-        filesystem()->put(DATABASE_DIR."/{$this->file}.json", $json);
+        filesystem()->put(databasePath("{$this->file}.json"), $json);
     }
 }

@@ -250,7 +250,18 @@ class Table
         $items = [];
 
         foreach ($this->getItems() as $id => $data) {
-            if (Compare::is(strtolower($data[$column]), $is, strtolower($value))) {
+            if (is_array($value) || is_array($data[$column])) {
+                if (!in_array($is, ['=', '!='])) {
+                    throw new Exception('Only != and = can apply to array values.');
+                }
+
+                $current = $data[$column];
+            } else {
+                $current = strtolower($data[$column]);
+                $value = strtolower($value);
+            }
+
+            if (Compare::is($current, $is, $value)) {
                 $items[$id] = $data;
             }
         }

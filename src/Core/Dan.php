@@ -2,47 +2,39 @@
 
 namespace Dan\Core;
 
-use Dan\Console\Console;
-use Dan\Contracts\MessagingContract;
-use Dan\Contracts\SocketContract;
-use Dan\Database\Database;
-use Dan\Database\DatabaseManager;
-use Dan\Events\EventArgs;
-use Dan\Helpers\Logger;
-use Dan\Hooks\HookManager;
-use Dan\Irc\Connection;
-use Dan\Irc\Location\User;
-use Dan\Setup\Setup;
-use Dan\Web\Listener;
+use Dan\Addons\AddonLoader;
+use Dan\Config\ConfigServiceProvider;
+use Dan\Connection\Handler as ConnectionHandler;
+use Dan\Console\ConsoleServiceProvider;
+use Dan\Contracts\DatabaseContract;
+use Dan\Core\Traits\Database;
+use Dan\Core\Traits\Paths;
+use Dan\Database\DatabaseServiceProvider;
+use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\ServiceProvider;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Dan
+class Dan extends Container implements DatabaseContract
 {
-    /** @var string Current version */
-    const VERSION = '5.1.5';
+    use Paths, Database;
 
-    /** @var array */
-    protected static $args = [];
+    const VERSION = '6.0.0';
 
-    /** @var string */
-    protected static $currentConnection;
+    /**
+     * @var array
+     */
+    protected $providers = [];
 
-    /** @var Filesystem $filesystem */
-    protected $filesystem;
-
-    /** @var SocketContract[] */
-    protected $connections = [];
-
-    /** @var static $dan */
-    protected static $dan;
-
-    /** @var DatabaseManager */
-    protected $databaseManager;
-
-    /** @var bool $running */
-    protected $running = false;
+    /**
+     * @var array
+     */
+    protected $coreProviders = [
+        ConfigServiceProvider::class,
+        DatabaseServiceProvider::class,
+        ConsoleServiceProvider::class,
+    ];
 
     /**
      * @var \Symfony\Component\Console\Input\InputInterface
@@ -54,441 +46,115 @@ class Dan
      */
     protected $output;
 
+    /**
+     * Dan constructor. Loads all the low-level providers and bindings.
+     *
+     * @param \Symfony\Component\Console\Input\InputInterface   $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     */
     public function __construct(InputInterface $input, OutputInterface $output)
     {
-        $this->input = $input;
-        $this->output = $output;
+        $this->instance('input', $input);
+        $this->instance('output', $output);
 
-        static::$dan = $this;
+        $this->bindPathsInContainer();
+        $this->registerCoreBindings();
+        $this->registerCoreProviders();
+        $this->registerCoreAliases();
 
-        $this->filesystem = new Filesystem();
-        $this->databaseManager = new DatabaseManager();
-
-        if (!filesystem()->exists(CONFIG_DIR)) {
-            filesystem()->makeDirectory(CONFIG_DIR);
+        if (console()->option('debug', false)) {
+            config()->set('dan.debug', true);
         }
 
-        if (!filesystem()->exists(STORAGE_DIR)) {
-            filesystem()->makeDirectory(STORAGE_DIR);
-        }
-
-        if (!filesystem()->exists(DATABASE_DIR)) {
-            filesystem()->makeDirectory(DATABASE_DIR);
-        }
-
-        if (!filesystem()->exists(BACKUP_DIR)) {
-            filesystem()->makeDirectory(BACKUP_DIR);
-        }
-
-        if (!filesystem()->exists(HOOK_DIR)) {
-            filesystem()->makeDirectory(HOOK_DIR);
-        }
+        $this->createPaths();
     }
 
     /**
-     * Boots up Dan.
+     * This is where we boot non-core providers. Like IRC, Web listener, plugins, etc.
      */
     public function boot()
     {
-        define('DEBUG', $this->input->getOption('debug'));
-
-        if (DEBUG) {
-            debug('!!!DEBUG MODE ACTIVATED!!!');
-        }
-
-        if (array_key_exists('--clear-config', static::$args)) {
-            filesystem()->deleteDirectory(CONFIG_DIR, true);
-        }
-
-        if (array_key_exists('--clear-storage', static::$args)) {
-            filesystem()->deleteDirectory(STORAGE_DIR, true);
-        }
-
-        Logger::defineSession();
-
-        info('Loading bot..');
-
-        try {
-            Config::load();
-        } catch (\Exception $exception) {
-            error($exception->getMessage());
-            die;
-        }
-
-        Setup::migrate();
-        HookManager::loadHooks();
-
-        success('Bot loaded.');
-
-        if (empty(config('irc.enabled'))) {
-            warn('There are no IRC servers enabled. Please add and/or enable one or use /connect <server>');
-        }
-
-        $this->fromUpdate();
-
-        $this->addSocket('console', new Console());
-
-        if (config('web.enabled')) {
-            $this->addSocket('listener', new Listener());
-        }
-
-        foreach (config('irc.servers') as $name => $config) {
-            if (!in_array($name, config('irc.enabled'))) {
-                continue;
-            }
-
-            $irc = new Connection($name, $config);
-            $irc->connect();
-            $this->addSocket($name, $irc);
-        }
-
-        $this->running = true;
-
-        $this->startSockets();
+        $this->registerProviders();
     }
 
     /**
-     * Connects to a network.
      *
-     * @param $name
-     *
-     * @throws \Exception
-     *
-     * @return bool
      */
-    public function connect($name)
+    public function run()
     {
-        if (!array_key_exists($name, config('irc.servers'))) {
-            throw new \Exception("Sever {$name} does not exist.");
-        }
+        $this->make('addons')->loadAll();
 
-        if (array_key_exists($name, $this->connections)) {
-            throw new \Exception('Already connected to this server.');
-        }
-
-        $irc = new Connection($name, config("irc.servers.{$name}"));
-        $irc->connect();
-        $this->addSocket($name, $irc);
-
-        return true;
+        $this['connections']->start();
+        $this['connections']->readConnections();
     }
 
     /**
-     * Adds a socket to the que.
-     *
-     * @param $name
-     * @param \Dan\Contracts\SocketContract $connection
+     * Register Dan's core aliases.
      */
-    public function addSocket($name, SocketContract $connection)
+    protected function registerCoreAliases()
     {
-        if (!$this->databaseManager->exists($name)) {
-            $this->databaseManager->create($name);
-            Setup::populateDatabase($name);
-        }
+        $aliases = [
+            'dan'           => [self::class, Container::class],
+            'filesystem'    => ['Illuminate\Filesystem\Filesystem', 'Illuminate\Contracts\Filesystem\Filesystem'],
+            'connections'   => [ConnectionHandler::class],
+        ];
 
-        $this->connections[$name] = $connection;
-    }
-
-    /**
-     * Removes a socket connection.
-     *
-     * @param $name
-     */
-    public function removeSocket($name)
-    {
-        unset($this->connections[$name]);
-    }
-
-    /**
-     * Starts reading from all sockets.
-     */
-    public function startSockets()
-    {
-        while ($this->running) {
-            usleep(200000);
-
-            $inputs = $this->getStreams();
-            $write = null;
-            $except = null;
-
-            if (stream_select($inputs, $write, $except, 0) > 0) {
-                foreach ($inputs as $input) {
-                    foreach ($this->connections as $connection) {
-                        if ($input == $connection->getStream()) {
-                            static::$currentConnection = $connection->getName();
-                            $connection->handle($input);
-                        }
-                    }
-                }
+        foreach ($aliases as $key => $list) {
+            foreach ($list as $alias) {
+                $this->alias($key, $alias);
             }
         }
     }
 
     /**
-     * Disconnects from a network.
-     *
-     * @param $name
-     *
-     * @throws \Exception
+     *  Load all core bindings.
      */
-    public static function disconnect($name)
+    protected function registerCoreBindings()
     {
-        if (!array_key_exists($name, config('irc.servers'))) {
-            throw new \Exception("Not connected to the server {$name}.");
-        }
+        static::setInstance($this);
 
-        $connection = static::$dan->connections[$name];
-
-        if ($connection instanceof Connection) {
-            $connection->send('QUIT', 'Disconnecting');
-
-            return;
-        }
-
-        throw new \Exception('This connection cannot be closed.');
+        $this->instance('dan', $this);
+        $this->instance('Illuminate\Container\Container', $this);
+        $this->instance('connections', new ConnectionHandler());
+        $this->instance('filesystem', new Filesystem());
+        $this->instance('addons', new AddonLoader());
     }
 
     /**
-     * Safely closes the bot.
-     *
-     * @param string $reason
-     * @param bool   $reboot
-     *
-     * @return bool
+     * Loads all core service providers.
      */
-    public static function quit($reason = 'Bot shutting down', $reboot = false)
+    protected function registerCoreProviders()
     {
-        if (event('dan.quitting') === false) {
-            return false;
-        }
+        foreach ($this->coreProviders as $provider) {
+            /** @var ServiceProvider $provider */
+            $provider = new $provider($this);
 
-        controlLog('Shutting down...');
-
-        Config::saveAll();
-
-        database()->save();
-
-        controlLog('Bye!');
-
-        foreach (static::$dan->connections as $connection) {
-            $connection->quit($reason);
-        }
-
-        if (!$reboot) {
-            die;
-        }
-
-        return true;
-    }
-
-    /**
-     * Gets all connection streams.
-     *
-     * @return array
-     */
-    protected function getStreams() : array
-    {
-        $streams = [];
-
-        foreach ($this->connections as $connection) {
-            $streams[] = $connection->getStream();
-        }
-
-        return $streams;
-    }
-
-    /**
-     * Does from-update checks.
-     */
-    public function fromUpdate()
-    {
-        if ($this->input->getOption('from-update')) {
-            subscribe('irc.packets.join', function (EventArgs $eventArgs) {
-
-                $channel = $this->input->getOption('channel');
-
-                if ($eventArgs->get('channel')->getLocation() != $channel) {
-                    return;
-                }
-
-                $v = static::getCurrentGitVersion();
-                message($channel, "{reset}[ {green}Up to date {reset}| Currently on {yellow}{$v['id']}{reset} | {cyan}{$v['message']} {reset}]");
-                $eventArgs->get('event')->destroy();
-            });
+            $provider->register();
         }
     }
 
     /**
-     * Gets the filesystem driver.
-     *
-     * @return Filesystem
+     * Loads all non-critical providers.
      */
-    public static function filesystem() : Filesystem
+    protected function registerProviders()
     {
-        return static::$dan->filesystem;
-    }
+        $providers = config('dan.providers');
 
-    /**
-     * Gets the database driver.
-     *
-     * @param string $name
-     *
-     * @throws \Exception
-     *
-     * @return \Dan\Database\Database
-     */
-    public static function database($name = null) : Database
-    {
-        if ($name == null) {
-            $name = static::$currentConnection;
+        foreach ($providers as $provider) {
+            $this->loadProvider($provider);
         }
-
-        if ($name == null) {
-            $name = 'console';
-        }
-
-        return static::$dan->databaseManager->get($name);
     }
 
     /**
-     * Gets the database manager.
-     *
-     * @throws \Exception
-     *
-     * @return \Dan\Database\DatabaseManager
+     * @param $provider
      */
-    public static function databaseManager() : DatabaseManager
+    protected function loadProvider($provider)
     {
-        return static::$dan->databaseManager;
-    }
+        console()->debug("Loading provider {$provider}");
 
-    /**
-     * Checks to see if a connection exists.
-     *
-     * @param $name
-     *
-     * @return bool
-     */
-    public static function hasConnection($name)
-    {
-        return array_key_exists($name, static::$dan->connections);
-    }
-
-    /**
-     * Gets the IRC connection.
-     *
-     * @param null $name
-     *
-     * @return \Dan\Irc\Connection|SocketContract|MessagingContract
-     */
-    public static function connection($name = null)
-    {
-        if ($name == null) {
-            $name = static::$currentConnection;
-        }
-
-        if ($name == null) {
-            $name = 'console';
-        }
-
-        if (!static::hasConnection($name)) {
-            return;
-        }
-
-        return static::$dan->connections[$name];
-    }
-
-    /**
-     * Checks to see if a user is an owner.
-     *
-     * @param \Dan\Irc\Location\User $user
-     *
-     * @return bool
-     */
-    public static function isOwner(User $user)
-    {
-        foreach (config('dan.owners') as $usr) {
-            if (fnmatch($usr, $user->string())) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Checks to see if a user is an admin.
-     *
-     * @param \Dan\Irc\Location\User $user
-     *
-     * @return bool
-     */
-    public static function isAdmin(User $user)
-    {
-        foreach (config('dan.admins') as $usr) {
-            if (fnmatch($usr, $user->string())) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Checks to see if a user is an admin or owner.
-     *
-     * @param \Dan\Irc\Location\User $user
-     *
-     * @return bool
-     */
-    public static function isAdminOrOwner(User $user)
-    {
-        return static::isOwner($user) || static::isAdmin($user);
-    }
-
-    /**
-     * Get program arguments.
-     *
-     * @param null $arg
-     * @param null $default
-     *
-     * @return array|null
-     */
-    public static function args($arg = null, $default = null)
-    {
-        if ($arg == null) {
-            return static::$args;
-        }
-
-        if (isset(static::$args[$arg])) {
-            return static::$args[$arg];
-        }
-
-        return $default;
-    }
-
-    /**
-     * Gets the current git version.
-     *
-     * @return array
-     */
-    public static function getCurrentGitVersion() : array
-    {
-        $commitId = trim(shell_exec('git rev-parse --short HEAD'));
-        $data = shell_exec('git log -1');
-        $messages = array_filter(explode(PHP_EOL, $data));
-        $commitMessage = trim(last($messages));
-
-        return ['id' => $commitId, 'message' => $commitMessage];
-    }
-
-    /**
-     * Gets the Dan instance.
-     *
-     * @return \Dan\Core\Dan
-     */
-    public static function self()
-    {
-        return static::$dan;
+        /** @var ServiceProvider $provider */
+        $provider = new $provider($this);
+        $provider->register();
+        $this->providers[get_class($provider)] = $provider;
     }
 }

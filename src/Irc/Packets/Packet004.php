@@ -9,9 +9,9 @@ class Packet004 implements PacketContract
 {
     public function handle(Connection $connection, array $from, array $data)
     {
-        $connection->support['SERVERNAME'] = $data[1];
-        $connection->support['VERSION'] = $data[2];
-        $connection->support['UMODES'] = $data[3];
-        $connection->support['CMODES'] = $data[4];
+        $connection->serverInfo->put('server_name', $data[1]);
+        $connection->serverInfo->put('version', $data[2]);
+        $connection->serverInfo->put('user_modes', $data[3]);
+        $connection->serverInfo->put('channel_modes', $data[4]);
     }
 }
