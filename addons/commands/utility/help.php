@@ -17,8 +17,6 @@ command(['help', 'commands'])
 
             $aliases = $command->getAliases();
 
-            var_dump($aliases, $message);
-
             if ($message != null && in_array($message, $aliases)) {
                 foreach ($command->getHelpText() as $help) {
                     $user->notice($help);
@@ -29,7 +27,7 @@ command(['help', 'commands'])
 
             $first = array_shift($aliases);
             $cmd = $first.(count($aliases) > 0 ? ' ('.implode(', ', $aliases).')' : '');
-            $list = array_merge($list, (array) $cmd);
+            $list = array_merge($list, [$cmd]);
         }
 
         $i = 0;
@@ -48,5 +46,5 @@ command(['help', 'commands'])
             $i++;
         }
 
-        $user->notice($commands->keys()->implode(', '));
+        $user->notice(implode(', ', $items));
     });

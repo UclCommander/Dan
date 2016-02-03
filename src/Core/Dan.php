@@ -72,10 +72,6 @@ class Dan extends Container implements DatabaseContract
         }
 
         $this->createPaths();
-
-        if (!file_exists(configPath('dan.json'))) {
-            (new Setup($input, $output))->doSetup();
-        }
     }
 
     /**
