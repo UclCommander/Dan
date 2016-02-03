@@ -60,7 +60,7 @@ class Setup
             $name = $this->output->ask('Lets start by choosing a name for the server', 'byteirc');
             $this->config->set("irc.servers.{$name}", []);
 
-            $server = $this->output->ask("The IRC server I'm connecting to", 'irc.byreirc.org');
+            $server = $this->output->ask("The IRC server I'm connecting to", 'irc.byteirc.org');
             $this->config->set("irc.servers.{$name}.server", $server);
 
             $port = $this->output->ask('Port', 6667);
