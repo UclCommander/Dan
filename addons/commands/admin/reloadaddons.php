@@ -3,8 +3,8 @@
 command(['reloadaddons', 'rla'])
     ->usableInConsole()
     ->usableInPrivate()
-    ->helpText("Reloads all addons")
+    ->helpText('Reloads all addons')
     ->rank('AOC')
-    ->handler(function() {
+    ->handler(function () {
         dan()->make('addons')->loadAll();
     });
