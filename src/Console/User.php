@@ -10,10 +10,11 @@ class User implements UserContract
      * Sends a message to the user.
      *
      * @param $message
+     * @param array $styles
      *
      * @return mixed
      */
-    public function message($message)
+    public function message($message, $styles = [])
     {
         console()->message($message);
     }

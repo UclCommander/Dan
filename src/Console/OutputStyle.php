@@ -30,6 +30,9 @@ class OutputStyle extends SymfonyStyle
             'light_cyan'    => new OutputFormatterStyle('cyan'),
             'white'         => new OutputFormatterStyle('white'),
             'default'       => new OutputFormatterStyle('default'),
+
+            'i'             => new OutputFormatterStyle('default'),
+            'b'             => new OutputFormatterStyle('default'),
         ]));
     }
 }

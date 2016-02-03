@@ -420,7 +420,7 @@ class Connection implements ConnectionContract, DatabaseContract
         }
 
         if (!config('dan.debug')) {
-            console()->line("[<magenta>{$this->name}</magenta>][[<cyan>{$location}</cyan>]][<yellow>{$this->user->nick}</yellow>] {$message}");
+            console()->line("[<magenta>{$this->name}</magenta>][<cyan>{$location}</cyan>][<yellow>{$this->user->nick}</yellow>] {$message}");
         }
 
         $formatter = new IrcOutputFormatter(true);

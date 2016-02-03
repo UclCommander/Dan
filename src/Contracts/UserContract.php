@@ -8,10 +8,11 @@ interface UserContract
      * Sends a message to the user.
      *
      * @param $message
+     * @param array $styles
      *
      * @return mixed
      */
-    public function message($message);
+    public function message($message, $styles = []);
 
     /**
      * Sends a notice to the user.

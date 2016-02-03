@@ -21,12 +21,13 @@ abstract class Location
 
     /**
      * @param $message
+     * @param array $styles
      *
      * @throws \Exception
      */
-    public function message($message)
+    public function message($message, $styles = [])
     {
-        $this->connection->message($this, $message);
+        $this->connection->message($this, $message, $styles);
     }
 
     /**
