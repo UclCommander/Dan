@@ -25,4 +25,13 @@ class Config extends Repository
         }
     }
 
+    /**
+     * Gets the items as an array.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->items;
+    }
 }

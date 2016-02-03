@@ -10,6 +10,8 @@ use Dan\Contracts\DatabaseContract;
 use Dan\Core\Traits\Database;
 use Dan\Core\Traits\Paths;
 use Dan\Database\DatabaseServiceProvider;
+use Dan\Events\EventServiceProvider;
+use Dan\Setup\Setup;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\ServiceProvider;
@@ -32,8 +34,9 @@ class Dan extends Container implements DatabaseContract
      */
     protected $coreProviders = [
         ConfigServiceProvider::class,
-        DatabaseServiceProvider::class,
         ConsoleServiceProvider::class,
+        DatabaseServiceProvider::class,
+        EventServiceProvider::class,
     ];
 
     /**
@@ -54,6 +57,8 @@ class Dan extends Container implements DatabaseContract
      */
     public function __construct(InputInterface $input, OutputInterface $output)
     {
+        $input->setInteractive(true);
+
         $this->instance('input', $input);
         $this->instance('output', $output);
 
@@ -67,6 +72,10 @@ class Dan extends Container implements DatabaseContract
         }
 
         $this->createPaths();
+
+        if (!file_exists(configPath('dan.json'))) {
+            (new Setup($input, $output))->doSetup();
+        }
     }
 
     /**
@@ -138,7 +147,7 @@ class Dan extends Container implements DatabaseContract
      */
     protected function registerProviders()
     {
-        $providers = config('dan.providers');
+        $providers = config('dan.providers', []);
 
         foreach ($providers as $provider) {
             $this->loadProvider($provider);
