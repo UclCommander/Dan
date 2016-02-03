@@ -11,7 +11,6 @@ use Dan\Core\Traits\Database;
 use Dan\Core\Traits\Paths;
 use Dan\Database\DatabaseServiceProvider;
 use Dan\Events\EventServiceProvider;
-use Dan\Setup\Setup;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\ServiceProvider;
