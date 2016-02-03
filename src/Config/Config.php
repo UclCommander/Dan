@@ -1,12 +1,12 @@
-<?php namespace Dan\Config;
+<?php
 
+namespace Dan\Config;
 
 use Exception;
 use Illuminate\Config\Repository;
 
 class Config extends Repository
 {
-
     /**
      * @throws \Exception
      */
