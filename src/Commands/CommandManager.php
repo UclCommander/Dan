@@ -155,7 +155,11 @@ class CommandManager
         $irc = null;
 
         if ($command->requiresIrcConnection()) {
-            $irc = $this->getIrcConnection($param);
+            if (($irc = $this->getIrcConnection($param)) === false) {
+                console()->info('This command requires an IRC connection. <yellow>/command <red>:ircname</red> arguments</yellow> to specify one.');
+
+                return false;
+            }
         }
 
         $this->callCommand($command, [
@@ -207,12 +211,12 @@ class CommandManager
      *
      * @param $param
      *
-     * @return \Dan\Connection\Handler|\Dan\Contracts\ConnectionContract|null
+     * @return \Dan\Connection\Handler|\Dan\Contracts\ConnectionContract|bool
      */
     private function getIrcConnection(&$param)
     {
         if (strpos($param, ':') === false) {
-            return;
+            return false;
         }
 
         $data = explode(' ', $param, 2);
@@ -223,6 +227,6 @@ class CommandManager
             return connection($conn);
         }
 
-        return;
+        return true;
     }
 }

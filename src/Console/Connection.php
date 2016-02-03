@@ -102,6 +102,7 @@ class Connection implements ConnectionContract
      */
     public function write($line)
     {
-        $this->output->writeln($line);
+        $time = date('H:i:s');
+        $this->output->writeln("[{$time}] {$line}");
     }
 }
