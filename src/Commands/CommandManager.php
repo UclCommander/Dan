@@ -154,7 +154,7 @@ class CommandManager
 
         $irc = null;
 
-        if ($command->requiresIrcConnection()) {
+        if ($command->needsIrcConnection()) {
             if (($irc = $this->getIrcConnection($param)) === false) {
                 console()->info('This command requires an IRC connection. <yellow>/command <red>:ircname</red> arguments</yellow> to specify one.');
 
