@@ -136,7 +136,7 @@ class Setup
                         'port'    => 6667,
                         'user'    => [
                             'nick'  => 'Dan',
-                            'user'  => 'Dan',
+                            'name'  => 'Dan',
                             'real'  => 'Dan the IRC Bot by UclCommander',
                             'pass'  => '',
                         ],
