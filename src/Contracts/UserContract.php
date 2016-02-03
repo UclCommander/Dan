@@ -1,9 +1,9 @@
-<?php namespace Dan\Contracts;
+<?php
 
+namespace Dan\Contracts;
 
 interface UserContract
 {
-
     /**
      * Sends a message to the user.
      *

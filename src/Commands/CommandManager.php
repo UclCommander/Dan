@@ -2,13 +2,12 @@
 
 namespace Dan\Commands;
 
+use Dan\Console\Connection as ConsoleConnection;
+use Dan\Console\User as ConsoleUser;
 use Dan\Events\Event;
 use Dan\Irc\Connection as IrcConnection;
-use Dan\Console\Connection as ConsoleConnection;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User as IrcUser;
-use Dan\Console\User as ConsoleUser;
-
 use Illuminate\Support\Collection;
 
 class CommandManager
@@ -125,7 +124,6 @@ class CommandManager
         return false;
     }
 
-
     /**
      * @param \Dan\Console\Connection $connection
      * @param $message
@@ -172,7 +170,6 @@ class CommandManager
         return false;
     }
 
-
     /**
      * @param $name
      *
@@ -215,7 +212,7 @@ class CommandManager
     private function getIrcConnection(&$param)
     {
         if (strpos($param, ':') === false) {
-            return null;
+            return;
         }
 
         $data = explode(' ', $param, 2);
@@ -226,6 +223,6 @@ class CommandManager
             return connection($conn);
         }
 
-        return null;
+        return;
     }
 }

@@ -1,11 +1,11 @@
-<?php namespace Dan\Console;
+<?php
 
+namespace Dan\Console;
 
 use Dan\Contracts\UserContract;
 
 class User implements UserContract
 {
-
     /**
      * Sends a message to the user.
      *

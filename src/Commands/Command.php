@@ -70,7 +70,6 @@ class Command
         return $this;
     }
 
-
     /**
      * @param bool $bool
      *
