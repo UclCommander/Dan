@@ -2,12 +2,13 @@
 
 namespace Dan\Irc\Location;
 
+use Dan\Contracts\UserContract;
 use Dan\Database\Savable;
 use Dan\Database\Traits\Data;
 use Dan\Irc\Connection;
 use Illuminate\Contracts\Support\Arrayable;
 
-class User extends Location implements Savable, Arrayable
+class User extends Location implements Savable, Arrayable, UserContract
 {
     use Data;
 

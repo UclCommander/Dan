@@ -3,9 +3,12 @@
 namespace Dan\Commands;
 
 use Dan\Events\Event;
-use Dan\Irc\Connection;
+use Dan\Irc\Connection as IrcConnection;
+use Dan\Console\Connection as ConsoleConnection;
 use Dan\Irc\Location\Channel;
-use Dan\Irc\Location\User;
+use Dan\Irc\Location\User as IrcUser;
+use Dan\Console\User as ConsoleUser;
+
 use Illuminate\Support\Collection;
 
 class CommandManager
@@ -32,8 +35,7 @@ class CommandManager
 
         events()->subscribe('irc.message.public', [$this, 'handleCommand'], Event::VeryHigh);
         events()->subscribe('irc.message.private', [$this, 'handlePrivateCommand'], Event::High);
-        // TODO: Console watching.
-        // events()->subscribe('console.message', [$this, 'handleConsoleCommand'], Event::High);
+        events()->subscribe('console.message', [$this, 'handleConsoleCommand'], Event::VeryHigh);
     }
 
     /**
@@ -72,7 +74,7 @@ class CommandManager
      *
      * @return bool
      */
-    public function handlePrivateCommand(Connection $connection, User $user, $message) : bool
+    public function handlePrivateCommand(IrcConnection $connection, IrcUser $user, $message) : bool
     {
         return $this->handleCommand($connection, $user, $message, null);
     }
@@ -87,7 +89,7 @@ class CommandManager
      *
      * @return bool|void
      */
-    public function handleCommand(Connection $connection, User $user, $message, Channel $channel = null) : bool
+    public function handleCommand(IrcConnection $connection, IrcUser $user, $message, Channel $channel = null) : bool
     {
         if (strpos($message, $connection->config->get('command_prefix')) === false) {
             return true;
@@ -96,14 +98,12 @@ class CommandManager
         $info = explode(' ', $message, 2);
         $name = substr($info[0], 1);
 
-        if (!$this->aliases->has($name)) {
-            $connection->message($channel ?? $user, "This command doesn't exist!");
+        if (!($command = $this->findCommand($name))) {
+            console()->info("This command doesn't exist!");
 
             return false;
         }
 
-        /** @var Command $command */
-        $command = $this->commands->get($this->aliases->get($name));
         $handler = $command->getHandler();
         $func = $handler;
 
@@ -113,11 +113,7 @@ class CommandManager
             return false;
         }
 
-        if (!($handler instanceof \Closure)) {
-            $func = [$handler, 'run'];
-        }
-
-        dan()->call($func, [
+        $this->callCommand($command, [
             'connection'     => $connection,
             'user'           => $user,
             'message'        => $info[1] ?? null,
@@ -127,5 +123,109 @@ class CommandManager
         ]);
 
         return false;
+    }
+
+
+    /**
+     * @param \Dan\Console\Connection $connection
+     * @param $message
+     *
+     * @return bool
+     */
+    public function handleConsoleCommand(ConsoleConnection $connection, $message) : bool
+    {
+        if (strpos($message, '/') === false) {
+            return true;
+        }
+
+        $info = explode(' ', $message, 2);
+        $name = substr($info[0], 1);
+        $param = $info[1] ?? null;
+
+        if (!($command = $this->findCommand($name))) {
+            console()->info("This command doesn't exist!");
+
+            return false;
+        }
+
+        if (!$command->isUsableInConsole()) {
+            console()->info('This command cannot be used in the console.');
+
+            return false;
+        }
+
+        $irc = null;
+
+        if ($command->requiresIrcConnection()) {
+            $irc = $this->getIrcConnection($param);
+        }
+
+        $this->callCommand($command, [
+            'connection'     => $irc,
+            'user'           => new ConsoleUser(),
+            'message'        => $param,
+            'channel'        => null,
+            'command'        => $name,
+            'commandManager' => $this,
+        ]);
+
+        return false;
+    }
+
+
+    /**
+     * @param $name
+     *
+     * @return bool|Command
+     */
+    public function findCommand($name)
+    {
+        if (!$this->aliases->has($name)) {
+            return false;
+        }
+
+        return $this->commands->get($this->aliases->get($name));
+    }
+
+    /**
+     * @param \Dan\Commands\Command $command
+     * @param $args
+     *
+     * @return mixed
+     */
+    public function callCommand(Command $command, $args)
+    {
+        $handler = $command->getHandler();
+        $func = $handler;
+
+        if (!($handler instanceof \Closure)) {
+            $func = [$handler, 'run'];
+        }
+
+        return dan()->call($func, $args);
+    }
+
+    /**
+     * Gets the required IRC connection if given.
+     *
+     * @param $param
+     *
+     * @return \Dan\Connection\Handler|\Dan\Contracts\ConnectionContract|null
+     */
+    private function getIrcConnection(&$param)
+    {
+        if (strpos($param, ':') === false) {
+            return null;
+        }
+
+        $data = explode(' ', $param, 2);
+        $conn = substr($data[0], 1);
+        $param = $data[1] ?? null;
+
+        if (connection()->hasConnection($conn)) {
+            return connection($conn);
+        }
+
+        return null;
     }
 }

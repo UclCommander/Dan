@@ -45,7 +45,7 @@ class Handler
             $name = $name->getName();
         }
 
-        if (!$this->connections->has($name)) {
+        if (!$this->hasConnection($name)) {
             return false;
         }
 
@@ -57,6 +57,18 @@ class Handler
         $this->connections->forget($name);
 
         return true;
+    }
+
+    /**
+     * Checks to see if a connection exists.
+     *
+     * @param $name
+     *
+     * @return bool
+     */
+    public function hasConnection($name) : bool
+    {
+        return $this->connections->has($name);
     }
 
     /**

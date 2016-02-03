@@ -29,6 +29,16 @@ class Command
      */
     protected $handler;
 
+    /**
+     * @var bool
+     */
+    protected $requiresIrcConnection = false;
+
+    /**
+     * Command constructor.
+     *
+     * @param $aliases
+     */
     public function __construct($aliases)
     {
         $this->aliases = (array) $aliases;
@@ -45,6 +55,21 @@ class Command
 
         return $this;
     }
+
+    /**
+     * Only applied when usableInConsole is set to true.
+     *
+     * @param bool $bool
+     *
+     * @return \Dan\Commands\Command
+     */
+    public function requiresIrcConnection($bool = true) : Command
+    {
+        $this->requiresIrcConnection = $bool;
+
+        return $this;
+    }
+
 
     /**
      * @param bool $bool
@@ -96,6 +121,14 @@ class Command
     public function getHandler()
     {
         return $this->handler;
+    }
+
+    /**
+     * @return bool
+     */
+    public function needsIrcConnection() : bool
+    {
+        return $this->requiresIrcConnection;
     }
 
     /**

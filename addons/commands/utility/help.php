@@ -2,13 +2,13 @@
 
 use Dan\Commands\Command;
 use Dan\Commands\CommandManager;
-use Dan\Irc\Location\User;
+use Dan\Contracts\UserContract;
 
 command(['help', 'commands'])
     ->usableInConsole()
     ->usableInPrivate()
     ->helpText('Gets help')
-    ->handler(function (CommandManager $commandManager, User $user, $message) {
+    ->handler(function (CommandManager $commandManager, UserContract $user, $message) {
         $commands = $commandManager->commands();
         $list = [];
 

@@ -3,9 +3,12 @@
 namespace Dan\Console;
 
 use Dan\Contracts\ConnectionContract;
+use Dan\Events\Traits\EventTrigger;
 
 class Connection implements ConnectionContract
 {
+    use EventTrigger;
+
     /**
      * @var \Symfony\Component\Console\Input\ArrayInput
      */
@@ -86,7 +89,10 @@ class Connection implements ConnectionContract
     {
         $message = trim(fgets($resource));
 
-        $this->write($message);
+        $this->triggerEvent('console.message', [
+            'connection' => $this,
+            'message'    => $message,
+        ]);
     }
 
     /**
