@@ -41,7 +41,7 @@ class Setup
 
         if (!$this->output->confirm('Do you want to skip setup and add initial values?', false)) {
             $host = $this->output->ask(
-                "Since you're my owner, what's you're hostmask? Please use nick!user@host format. You can use wildcards (*) too!"
+                "Since you're my owner, what's your hostmask? Please use nick!user@host format. You can use wildcards (*) too!"
             );
 
             $this->config->push('dan.owners', $host);
