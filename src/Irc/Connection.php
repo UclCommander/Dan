@@ -405,11 +405,9 @@ class Connection implements ConnectionContract, DatabaseContract
     public function message($location, $message, $styles = [])
     {
         if ($this->isChannel($location)) {
-        {
             if (!$this->inChannel($location)) {
                 throw new \Exception("This channel doesn't exist.");
             }
-        }
 
             $this->triggerEvent('irc.bot.message.public', [
                 'connection'    => $this,
