@@ -42,7 +42,8 @@ class Update
 
         // RIP GitHub Jan 27th, 2016
         if (strpos($shell, 'remote error')) {
-            $messagingContract->message("Unable to connect to GitHub");
+            $messagingContract->message('Unable to connect to GitHub');
+
             return;
         }
 
