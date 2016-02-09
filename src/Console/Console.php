@@ -316,7 +316,8 @@ class Console
 
         if (config('dan.debug')) {
             $this->error('Stack Trace:');
-            $this->error($exception->getTraceAsString());
+            echo $exception->getTraceAsString();
+            echo PHP_EOL;
         }
     }
 }

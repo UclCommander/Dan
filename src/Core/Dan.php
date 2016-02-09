@@ -139,7 +139,6 @@ class Dan extends Container implements DatabaseContract
         foreach ($this->coreProviders as $provider) {
             /** @var ServiceProvider $provider */
             $provider = new $provider($this);
-
             $provider->register();
         }
     }
@@ -166,5 +165,15 @@ class Dan extends Container implements DatabaseContract
         $provider = new $provider($this);
         $provider->register();
         $this->providers[get_class($provider)] = $provider;
+    }
+
+    /**
+     * @param $class
+     *
+     * @return \Illuminate\Support\ServiceProvider
+     */
+    public function provider($class) : ServiceProvider
+    {
+        return $this->providers[$class];
     }
 }
