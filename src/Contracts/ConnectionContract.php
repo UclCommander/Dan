@@ -14,9 +14,9 @@ interface ConnectionContract
     /**
      * Connects to the connection.
      *
-     * @return void
+     * @return bool
      */
-    public function connect();
+    public function connect() : bool;
 
     /**
      * Disconnects from the connection.

@@ -32,15 +32,17 @@ class IrcServiceProvider extends ServiceProvider
 
     /**
      * @param $server
+     *
+     * @return bool
      */
-    protected function connect($server)
+    public function connect($server) : bool
     {
         $config = $this->config['servers'][$server];
 
         $connection = new Connection($server, $config);
-
         $connection->createDatabase();
+        $connected = connection()->addConnection($connection);
 
-        connection()->addConnection($connection);
+        return is_bool($connected) ? $connected : false;
     }
 }

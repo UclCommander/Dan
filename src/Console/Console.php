@@ -7,6 +7,7 @@ use InvalidArgumentException;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
+use Throwable;
 
 class Console
 {
@@ -301,5 +302,21 @@ class Console
     public function notice($message)
     {
         $this->info($message);
+    }
+
+    /**
+     * @param Throwable $exception
+     */
+    public function exception(Throwable $exception)
+    {
+        $this->error('Exception was thrown.');
+        $this->error($exception->getMessage());
+        $this->error("On line {$exception->getLine()}");
+        $this->error("Of file {$exception->getFile()}");
+
+        if (config('dan.debug')) {
+            $this->error('Stack Trace:');
+            $this->error($exception->getTraceAsString());
+        }
     }
 }

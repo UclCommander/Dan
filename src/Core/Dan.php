@@ -32,7 +32,6 @@ class Dan extends Container implements DatabaseContract
      * @var array
      */
     protected $coreProviders = [
-        ConfigServiceProvider::class,
         ConsoleServiceProvider::class,
         DatabaseServiceProvider::class,
         EventServiceProvider::class,
@@ -51,10 +50,11 @@ class Dan extends Container implements DatabaseContract
     /**
      * Dan constructor. Loads all the low-level providers and bindings.
      *
-     * @param \Symfony\Component\Console\Input\InputInterface   $input
+     * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @param bool $command
      */
-    public function __construct(InputInterface $input, OutputInterface $output)
+    public function __construct(InputInterface $input, OutputInterface $output, $command = false)
     {
         $input->setInteractive(true);
 
@@ -62,15 +62,20 @@ class Dan extends Container implements DatabaseContract
         $this->instance('output', $output);
 
         $this->bindPathsInContainer();
-        $this->registerCoreBindings();
-        $this->registerCoreProviders();
         $this->registerCoreAliases();
+        $this->registerCoreBindings();
 
-        if (console()->option('debug', false)) {
-            config()->set('dan.debug', true);
-        }
+        $this->loadProvider(ConfigServiceProvider::class);
 
         $this->createPaths();
+
+        if (!$command) {
+            $this->registerCoreProviders();
+
+            if (console()->option('debug', false)) {
+                config()->set('dan.debug', true);
+            }
+        }
     }
 
     /**
@@ -78,6 +83,8 @@ class Dan extends Container implements DatabaseContract
      */
     public function boot()
     {
+
+
         $this->registerProviders();
     }
 
@@ -145,6 +152,7 @@ class Dan extends Container implements DatabaseContract
         $providers = config('dan.providers', []);
 
         foreach ($providers as $provider) {
+            console()->debug("Loading provider {$provider}");
             $this->loadProvider($provider);
         }
     }
@@ -154,8 +162,6 @@ class Dan extends Container implements DatabaseContract
      */
     protected function loadProvider($provider)
     {
-        console()->debug("Loading provider {$provider}");
-
         /** @var ServiceProvider $provider */
         $provider = new $provider($this);
         $provider->register();

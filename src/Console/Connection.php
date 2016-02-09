@@ -56,16 +56,18 @@ class Connection implements ConnectionContract
     /**
      * Connects to the connection.
      *
-     * @return void
+     * @return bool
      */
-    public function connect()
+    public function connect() : bool
     {
         if (!is_null($this->stream)) {
-            return;
+            return false;
         }
 
         $this->stream = fopen('php://stdin', 'r');
         stream_set_blocking($this->stream, 0);
+
+        return true;
     }
 
     /**

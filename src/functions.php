@@ -274,3 +274,18 @@ if (!function_exists('command')) {
         return dan('commands')->registerCommand((array) $names);
     }
 }
+
+if (!function_exists('xmlToArray')) {
+
+    /**
+     * Coverts a SimpleXmlElement to an array.
+     *
+     * @param $data
+     *
+     * @return mixed
+     */
+    function xmlToArray($data)
+    {
+        return json_decode(json_encode($data), true);
+    }
+}

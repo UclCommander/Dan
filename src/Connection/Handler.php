@@ -22,14 +22,18 @@ class Handler
 
     /**
      * @param \Dan\Contracts\ConnectionContract $connectionContract
+     *
+     * @return bool|null
      */
     public function addConnection(ConnectionContract $connectionContract)
     {
         $this->connections->put($connectionContract->getName(), $connectionContract);
 
         if ($this->running) {
-            $connectionContract->connect();
+            return $connectionContract->connect();
         }
+
+        return null;
     }
 
     /**

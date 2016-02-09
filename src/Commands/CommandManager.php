@@ -15,18 +15,15 @@ class CommandManager
     /**
      * @var \Illuminate\Support\Collection
      */
-    protected $commands = [];
+    protected $commands;
 
     /**
      * @var \Illuminate\Support\Collection
      */
-    protected $aliases = [];
+    protected $aliases;
 
     public function __construct()
     {
-        $this->commands = new Collection();
-        $this->aliases = new Collection();
-
         events()->subscribe('addons.load', function () {
             $this->commands = new Collection();
             $this->aliases = new Collection();
@@ -57,7 +54,7 @@ class CommandManager
 
         $name = $aliases[0];
 
-        $this->commands->put($aliases[0], $command);
+        $this->commands->put($name, $command);
 
         foreach ($aliases as $alias) {
             $this->aliases->put($alias, $name);
@@ -102,9 +99,6 @@ class CommandManager
 
             return false;
         }
-
-        $handler = $command->getHandler();
-        $func = $handler;
 
         if (is_null($channel) && !$command->isUsableInPrivate()) {
             $connection->message($user, 'This command must be used in a channel.');
@@ -203,7 +197,15 @@ class CommandManager
             $func = [$handler, 'run'];
         }
 
-        return dan()->call($func, $args);
+        try {
+            return dan()->call($func, $args);
+        } catch (\Error $error) {
+            console()->exception($error);
+        } catch (\Exception $exception) {
+            console()->exception($exception);
+        }
+
+        return null;
     }
 
     /**
