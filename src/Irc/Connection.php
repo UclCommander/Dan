@@ -132,7 +132,6 @@ class Connection implements ConnectionContract, DatabaseContract
      */
     public function disconnect() : bool
     {
-        connection()->removeConnection($this);
         return $this->socket->disconnect();
     }
 

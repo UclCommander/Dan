@@ -33,8 +33,12 @@ command(['disconnect'])
                 return;
             }
 
-            $location->message("Disconnecting from {$message}");
-            connection($message)->disconnect();
+            if (connection()->removeConnection($message)) {
+                $location->message("Disconnecting from {$message}");
+                return;
+            }
+
+            $location->message("Unable to disconnect from {$message}");
 
         } catch (Exception $e) {
             console()->exception($e);

@@ -43,7 +43,7 @@ class Handler
      *
      * @return bool
      */
-    public function removeConnection($name)
+    public function removeConnection($name) : bool
     {
         if ($name instanceof ConnectionContract) {
             $name = $name->getName();
@@ -55,12 +55,25 @@ class Handler
 
         /** @var ConnectionContract $connection */
         $connection = $this->connections->get($name);
-
         $connection->disconnect();
 
-        $this->connections->forget($name);
+        $this->forgetConnection($name);
 
         return true;
+    }
+
+    /**
+     * Removes a connection from the handler.
+     *
+     * @param $name
+     */
+    public function forgetConnection($name)
+    {
+        if ($name instanceof ConnectionContract) {
+            $name = $name->getName();
+        }
+
+        $this->connections->forget($name);
     }
 
     /**
