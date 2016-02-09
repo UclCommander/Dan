@@ -132,6 +132,7 @@ class Connection implements ConnectionContract, DatabaseContract
      */
     public function disconnect() : bool
     {
+        connection()->removeConnection($this);
         return $this->socket->disconnect();
     }
 
@@ -202,11 +203,9 @@ class Connection implements ConnectionContract, DatabaseContract
 
             unset($handler);
         } catch (\Exception $exception) {
-            console()->error($exception->getMessage()." | File: {$exception->getFile()}:{$exception->getLine()}");
-            var_dump($exception->getTraceAsString());
+            console()->exception($exception);
         } catch (\Error $error) {
-            console()->error($error->getMessage()." | File: {$error->getFile()}:{$error->getLine()}");
-            var_dump($error->getTraceAsString());
+            console()->exception($error);
         }
     }
 
