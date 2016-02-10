@@ -11,7 +11,7 @@ use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
 command(['fgtlist', 'fgts'])
-    ->usableInPrivate()
+    ->allowPrivate()
     ->helpText('Get da fgts')
     ->handler(function (User $user, Channel $channel) {
         $location = $channel ?? $user;

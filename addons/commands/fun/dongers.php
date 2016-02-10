@@ -12,7 +12,7 @@ use Dan\Irc\Location\User;
 
 
 command('dongers')
-    ->usableInPrivate()
+    ->allowPrivate()
     ->helpText('RAISE THE DONGERS')
     ->handler(function (User $user, Channel $channel) {
         $location = $channel ?? $user;

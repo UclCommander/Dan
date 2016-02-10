@@ -11,7 +11,7 @@ use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
 command('ding')
-    ->usableInPrivate()
+    ->allowPrivate()
     ->helpText('Ding dong!')
     ->handler(function (User $user, Channel $channel = null) {
         $location = $channel ?? $user;
