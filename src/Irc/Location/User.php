@@ -50,8 +50,8 @@ class User extends Location implements Savable, Arrayable, UserContract
     {
         if (is_array($nick)) {
             $real = $nick[3] ?? null;
-            $host = $host[2] ?? null;
-            $user = $user[1] ?? null;
+            $host = $nick[2] ?? null;
+            $user = $nick[1] ?? null;
             $nick = $nick[0] ?? null;
         }
 
@@ -62,7 +62,9 @@ class User extends Location implements Savable, Arrayable, UserContract
         $this->real = $real;
         $this->connection = $connection;
 
-        $this->save();
+        if (!is_null($nick)) {
+            $this->save();
+        }
     }
 
     /**

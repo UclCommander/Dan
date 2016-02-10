@@ -79,6 +79,9 @@ class Connection implements ConnectionContract, DatabaseContract
     {
         $this->name = $name;
         $this->config = dotcollect($config);
+
+        $this->createDatabase();
+
         $this->user = new User($this, $this->config->get('user.nick'), $this->config->get('user.name'), null, $this->config->get('user.real'));
         $this->socket = new Socket();
         $this->supported = new Collection();

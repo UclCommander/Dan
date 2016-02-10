@@ -40,7 +40,6 @@ class IrcServiceProvider extends ServiceProvider
         $config = $this->config['servers'][$server];
 
         $connection = new Connection($server, $config);
-        $connection->createDatabase();
         $connected = connection()->addConnection($connection);
 
         return is_bool($connected) ? $connected : false;

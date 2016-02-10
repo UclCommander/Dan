@@ -84,6 +84,12 @@ class Table
                         $new[$key] = $value;
                     }
                 } else {
+                    if (is_string($this->database->config[$this->table]['columns'][$key])) {
+                        if (is_array($value)) {
+                            throw new Exception("Column {$key} is a string, value given is an array.");
+                        }
+                    }
+
                     $new[$key] = $value;
                 }
             }
