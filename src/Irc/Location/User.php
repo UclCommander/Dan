@@ -7,6 +7,7 @@ use Dan\Database\Savable;
 use Dan\Database\Traits\Data;
 use Dan\Irc\Connection;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Collection;
 
 class User extends Location implements Savable, Arrayable, UserContract
 {
@@ -53,6 +54,19 @@ class User extends Location implements Savable, Arrayable, UserContract
             $host = $nick[2] ?? null;
             $user = $nick[1] ?? null;
             $nick = $nick[0] ?? null;
+        }
+
+        if ($user == null) {
+            /** @var Collection $data */
+            $data = $connection->database('users')->where('nick', $nick)->first();
+
+            if (is_null($data->get('user'))) {
+                $connection->send('WHO', $nick);
+            } else {
+                $user = $data->get('user');
+                $host = $data->get('host');
+                $real = $data->get('real');
+            }
         }
 
         $this->location = $nick;

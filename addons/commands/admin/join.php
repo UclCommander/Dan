@@ -5,8 +5,8 @@ use Dan\Irc\Connection;
 use Dan\Irc\Location\Channel;
 
 command(['join'])
-    ->usableInPrivate()
-    ->usableInConsole()
+    ->allowPrivate()
+    ->allowConsole()
     ->requiresIrcConnection()
     ->rank('ASC')
     ->helpText('Joins a channel')

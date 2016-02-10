@@ -87,11 +87,11 @@ class Create
         $options = "\n";
 
         if ($this->private) {
-            $options .= "    ->usableInPrivate()\n";
+            $options .= "    ->allowPrivate()\n";
         }
 
         if ($this->console) {
-            $options .= "    ->usableInConsole()\n";
+            $options .= "    ->allowConsole()\n";
         }
 
         if ($this->requiresIrc) {
