@@ -5,12 +5,14 @@ namespace Dan\Irc;
 use Dan\Contracts\ConnectionContract;
 use Dan\Contracts\DatabaseContract;
 use Dan\Contracts\PacketContract;
+use Dan\Database\Database;
 use Dan\Events\Traits\EventTrigger;
 use Dan\Irc\Formatter\IrcOutputFormatter;
 use Dan\Irc\Formatter\IrcOutputFormatterStyle;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\Location;
 use Dan\Irc\Location\User;
+use Dan\Irc\Traits\BotStaff;
 use Dan\Irc\Traits\Helpers;
 use Dan\Irc\Traits\IrcDatabase;
 use Dan\Irc\Traits\Parser;
@@ -20,7 +22,7 @@ use Illuminate\Support\Collection;
 
 class Connection implements ConnectionContract, DatabaseContract
 {
-    use Parser, IrcDatabase, Helpers, EventTrigger;
+    use Parser, IrcDatabase, Helpers, EventTrigger, BotStaff;
 
     /**
      * @var \Illuminate\Support\Collection
@@ -92,6 +94,23 @@ class Connection implements ConnectionContract, DatabaseContract
     public function getName() : string
     {
         return $this->name;
+    }
+
+    /**
+     * Gets the connection's database.
+     *
+     * @param null $table
+     *
+     * @return \Dan\Database\Database|\Dan\Database\Table
+     * @throws \Exception
+     */
+    public function database($table = null)
+    {
+        if (!is_null($table)) {
+            return database($this->name)->table($table);
+        }
+
+        return database($this->name);
     }
 
     /**

@@ -108,4 +108,12 @@ class User extends Location implements Savable, Arrayable, UserContract
             'data' => $this->data,
         ];
     }
+
+    /**
+     *
+     */
+    public function __toString()
+    {
+        return "{$this->nick}!{$this->user}@{$this->host}";
+    }
 }

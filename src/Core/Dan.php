@@ -83,8 +83,6 @@ class Dan extends Container implements DatabaseContract
      */
     public function boot()
     {
-
-
         $this->registerProviders();
     }
 

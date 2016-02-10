@@ -22,4 +22,19 @@ class Channel extends Location
         $this->connection = $connection;
         $this->location = $name;
     }
+
+    /**
+     * Kicks a user from the channel.
+     *
+     * @param $user
+     * @param string $reason
+     */
+    public function kick($user, $reason = 'Requested')
+    {
+        if ($user instanceof User) {
+            $user = $user->nick;
+        }
+
+        $this->connection->send('KICK', $this, $user, $reason);
+    }
 }
