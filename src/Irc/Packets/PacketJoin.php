@@ -14,8 +14,8 @@ class PacketJoin implements PacketContract
     public function handle(Connection $connection, array $from, array $data)
     {
         if ($from[0] != $connection->user->nick) {
-            //$channel = $connection->getChannel($data[0]);
-            //$channel->setUsers($from[0]);
+            $channel = $connection->getChannel($data[0]);
+            $channel->addUser($from[0]);
         } else {
             $connection->addChannel($data[0]);
         }

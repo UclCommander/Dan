@@ -64,4 +64,29 @@ trait Parser
             'from'      => $userInfo,
         ];
     }
+
+    /**
+     * @param $data
+     *
+     * @return array
+     */
+    public function parse353($data) : array
+    {
+        $users = explode(' ', $data);
+        $list = [];
+
+        foreach ($users as $user) {
+            $prefix = null;
+            $first = substr($user, 0, 1);
+
+            if (in_array($first, ['+', '%', '@', '&', '~'])) {
+                $prefix = $first;
+                $user = substr($user, 1);
+            }
+
+            $list[$user] = $prefix;
+        }
+
+        return $list;
+    }
 }
