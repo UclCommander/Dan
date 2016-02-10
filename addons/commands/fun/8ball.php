@@ -1,16 +1,19 @@
 <?php
+
 /**
  * 8ball command. Predicts the future.
  *
  * Do not directly edit this file.
  * If you want to change the rank, see commands.permissions in the configuration.
  */
+
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
 command(['8ball', '8b'])
     ->usableInPrivate()
     ->helpText("Ask the 8ball a question")
+    ->rank('*')
     ->handler(function (User $user, $message, Channel $channel = null) {
         $location = $channel ?? $user;
 
