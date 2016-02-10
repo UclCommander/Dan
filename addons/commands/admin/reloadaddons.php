@@ -1,8 +1,8 @@
 <?php
 
 command(['reloadaddons', 'rla'])
-    ->usableInConsole()
-    ->usableInPrivate()
+    ->allowConsole()
+    ->allowPrivate()
     ->helpText('Reloads all addons')
     ->rank('AOC')
     ->handler(function () {

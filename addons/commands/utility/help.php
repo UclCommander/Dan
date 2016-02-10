@@ -5,8 +5,8 @@ use Dan\Commands\CommandManager;
 use Dan\Contracts\UserContract;
 
 command(['help', 'commands'])
-    ->usableInConsole()
-    ->usableInPrivate()
+    ->allowConsole()
+    ->allowPrivate()
     ->helpText('Gets help')
     ->handler(function (CommandManager $commandManager, UserContract $user, $message) {
         $commands = $commandManager->commands();

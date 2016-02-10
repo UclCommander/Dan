@@ -4,8 +4,8 @@ use Dan\Contracts\UserContract;
 use Dan\Irc\Location\Channel;
 
 command(['memory'])
-    ->usableInPrivate()
-    ->usableInConsole()
+    ->allowPrivate()
+    ->allowConsole()
     ->helpText("Gets the bot's memory usage")
     ->rank('ASC')
     ->handler(function (UserContract $user, Channel $channel = null) {

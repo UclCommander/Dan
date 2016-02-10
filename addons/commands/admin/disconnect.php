@@ -4,8 +4,8 @@ use Dan\Contracts\UserContract;
 use Dan\Irc\Location\Channel;
 
 command(['disconnect'])
-    ->usableInPrivate()
-    ->usableInConsole()
+    ->allowPrivate()
+    ->allowConsole()
     ->rank('SC')
     ->helpText('Connects to a network')
     ->handler(function (UserContract $user, $message, Channel $channel = null) {

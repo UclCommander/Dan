@@ -75,7 +75,7 @@ class Command
      *
      * @return \Dan\Commands\Command
      */
-    public function usableInConsole($bool = true) : Command
+    public function allowConsole($bool = true) : Command
     {
         $this->canBeUsedInConsole = $bool;
 
@@ -87,7 +87,7 @@ class Command
      *
      * @return \Dan\Commands\Command
      */
-    public function usableInPrivate($bool = true) : Command
+    public function allowPrivate($bool = true) : Command
     {
         $this->canBeUsedInPrivate = $bool;
 
@@ -125,7 +125,7 @@ class Command
     /**
      * @return bool
      */
-    public function needsIrcConnection() : bool
+    public function begsForIrcConnection() : bool
     {
         return $this->requiresIrcConnection;
     }

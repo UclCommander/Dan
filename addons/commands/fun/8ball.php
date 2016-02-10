@@ -11,7 +11,7 @@ use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
 command(['8ball', '8b'])
-    ->usableInPrivate()
+    ->allowPrivate()
     ->helpText("Ask the 8ball a question")
     ->rank('*')
     ->handler(function (User $user, $message, Channel $channel = null) {

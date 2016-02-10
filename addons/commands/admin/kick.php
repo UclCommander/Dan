@@ -5,8 +5,8 @@ use Dan\Irc\Connection;
 use Dan\Irc\Location\Channel;
 
 command(['kick', 'k'])
-    ->usableInPrivate()
-    ->usableInConsole()
+    ->allowPrivate()
+    ->allowConsole()
     ->requiresIrcConnection()
     ->rank('oaqASC')
     ->helpText('Kicks a user from the channel')

@@ -3,8 +3,8 @@
 use Dan\Irc\Connection;
 
 command(['raw'])
-    ->usableInPrivate()
-    ->usableInConsole()
+    ->allowPrivate()
+    ->allowConsole()
     ->requiresIrcConnection()
     ->rank('SC')
     ->helpText('Sends a RAW message.')

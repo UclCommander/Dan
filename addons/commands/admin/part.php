@@ -5,8 +5,8 @@ use Dan\Irc\Connection;
 use Dan\Irc\Location\Channel;
 
 command(['part', 'leave'])
-    ->usableInPrivate()
-    ->usableInConsole()
+    ->allowPrivate()
+    ->allowConsole()
     ->requiresIrcConnection()
     ->rank('ASC')
     ->helpText('Leaves a channel')
