@@ -100,6 +100,10 @@ class Setup
      */
     protected function makeConfigFiles()
     {
+        if (!file_exists(ROOT_DIR."/config/")) {
+            mkdir(ROOT_DIR."/config/");
+        }
+
         foreach ($this->config->toArray() as $key => $value) {
             file_put_contents(ROOT_DIR."/config/{$key}.json", json_encode($value, JSON_PRETTY_PRINT));
         }
