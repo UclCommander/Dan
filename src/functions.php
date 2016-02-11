@@ -122,7 +122,7 @@ if (!function_exists('configPath')) {
     }
 }
 
-if (!function_exists('hooksPath')) {
+if (!function_exists('addonsPath')) {
 
     /**
      * Gets the config path.
