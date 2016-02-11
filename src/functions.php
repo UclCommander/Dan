@@ -122,7 +122,7 @@ if (!function_exists('configPath')) {
     }
 }
 
-if (!function_exists('hooksPath')) {
+if (!function_exists('addonsPath')) {
 
     /**
      * Gets the config path.
@@ -287,5 +287,20 @@ if (!function_exists('xmlToArray')) {
     function xmlToArray($data)
     {
         return json_decode(json_encode($data), true);
+    }
+}
+
+if (!function_exists('array_random')) {
+
+    /**
+     * Because array_rand doesn't do what's expected of it.
+     *
+     * @param $array
+     *
+     * @return mixed
+     */
+    function array_random($array)
+    {
+        return $array[array_rand($array)];
     }
 }

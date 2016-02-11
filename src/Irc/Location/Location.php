@@ -20,6 +20,8 @@ abstract class Location
     protected $connection;
 
     /**
+     * Sends a message to the location.
+     *
      * @param $message
      * @param array $styles
      *
@@ -31,6 +33,19 @@ abstract class Location
     }
 
     /**
+     * Sends an action to the location.
+     *
+     * @param $message
+     * @param array $styles
+     */
+    public function action($message, $styles = [])
+    {
+        $this->connection->action($this, $message, $styles);
+    }
+
+    /**
+     * Sends a notice to the location
+     *
      * @param $message
      */
     public function notice($message)
