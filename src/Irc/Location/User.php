@@ -50,17 +50,17 @@ class User extends Location implements Savable, Arrayable, UserContract
     public function __construct(Connection $connection, $nick, $user = null, $host = null, $real = null)
     {
         if (is_array($nick)) {
-            $real = $nick[3] ?? null;
-            $host = $nick[2] ?? null;
-            $user = $nick[1] ?? null;
-            $nick = $nick[0] ?? null;
+            $real = $nick[3] ?? $nick['real'] ?? null;
+            $host = $nick[2] ?? $nick['host'] ?? null;
+            $user = $nick[1] ?? $nick['user'] ?? null;
+            $nick = $nick[0] ?? $nick['nick'] ?? null;
         }
 
         if ($user == null) {
             /** @var Collection $data */
             $data = $connection->database('users')->where('nick', $nick)->first();
 
-            if (is_null($data->get('user'))) {
+            if (is_null($data->get('user')) && !is_null($nick)) {
                 $connection->send('WHO', $nick);
             } else {
                 $user = $data->get('user');
