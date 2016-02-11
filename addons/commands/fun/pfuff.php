@@ -1,7 +1,10 @@
 <?php
 
 /**
- * ヽ༼ຈل͜ຈ༽ﾉ
+ * @author matthijs186
+ *
+ * PINK FLUFFY UNICORNS DANCING ON RAINBOWS
+ * pomf pomf pomf
  *
  * Do not directly edit this file.
  * If you want to change the rank, see commands.permissions in the configuration.
@@ -10,11 +13,12 @@
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
-
-command('dongers')
+command(['pfuff', 'pfudor'])
     ->allowPrivate()
-    ->helpText('RAISE THE DONGERS')
+    ->helpText('Pink fluffy unicorns!')
     ->handler(function (User $user, Channel $channel) {
         $location = $channel ?? $user;
-        $location->message('ヽ༼ຈل͜ຈ༽ﾉ raise your dongers ヽ༼ຈل͜ຈ༽ﾉ');
+
+        $location->message('<pink>PINK FLUFFY UNICORNS DANCING ON RAINBOWS</pink>');
+        $location->message('https://youtu.be/qRC4Vk6kisY');
     });

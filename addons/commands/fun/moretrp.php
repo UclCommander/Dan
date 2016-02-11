@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ヽ༼ຈل͜ຈ༽ﾉ
+ * Gives more popcorn.
  *
  * Do not directly edit this file.
  * If you want to change the rank, see commands.permissions in the configuration.
@@ -10,11 +10,11 @@
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
-
-command('dongers')
+command(['morepopcorn', 'moretrp', 'mp'])
     ->allowPrivate()
-    ->helpText('RAISE THE DONGERS')
+    ->helpText('I\'m going to need more popcorn!')
     ->handler(function (User $user, Channel $channel) {
         $location = $channel ?? $user;
-        $location->message('ヽ༼ຈل͜ຈ༽ﾉ raise your dongers ヽ༼ຈل͜ຈ༽ﾉ');
+
+        $location->message('I\'m going to need more popcorn! http://skycld.co/morepopcorn');
     });
