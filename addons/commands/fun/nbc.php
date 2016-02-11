@@ -13,7 +13,7 @@ use Dan\Irc\Location\User;
 command('nbc')
     ->allowPrivate()
     ->helpText('NOBODY CARS THAT YOU NEED HELP')
-    ->handler(function (User $user, $message, Channel $channel) {
+    ->handler(function (User $user, $message, Channel $channel = null) {
         $location = $channel ?? $user;
 
         $location->message(($message ? $message.': ' : '') . 'http://skycld.co/nbc');

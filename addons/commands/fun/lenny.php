@@ -13,7 +13,7 @@ use Dan\Irc\Location\User;
 command('lenny')
     ->allowPrivate()
     ->helpText('lenny faces. Optional: hugs, no, lenninati, backward(s), pumped')
-    ->handler(function (User $user, $message, Channel $channel) {
+    ->handler(function (User $user, $message, Channel $channel = null) {
         $location = $channel ?? $user;
 
         switch(trim($message)) {
