@@ -34,7 +34,7 @@ command(['rpsls', 'rock', 'paper', 'scissors', 'lizard', 'spock'])
             return;
         }
 
-        $randItem = [array_rand(array_keys($items))];
+        $randItem = array_random(array_keys($items));
 
         if ($randItem == $message)
         {
