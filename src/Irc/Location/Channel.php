@@ -88,6 +88,22 @@ class Channel extends Location
     }
 
     /**
+     * Gets a user from the channel.
+     *
+     * @param $user
+     *
+     * @return User|null
+     */
+    public function getUser($user)
+    {
+        if ($user instanceof User) {
+            $user = $user->nick;
+        }
+
+        return $this->users->get($user);
+    }
+
+    /**
      * Sets a mode on a user.
      *
      * @param $user

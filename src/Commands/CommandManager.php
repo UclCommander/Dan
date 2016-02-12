@@ -250,7 +250,7 @@ class CommandManager
      *
      * @return bool
      */
-    protected function canUseCommand(Connection $connection, Command $command, IrcUser $user)
+    public function canUseCommand(Connection $connection, Command $command, IrcUser $user)
     {
         if ($connection->isOwner($user)) {
             return true;

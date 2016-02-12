@@ -4,8 +4,22 @@ namespace Dan\Irc\Traits;
 
 trait Mode
 {
+    /**
+     * @var array
+     */
     protected $modes = [];
 
+    /**
+     * @var array
+     */
+    protected $permissions = [
+        'kick'  => 'hoaq',
+        'ban'   => 'hoaq',
+    ];
+
+    /**
+     * @var array
+     */
     protected $prefixMap = [
         '~' => 'q',
         '&' => 'a',
@@ -129,5 +143,21 @@ trait Mode
         $mode = array_key_exists($prefix, $this->prefixMap) ? $this->prefixMap[$prefix] : '';
 
         return $this->hasMode($mode);
+    }
+
+    /**
+     * Checks to see if the location has permission to do a predefined action.
+     *
+     * @param $do
+     *
+     * @return bool
+     */
+    public function hasPermissionTo($do) : bool
+    {
+        if (array_key_exists($do, $this->permissions)) {
+            return $this->hasOneOf($this->permissions[$do]);
+        }
+
+        return false;
     }
 }

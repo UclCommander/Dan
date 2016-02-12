@@ -3,12 +3,13 @@
 use Dan\Commands\Command;
 use Dan\Commands\CommandManager;
 use Dan\Contracts\UserContract;
+use Dan\Irc\Connection;
 
 command(['help', 'commands'])
     ->allowConsole()
     ->allowPrivate()
     ->helpText('Gets help')
-    ->handler(function (CommandManager $commandManager, UserContract $user, $message) {
+    ->handler(function (CommandManager $commandManager, UserContract $user, $message, Connection $connection = null) {
         $commands = $commandManager->commands();
         $list = [];
 
@@ -16,6 +17,12 @@ command(['help', 'commands'])
             /* @var Command $command */
 
             $aliases = $command->getAliases();
+
+            if (!is_null($connection)) {
+                if (!$commandManager->canUseCommand($connection, $command, $user)) {
+                    continue;
+                }
+            }
 
             if ($message != null && in_array($message, $aliases)) {
                 foreach ($command->getHelpText() as $help) {
