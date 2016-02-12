@@ -90,7 +90,7 @@ class CommandManager
     {
         $location = $channel ?? $user;
 
-        if (strpos($message, $connection->config->get('command_prefix')) === false) {
+        if (strpos($message, $connection->config->get('command_prefix')) !== 0) {
             return true;
         }
 
@@ -252,6 +252,11 @@ class CommandManager
      */
     public function canUseCommand(Connection $connection, Command $command, IrcUser $user)
     {
+        // x = basically anyone can use.
+        if (strpos($command->getRank(), 'x') !== false) {
+            return true;
+        }
+
         if ($connection->isOwner($user)) {
             return true;
         }

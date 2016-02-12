@@ -17,7 +17,7 @@ command(['kick', 'k'])
 
         $from = $channel;
         $theUser = $data[0];
-        $reason = $data[1] ? implode(' ', [$data[1], ($data[2] ?? null)]) : null;
+        $reason = isset($data[1]) ? implode(' ', [$data[1], ($data[2] ?? null)]) : null;
 
         if ($connection->isChannel($theUser)) {
             if (!$connection->inChannel($theUser)) {

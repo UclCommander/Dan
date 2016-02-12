@@ -44,7 +44,7 @@ class PacketPrivmsg implements PacketContract
             $this->triggerEvent('irc.message.public', [
                 'connection' => $connection,
                 'channel'    => $channel,
-                'user'       => $user,
+                'user'       => $channel->getUser($user),
                 'message'    => $message,
             ]);
         } else {

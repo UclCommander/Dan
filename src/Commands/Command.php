@@ -37,7 +37,7 @@ class Command
     /**
      * @var string
      */
-    protected $rank;
+    protected $rank = 'xvhoaqAS';
 
     /**
      * Command constructor.
