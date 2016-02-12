@@ -45,6 +45,7 @@ command(['rpsls', 'rock', 'paper', 'scissors', 'lizard', 'spock'])
         if (!in_array($randItem, $items[$message]))
         {
             $location->message('You <red>LOST!</red> >:) - I chose <orange>' . $randItem . '</orange>');
+            return;
         }
 
         $location->message('You <green>WON!</green> D: - I chose <orange>' . $randItem . '</orange>');

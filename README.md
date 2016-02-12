@@ -2,10 +2,10 @@
 
 ## Dan 6.0
 
-With the 6th version in the series of what-an-i-doing-with-my-life, I add more Illuminate components to add dependency injection. Some other stuff too I guess.
+With the 6th version in the series of what-am-i-doing-with-my-life, I add more Illuminate components to add dependency injection. Some other stuff too I guess.
  
 ### Requirements
- - PHP 7.0 (If you're not already running this, you heed help..)
+ - PHP 7.0 (If you're not already running this, you need help..)
  - Composer
  - Knowledge in JSON (sorry YAML people)
  - Basic PHP understanding for making custom commands (why wouldn't you want to make some?)
