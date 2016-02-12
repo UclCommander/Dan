@@ -8,7 +8,7 @@ command(['part', 'leave'])
     ->allowPrivate()
     ->allowConsole()
     ->requiresIrcConnection()
-    ->rank('ASC')
+    ->rank('AS')
     ->helpText('Leaves a channel')
     ->handler(function (Connection $connection, UserContract $user, $message, Channel $channel = null) {
         $location = $channel ?? $user;

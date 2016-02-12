@@ -35,6 +35,11 @@ class Command
     protected $requiresIrcConnection = false;
 
     /**
+     * @var string
+     */
+    protected $rank;
+
+    /**
      * Command constructor.
      *
      * @param $aliases
@@ -147,6 +152,8 @@ class Command
     }
 
     /**
+     * Get command aliases.
+     *
      * @return array
      */
     public function getAliases() : array
@@ -155,10 +162,22 @@ class Command
     }
 
     /**
+     * Gets the commands help text.
+     *
      * @return array
      */
     public function getHelpText() : array
     {
         return $this->helpText;
+    }
+
+    /**
+     * Gets the command rank.
+     *
+     * @return string
+     */
+    public function getRank()
+    {
+        return $this->rank;
     }
 }

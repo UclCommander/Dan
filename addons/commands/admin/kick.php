@@ -8,7 +8,7 @@ command(['kick', 'k'])
     ->allowPrivate()
     ->allowConsole()
     ->requiresIrcConnection()
-    ->rank('oaqASC')
+    ->rank('oaqAS')
     ->helpText('Kicks a user from the channel')
     ->handler(function (Connection $connection, UserContract $user, $message, Channel $channel = null) {
         $location = $channel ?? $user;

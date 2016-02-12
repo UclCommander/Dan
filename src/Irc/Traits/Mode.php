@@ -2,8 +2,6 @@
 
 namespace Dan\Irc\Traits;
 
-use Illuminate\Support\Collection;
-
 trait Mode
 {
     protected $modes = [];
