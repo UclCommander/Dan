@@ -39,7 +39,7 @@ command(['roulette', 'rr'])
         $fire = $bullets[$round];
 
         if ($fire) {
-            $response = sprintf("<red>%s dies! D:</red>", $location->nick);
+            $response = sprintf("<red>%s dies! D:</red>", $user->nick);
             $shuffle();
         } else {
             $location->setData('rr.round', ($round + 1));
