@@ -2,29 +2,26 @@
 
 namespace Dan\Irc\Packets;
 
-use Dan\Contracts\PacketContract;
-use Dan\Irc\Connection;
-
-class Packet251 implements PacketContract
+class Packet251 extends Packet
 {
-    public function handle(Connection $connection, array $from, array $data)
+    public function handle(array $from, array $data)
     {
-        foreach ($connection->config->get('autorun_commands', []) as $command) {
-            $nick = $connection->user->nick;
-            $connection->raw(str_replace(['{NICK}'], [$nick], $command));
+        foreach ($this->connection->config->get('autorun_commands', []) as $command) {
+            $nick = $this->connection->user->nick;
+            $this->connection->raw(str_replace(['{NICK}'], [$nick], $command));
         }
 
-        if ($connection->config->get('user.pass') != '') {
-            $password = $connection->config->get('user.pass');
-            $connection->message('NickServ', "IDENTIFY {$password}");
+        if ($this->connection->config->get('user.pass') != '') {
+            $password = $this->connection->config->get('user.pass');
+            $this->connection->message('NickServ', "IDENTIFY {$password}");
         }
 
         sleep(5);
 
-        foreach ($connection->config->get('channels', []) as $channel) {
+        foreach ($this->connection->config->get('channels', []) as $channel) {
             $data = explode(':', $channel);
 
-            $connection->joinChannel($data[0], (isset($data[1]) ? $data[1] : null));
+            $this->connection->joinChannel($data[0], (isset($data[1]) ? $data[1] : null));
         }
     }
 }

@@ -219,8 +219,8 @@ class Connection implements ConnectionContract, DatabaseContract
 
         try {
             /** @var PacketContract $handler */
-            $handler = new $class();
-            $handler->handle($this, $from, $data);
+            $handler = new $class($this);
+            $handler->handle($from, $data);
 
             unset($handler);
         } catch (\Exception $exception) {

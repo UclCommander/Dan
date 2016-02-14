@@ -2,12 +2,14 @@
 
 namespace Dan\Irc\Packets;
 
-use Dan\Contracts\PacketContract;
-use Dan\Irc\Connection;
 
-class Packet003 implements PacketContract
+class Packet003 extends Packet
 {
-    public function handle(Connection $connection, array $from, array $data)
+    /**
+     * @param array $from
+     * @param array $data
+     */
+    public function handle(array $from, array $data)
     {
         if (!config('dan.debug')) {
             console()->message("[<magenta>{$from[0]}</magenta>] {$data[1]}");

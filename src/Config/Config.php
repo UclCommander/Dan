@@ -4,8 +4,9 @@ namespace Dan\Config;
 
 use Exception;
 use Illuminate\Config\Repository;
+use Illuminate\Contracts\Support\Arrayable;
 
-class Config extends Repository
+class Config extends Repository implements Arrayable
 {
     /**
      * @throws \Exception

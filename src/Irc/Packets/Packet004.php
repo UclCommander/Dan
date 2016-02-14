@@ -2,16 +2,17 @@
 
 namespace Dan\Irc\Packets;
 
-use Dan\Contracts\PacketContract;
-use Dan\Irc\Connection;
-
-class Packet004 implements PacketContract
+class Packet004 extends Packet
 {
-    public function handle(Connection $connection, array $from, array $data)
+    /**
+     * @param array $from
+     * @param array $data
+     */
+    public function handle(array $from, array $data)
     {
-        $connection->serverInfo->put('server_name', $data[1]);
-        $connection->serverInfo->put('version', $data[2]);
-        $connection->serverInfo->put('user_modes', $data[3]);
-        $connection->serverInfo->put('channel_modes', $data[4]);
+        $this->connection->serverInfo->put('server_name', $data[1]);
+        $this->connection->serverInfo->put('version', $data[2]);
+        $this->connection->serverInfo->put('user_modes', $data[3]);
+        $this->connection->serverInfo->put('channel_modes', $data[4]);
     }
 }

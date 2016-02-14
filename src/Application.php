@@ -5,8 +5,8 @@ namespace Dan;
 use Dan\Console\Commands\CreateCommandCommand;
 use Dan\Console\Commands\DanCommand;
 use Dan\Console\Commands\SetupCommand;
+use Dan\Setup\Setup;
 use Symfony\Component\Console\Application as SymfonyApplication;
-use Symfony\Component\Console\Input\InputInterface;
 
 class Application extends SymfonyApplication
 {
@@ -14,7 +14,7 @@ class Application extends SymfonyApplication
     {
         parent::__construct($name, $version);
 
-        $this->setDefaultCommand(file_exists(ROOT_DIR.'/config/dan.json') ? 'dan' : 'setup');
+        $this->setDefaultCommand(Setup::isSetup() ? 'dan' : 'setup');
     }
 
     /**

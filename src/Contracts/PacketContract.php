@@ -2,9 +2,11 @@
 
 namespace Dan\Contracts;
 
-use Dan\Irc\Connection;
-
 interface PacketContract
 {
-    public function handle(Connection $connection, array $from, array $data);
+    /**
+     * @param array $from
+     * @param array $data
+     */
+    public function handle(array $from, array $data);
 }

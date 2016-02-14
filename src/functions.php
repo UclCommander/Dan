@@ -4,6 +4,7 @@ use Dan\Commands\Command;
 use Dan\Console\Console;
 use Dan\Core\Dan;
 use Dan\Support\DotCollection;
+use Dan\Web\Route;
 
 if (!function_exists('dan')) {
 
@@ -272,6 +273,21 @@ if (!function_exists('command')) {
     function command($names) : Command
     {
         return dan('commands')->registerCommand((array) $names);
+    }
+}
+
+if (!function_exists('route')) {
+
+    /**
+     * Creates a new route.
+     *
+     * @param $path
+     *
+     * @return \Dan\Web\Route
+     */
+    function route($path) : Route
+    {
+        return dan('web')->registerRoute($path);
     }
 }
 

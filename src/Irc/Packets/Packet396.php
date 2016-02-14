@@ -2,15 +2,18 @@
 
 namespace Dan\Irc\Packets;
 
-use Dan\Contracts\PacketContract;
-use Dan\Irc\Connection;
-
-class Packet396 implements PacketContract
+class Packet396 extends Packet
 {
-    public function handle(Connection $connection, array $from, array $data)
+    /**
+     * @param array $from
+     * @param array $data
+     *
+     * @throws \Exception
+     */
+    public function handle(array $from, array $data)
     {
         if ($data[0] == config('irc.user.nick')) {
-            $connection->database('users')->where('nick', $data[0])->update([
+            $this->connection->database('users')->where('nick', $data[0])->update([
                 'host'  => $data[1],
             ]);
         }

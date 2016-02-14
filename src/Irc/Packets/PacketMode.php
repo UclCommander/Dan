@@ -1,16 +1,21 @@
-<?php namespace Dan\Irc\Packets;
+<?php
 
+namespace Dan\Irc\Packets;
 
-use Dan\Contracts\PacketContract;
 use Dan\Events\Traits\EventTrigger;
-use Dan\Irc\Connection;
 use Dan\Irc\Traits\Parser;
 
-class PacketMode implements PacketContract
+class PacketMode extends Packet
 {
     use EventTrigger, Parser;
 
-    public function handle(Connection $connection, array $from, array $data)
+    /**
+     * @param array $from
+     * @param array $data
+     *
+     * @throws \Exception
+     */
+    public function handle(array $from, array $data)
     {
         $location = $data[0];
         $modes = $data[1];
@@ -20,12 +25,12 @@ class PacketMode implements PacketContract
 
         $modes = $this->parseModes($modes, $data);
 
-        if ($connection->isChannel($location)) {
-            if (!$connection->inChannel($location)) {
+        if ($this->connection->isChannel($location)) {
+            if (!$this->connection->inChannel($location)) {
                 return;
             }
 
-            $channel = $connection->getChannel($location);
+            $channel = $this->connection->getChannel($location);
 
             foreach ($modes as $mode) {
                 if (!is_null($mode['option'])) {
@@ -41,12 +46,12 @@ class PacketMode implements PacketContract
             return;
         }
 
-        if ($location == $connection->user->nick) {
-            $connection->user->setModes($modes);
+        if ($location == $this->connection->user->nick) {
+            $this->connection->user->setModes($modes);
 
             $this->triggerEvent('irc.bot.mode', [
-                'connection' => $connection,
-                'user'       => $connection->user,
+                'connection' => $this->connection,
+                'user'       => $this->connection->user,
                 'mode'       => $modes,
             ]);
 
