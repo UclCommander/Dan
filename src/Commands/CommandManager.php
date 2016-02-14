@@ -252,8 +252,8 @@ class CommandManager
      */
     public function canUseCommand(Connection $connection, Command $command, IrcUser $user)
     {
-        // x = basically anyone can use.
-        if (strpos($command->getRank(), 'x') !== false) {
+        // x/* = basically anyone can use.
+        if (in_array(str_split($command->getRank()), ['x', '*'])) {
             return true;
         }
 

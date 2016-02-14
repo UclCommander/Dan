@@ -181,7 +181,7 @@ class Table
      *
      * @return Collection
      */
-    public function get()
+    public function get() : Collection
     {
         return new Collection($this->getItems());
     }
@@ -189,9 +189,9 @@ class Table
     /**
      * Gets the first item found.
      *
-     * @return Collection|null
+     * @return Collection
      */
-    public function first()
+    public function first() : Collection
     {
         if (empty($this->getItems())) {
             return new Collection([]);

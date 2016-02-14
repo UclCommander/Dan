@@ -2,11 +2,16 @@
 
 namespace Dan\Irc\Location;
 
+use Dan\Database\Savable;
+use Dan\Database\Traits\Data;
 use Dan\Irc\Connection;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Collection;
 
-class Channel extends Location
+class Channel extends Location implements Savable, Arrayable
 {
+    use Data;
+
     /**
      * @var \Dan\Irc\Connection
      */
@@ -29,6 +34,10 @@ class Channel extends Location
         $this->location = $name;
 
         $this->users = new Collection();
+
+        $this->loadCurrentData();
+
+        $this->save();
     }
 
     /**
@@ -116,5 +125,47 @@ class Channel extends Location
         }
 
         $this->users->get($user)->setMode($mode);
+    }
+
+    /**
+     *
+     */
+    public function save()
+    {
+        $this->connection->database('channels')
+            ->insertOrUpdate([
+                'name', '=', $this->location,
+            ], $this->toArray());
+    }
+
+    /**
+     * Get the instance as an array.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return [
+            'name'      => $this->location,
+            'max_users' => 0,
+            'topic'     => '',
+            'data'      => $this->data,
+        ];
+    }
+
+    protected function loadCurrentData()
+    {
+        /** @var Collection $data */
+        $data = $this->connection->database('channels')->where('name', $this->location)->first();
+
+        if (!$data->count()) {
+            return;
+        }
+
+        $this->location = $data->get('name');
+        //$this->maxUsers = $data->get('max_users');
+        //$this->topic = $data->get('topic');
+        $this->data = $data->get('data');
+
     }
 }
