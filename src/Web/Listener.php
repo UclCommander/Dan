@@ -3,20 +3,40 @@
 namespace Dan\Web;
 
 use Dan\Contracts\ConnectionContract;
+use Dan\Events\Event;
+use Illuminate\Support\Collection;
 
 class Listener implements ConnectionContract
 {
 
+    /**
+     * @var
+     */
     protected $stream;
+
+    /**
+     * @var
+     */
+    protected $routes;
 
     /**
      * @var array
      */
-    private $config;
+    protected $config;
 
+    /**
+     * Listener constructor.
+     *
+     * @param array $config
+     */
     public function __construct(array $config)
     {
+        $this->routes = new Collection();
         $this->config = $config;
+
+        events()->subscribe('addons.load', function () {
+            $this->routes = new Collection();
+        }, Event::VeryHigh);
     }
 
     /**
@@ -99,5 +119,28 @@ class Listener implements ConnectionContract
     public function write($line)
     {
         // TODO: Implement write() method.
+    }
+
+    /**
+     * Registers a route to the listener.
+     *
+     * @param $name
+     *
+     * @return \Dan\Web\Route
+     */
+    public function registerRoute($name) : Route
+    {
+        console()->info("Loading route {$name}");
+        $route = new Route();
+        $this->routes->put($name, $route);
+        return $this->routes->get($name);
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function routes() : Collection
+    {
+        return $this->routes;
     }
 }

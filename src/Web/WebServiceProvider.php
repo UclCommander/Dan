@@ -14,6 +14,8 @@ class WebServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        connection()->addConnection(new Listener(config('web')));
+        $listener = new Listener(config('web'));
+        connection()->addConnection($listener);
+        $this->app->instance('web', $listener);
     }
 }

@@ -127,6 +127,7 @@ class Setup
                 'admins'    => [],
                 'providers' => [
                     \Dan\Commands\CommandServiceProvider::class,
+                    \Dan\Web\WebServiceProvider::class,
                     \Dan\Irc\IrcServiceProvider::class,
                 ],
             ],

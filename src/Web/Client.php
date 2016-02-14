@@ -51,7 +51,7 @@ class Client
 
         $this->formatHeaders($headers);
 
-        $response = new Response('No routes found', 404);
+        $response = $this->gotoRoute($data, $headers);
 
         $this->write($response);
         $this->close();
@@ -74,5 +74,51 @@ class Client
     {
         fclose($this->client);
         unset($this->client);
+    }
+
+    /**
+     * Finds and runs the route if it exsits.
+     * 
+     * @param $data
+     * @param $headers
+     *
+     * @return \Dan\Web\Response
+     */
+    protected function gotoRoute($data, $headers) : Response
+    {
+        foreach ($this->listener->routes() as $name => $route) {
+            /** @var Route $route */
+
+            if ($route->getPath() != $data['path']) {
+                continue;
+            }
+
+            if ($route->getMethod() != $data['method']) {
+                continue;
+            }
+
+            return $this->handleRoute($route, $headers);
+        }
+
+        return new Response('Route not found', 404);
+    }
+
+    /**
+     * Handles running the route.
+     *
+     * @param \Dan\Web\Route $route
+     * @param $headers
+     *
+     * @return \Dan\Web\Response
+     */
+    protected function handleRoute(Route $route, $headers) : Response
+    {
+        $response = dan()->call($route->getHandler());
+
+        if ($response instanceof Response) {
+            return $response;
+        }
+
+        return new Response($response);
     }
 }
