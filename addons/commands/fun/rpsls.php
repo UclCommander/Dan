@@ -23,30 +23,26 @@ command(['rpsls', 'rock', 'paper', 'scissors', 'lizard', 'spock'])
             'spock' => ['rock', 'scissors'],
         ];
 
-        if (in_array($command, array_keys($items)))
-        {
+        if (in_array($command, array_keys($items))) {
             $message = $command;
         }
 
-        if (!array_key_exists($message, $items))
-        {
+        if (!array_key_exists($message, $items)) {
             $location->message('Invalid choice. Pick from: ' . implode(', ', array_keys($items)));
             return;
         }
 
         $randItem = array_random(array_keys($items));
 
-        if ($randItem == $message)
-        {
+        if ($randItem == $message) {
             $location->message('It\'s a <yellow>TIE!</yellow> Try again!');
             return;
         }
 
-        if (!in_array($randItem, $items[$message]))
-        {
-            $location->message('You <red>LOST!</red> >:) - I chose <orange>' . $randItem . '</orange>');
+        if (!in_array($randItem, $items[$message])) {
+            $location->message("You <red>LOST!</red> >:) - I chose <orange>{$randItem}</orange>");
             return;
         }
 
-        $location->message('You <green>WON!</green> D: - I chose <orange>' . $randItem . '</orange>');
+        $location->message("You <green>WON!</green> D: - I chose <orange>{$randItem}</orange>");
     });
