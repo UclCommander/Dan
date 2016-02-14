@@ -2,21 +2,16 @@
 
 namespace Dan\Irc\Packets;
 
-use Dan\Contracts\PacketContract;
-use Dan\Irc\Connection;
 
-class Packet352 implements PacketContract
+class Packet352 extends Packet
 {
     /**
-     * @param \Dan\Irc\Connection $connection
-     * @param array               $from
-     * @param array               $data
-     *
-     * @throws \Exception
+     * @param array $from
+     * @param array $data
      */
-    public function handle(Connection $connection, array $from, array $data)
+    public function handle(array $from, array $data)
     {
-        $connection->database('users')->insertOrUpdate(['nick', $data[5]], [
+        $this->connection->database('users')->insertOrUpdate(['nick', $data[5]], [
             'nick' => $data[5],
             'user' => $data[2],
             'host' => $data[3],

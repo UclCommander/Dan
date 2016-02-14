@@ -2,33 +2,35 @@
 
 namespace Dan\Irc\Packets;
 
-use Dan\Contracts\PacketContract;
 use Dan\Events\Traits\EventTrigger;
-use Dan\Irc\Connection;
 use Dan\Irc\Location\User;
 
-class PacketJoin implements PacketContract
+class PacketJoin extends Packet
 {
     use EventTrigger;
 
-    public function handle(Connection $connection, array $from, array $data)
+    /**
+     * @param array $from
+     * @param array $data
+     */
+    public function handle(array $from, array $data)
     {
-        if ($from[0] != $connection->user->nick) {
-            $channel = $connection->getChannel($data[0]);
+        if ($from[0] != $this->connection->user->nick) {
+            $channel = $this->connection->getChannel($data[0]);
             $channel->addUser($from[0]);
         } else {
-            $connection->addChannel($data[0]);
-            $connection->send('MODE', $data[0]);
+            $this->connection->addChannel($data[0]);
+            $this->connection->send('MODE', $data[0]);
         }
 
         $this->triggerEvent('irc.join', [
-            'user'          => new User($connection, ...$from),
-            'channel'       => $connection->getChannel($data[0]),
-            'connection'    => $connection,
+            'user'          => new User($this->connection, ...$from),
+            'channel'       => $this->connection->getChannel($data[0]),
+            'connection'    => $this->connection,
         ]);
 
         if (!config('dan.debug')) {
-            console()->message("[<magenta>{$connection->getName()}</magenta>] <yellow>{$from[0]}</yellow> <cyan>joined {$data[0]}</cyan>");
+            console()->message("[<magenta>{$this->connection->getName()}</magenta>] <yellow>{$from[0]}</yellow> <cyan>joined {$data[0]}</cyan>");
         }
     }
 }

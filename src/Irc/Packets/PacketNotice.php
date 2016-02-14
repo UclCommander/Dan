@@ -2,12 +2,13 @@
 
 namespace Dan\Irc\Packets;
 
-use Dan\Contracts\PacketContract;
-use Dan\Irc\Connection;
-
-class PacketNotice implements PacketContract
+class PacketNotice extends Packet
 {
-    public function handle(Connection $connection, array $from, array $data)
+    /**
+     * @param array $from
+     * @param array $data
+     */
+    public function handle(array $from, array $data)
     {
         // var_dump($from, $data);
     }

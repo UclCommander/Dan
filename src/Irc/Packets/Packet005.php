@@ -2,24 +2,25 @@
 
 namespace Dan\Irc\Packets;
 
-use Dan\Contracts\PacketContract;
-use Dan\Irc\Connection;
-
-class Packet005 implements PacketContract
+class Packet005 extends Packet
 {
-    public function handle(Connection $connection, array $from, array $data)
+    /**
+     * @param array $from
+     * @param array $data
+     */
+    public function handle(array $from, array $data)
     {
         $data = array_slice($data, 1, -1);
 
         foreach ($data as $support) {
             if (strpos($support, '=') === false) {
-                $connection->supported->put($support, true);
+                $this->connection->supported->put($support, true);
                 continue;
             }
 
             list($name, $value) = explode('=', $support);
 
-            $connection->supported->put($name, $value);
+            $this->connection->supported->put($name, $value);
         }
     }
 }

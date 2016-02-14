@@ -41,5 +41,11 @@ trait IrcDatabase
                     'data'  => [],
                 ]);
         }
+
+        if (!database($this->name)->tableExists('ignore')) {
+            database($this->name)
+                ->schema('ignore')
+                ->create(['mask'  => '']);
+        }
     }
 }

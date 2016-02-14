@@ -1,12 +1,13 @@
 <?php
 namespace Dan\Irc\Packets;
 
-use Dan\Contracts\PacketContract;
-use Dan\Irc\Connection;
-
-class Packet366 implements PacketContract
+class Packet366 extends Packet
 {
-    public function handle(Connection $connection, array $from, array $data)
+    /**
+     * @param array $from
+     * @param array $data
+     */
+    public function handle(array $from, array $data)
     {
     }
 }

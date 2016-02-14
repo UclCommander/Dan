@@ -2,72 +2,71 @@
 
 namespace Dan\Irc\Packets;
 
-use Dan\Contracts\PacketContract;
 use Dan\Events\Traits\EventTrigger;
-use Dan\Irc\Connection;
 use Dan\Irc\Location\User;
 use Dan\Irc\Traits\CTCP;
+use Dan\Irc\Traits\Ignore;
 
-class PacketPrivmsg implements PacketContract
+class PacketPrivmsg extends Packet
 {
-    use EventTrigger, CTCP;
+    use EventTrigger, CTCP, Ignore;
 
     /**
      * Handles the PRIVMSG Packet.
      *
-     * @param \Dan\Irc\Connection $connection
      * @param array               $from
      * @param array               $data
-     *
-     * @throws \Exception
      */
-    public function handle(Connection $connection, array $from, array $data)
+    public function handle(array $from, array $data)
     {
-        $user = new User($connection, $from);
+        $user = new User($this->connection, $from);
         $message = $data[1] ?? null;
 
+        if ($this->isIgnored($user)) {
+            return;
+        }
+
         if ($this->hasCTCP($message)) {
-            if (!empty(($return = $this->handleCTCP($connection, $user, $message)))) {
-                $connection->notice($user, $this->prepareCTCP(...$return));
+            if (!empty(($return = $this->handleCTCP($user, $message)))) {
+                $this->connection->notice($user, $this->prepareCTCP(...$return));
             }
 
             return;
         }
 
-        if ($connection->isChannel($data[0])) {
-            if (!$connection->inChannel($data[0])) {
+        if ($this->connection->isChannel($data[0])) {
+            if (!$this->connection->inChannel($data[0])) {
                 return;
             }
 
-            $channel = $connection->getChannel($data[0]);
+            $channel = $this->connection->getChannel($data[0]);
 
             $this->triggerEvent('irc.message.public', [
-                'connection' => $connection,
+                'connection' => $this->connection,
                 'channel'    => $channel,
                 'user'       => $channel->getUser($user),
                 'message'    => $message,
             ]);
         } else {
             $this->triggerEvent('irc.message.private', [
-                'connection' => $connection,
+                'connection' => $this->connection,
                 'user'       => $user,
                 'message'    => $message,
             ]);
         }
 
-        console()->message("[<magenta>{$connection->getName()}</magenta>][<cyan>{$data[0]}</cyan>][<yellow>{$from[0]}</yellow>] {$message}");
+        console()->message("[<magenta>{$this->connection->getName()}</magenta>][<cyan>{$data[0]}</cyan>][<yellow>{$from[0]}</yellow>] {$message}");
     }
 
     /**
      * Handles a CTCP event.
      *
-     * @param \Dan\Irc\Connection    $connection
      * @param \Dan\Irc\Location\User $user
      * @param $message
      *
      * @return array
      */
-    protected function handleCTCP(Connection $connection, User $user, $message) : array
+    protected function handleCTCP(User $user, $message) : array
     {
         $ctcp = $this->parseCTCP($message);
 
@@ -78,7 +77,7 @@ class PacketPrivmsg implements PacketContract
         }
 
         $response = $this->triggerEvent('irc.ctcp.'.strtolower($ctcp['command']), [
-            'connection' => $connection,
+            'connection' => $this->connection,
             'user'       => $user,
             'message'    => $ctcp['message'],
         ]);

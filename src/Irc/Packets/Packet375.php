@@ -2,14 +2,15 @@
 
 namespace Dan\Irc\Packets;
 
-use Dan\Contracts\PacketContract;
-use Dan\Irc\Connection;
-
-class Packet375 implements PacketContract
+class Packet375 extends Packet
 {
-    public function handle(Connection $connection, array $from, array $data)
+    /**
+     * @param array $from
+     * @param array $data
+     */
+    public function handle(array $from, array $data)
     {
-        if (!config('dan.debug') && $connection->config->get('show_motd')) {
+        if (!config('dan.debug') && $this->connection->config->get('show_motd')) {
             console()->message(end($data));
         }
     }
