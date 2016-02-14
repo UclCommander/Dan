@@ -70,4 +70,51 @@ class Channel extends Location
 
         $this->users->put($user->nick, $user);
     }
+
+    /**
+     * Checks to see if the channel has the given user.
+     *
+     * @param $user
+     *
+     * @return bool
+     */
+    public function hasUser($user) : bool
+    {
+        if ($user instanceof User) {
+            $user = $user->nick;
+        }
+
+        return $this->users->has($user);
+    }
+
+    /**
+     * Gets a user from the channel.
+     *
+     * @param $user
+     *
+     * @return User|null
+     */
+    public function getUser($user)
+    {
+        if ($user instanceof User) {
+            $user = $user->nick;
+        }
+
+        return $this->users->get($user);
+    }
+
+    /**
+     * Sets a mode on a user.
+     *
+     * @param $user
+     * @param $mode
+     */
+    public function setUserMode($user, $mode)
+    {
+        if ($user instanceof User) {
+            $user = $user->nick;
+        }
+
+        $this->users->get($user)->setMode($mode);
+    }
 }

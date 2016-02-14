@@ -8,7 +8,7 @@ command(['join'])
     ->allowPrivate()
     ->allowConsole()
     ->requiresIrcConnection()
-    ->rank('ASC')
+    ->rank('AS')
     ->helpText('Joins a channel')
     ->handler(function (Connection $connection, UserContract $user, $message, Channel $channel = null) {
         $location = $channel ?? $user;

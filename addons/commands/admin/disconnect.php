@@ -6,7 +6,7 @@ use Dan\Irc\Location\Channel;
 command(['disconnect'])
     ->allowPrivate()
     ->allowConsole()
-    ->rank('SC')
+    ->rank('S')
     ->helpText('Connects to a network')
     ->handler(function (UserContract $user, $message, Channel $channel = null) {
 

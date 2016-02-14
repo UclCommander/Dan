@@ -8,7 +8,7 @@ command(['kick', 'k'])
     ->allowPrivate()
     ->allowConsole()
     ->requiresIrcConnection()
-    ->rank('oaqASC')
+    ->rank('oaqAS')
     ->helpText('Kicks a user from the channel')
     ->handler(function (Connection $connection, UserContract $user, $message, Channel $channel = null) {
         $location = $channel ?? $user;
@@ -17,10 +17,9 @@ command(['kick', 'k'])
 
         $from = $channel;
         $theUser = $data[0];
-        $reason = $data[1] ? implode(' ', [$data[1], ($data[2] ?? null)]) : null;
+        $reason = isset($data[1]) ? implode(' ', [$data[1], ($data[2] ?? null)]) : null;
 
         if ($connection->isChannel($theUser)) {
-
             if (!$connection->inChannel($theUser)) {
                 $location->message("I'm not in this channel!");
                 return;
@@ -37,7 +36,11 @@ command(['kick', 'k'])
             return;
         }
 
-        // TODO: Check to see if the bot has the permission to kick before we try to.
+        if (!$from->getUser($connection->user)->hasPermissionTo('kick')) {
+            $location->message("I'm not allowed to kick users here.");
+
+            return;
+        }
 
         $from->kick($theUser, trim($reason));
     });

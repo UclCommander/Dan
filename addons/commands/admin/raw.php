@@ -6,7 +6,7 @@ command(['raw'])
     ->allowPrivate()
     ->allowConsole()
     ->requiresIrcConnection()
-    ->rank('SC')
+    ->rank('S')
     ->helpText('Sends a RAW message.')
     ->handler(function (Connection $connection, $message) {
         $connection->raw($message);

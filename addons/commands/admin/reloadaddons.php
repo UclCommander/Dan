@@ -1,10 +1,14 @@
 <?php
 
+use Dan\Contracts\UserContract;
+
 command(['reloadaddons', 'rla'])
     ->allowConsole()
     ->allowPrivate()
     ->helpText('Reloads all addons')
-    ->rank('AOC')
-    ->handler(function () {
+    ->rank('S')
+    ->handler(function (UserContract $user) {
+        $user->notice("Reloading addons..");
         dan()->make('addons')->loadAll();
+        $user->notice("Addons reloaded.");
     });

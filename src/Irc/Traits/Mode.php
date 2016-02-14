@@ -2,12 +2,24 @@
 
 namespace Dan\Irc\Traits;
 
-use Illuminate\Support\Collection;
-
 trait Mode
 {
-    protected $modes;
+    /**
+     * @var array
+     */
+    protected $modes = [];
 
+    /**
+     * @var array
+     */
+    protected $permissions = [
+        'kick'  => 'hoaq',
+        'ban'   => 'hoaq',
+    ];
+
+    /**
+     * @var array
+     */
     protected $prefixMap = [
         '~' => 'q',
         '&' => 'a',
@@ -17,42 +29,59 @@ trait Mode
     ];
 
     /**
+     * Gets all set modes on the object.
+     *
      * @return array
      */
     public function modes() : array
     {
-        return array_values($this->modes);
+        return $this->modes;
     }
 
     /**
-     * Sets modes.
+     * Returns a mode option.
      *
-     * @param $m
+     * @param $mode
+     *
+     * @return mixed
      */
-    public function setMode($m)
+    public function option($mode)
     {
-        if ($m instanceof self) {
-            $data = $m->modes();
-        } elseif ($m instanceof Collection) {
-            $data = $m->toArray();
-        } else {
-            $data = str_split($m);
+        return $this->modes[$mode];
+    }
+
+    /**
+     * Sets a single mode.
+     *
+     * @param $mode
+     * @param null $option
+     *
+     * @throws \Exception
+     */
+    public function setMode($mode, $option = null)
+    {
+        if(strlen($mode) > 2) {
+            throw new \Exception("Mode {$mode} is too long. Did you mean to use setModes()?");
         }
 
-        $add = true;
+        if (strpos($mode, '-') === 0) {
+            unset($this->modes[substr($mode, 1)]);
+            return;
+        }
 
-        for ($i = 0; $i < count($data); $i++) {
-            if ($data[$i] == '+' || $data[$i] == '-') {
-                $add = ($data[$i] == '+');
-                continue;
-            }
+        $this->modes[substr($mode, 1)] = $option;
+    }
 
-            if (!$add) {
-                unset($this->modes[$data[$i]]);
-                continue;
-            }
 
-            $this->modes[$data[$i]] = $data[$i];
+    /**
+     * Sets modes. Must be in array format with mode and option keys.
+     *
+     * @param $modes
+     */
+    public function setModes($modes)
+    {
+        foreach ($modes as $mode) {
+            $this->setMode($mode['mode'], $mode['option']);
         }
     }
 
@@ -83,7 +112,7 @@ trait Mode
     }
 
     /**
-     * Checks to see if this object has one of the givin modes.
+     * Checks to see if this object has one of the given modes.
      *
      * @param $mode
      *
@@ -114,5 +143,21 @@ trait Mode
         $mode = array_key_exists($prefix, $this->prefixMap) ? $this->prefixMap[$prefix] : '';
 
         return $this->hasMode($mode);
+    }
+
+    /**
+     * Checks to see if the location has permission to do a predefined action.
+     *
+     * @param $do
+     *
+     * @return bool
+     */
+    public function hasPermissionTo($do) : bool
+    {
+        if (array_key_exists($do, $this->permissions)) {
+            return $this->hasOneOf($this->permissions[$do]);
+        }
+
+        return false;
     }
 }

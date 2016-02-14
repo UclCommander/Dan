@@ -18,6 +18,7 @@ class PacketJoin implements PacketContract
             $channel->addUser($from[0]);
         } else {
             $connection->addChannel($data[0]);
+            $connection->send('MODE', $data[0]);
         }
 
         $this->triggerEvent('irc.join', [

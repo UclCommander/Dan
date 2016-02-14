@@ -6,6 +6,7 @@ use Dan\Console\Connection as ConsoleConnection;
 use Dan\Console\User as ConsoleUser;
 use Dan\Events\Event;
 use Dan\Irc\Connection as IrcConnection;
+use Dan\Irc\Connection;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User as IrcUser;
 use Illuminate\Support\Collection;
@@ -87,7 +88,9 @@ class CommandManager
      */
     public function handleCommand(IrcConnection $connection, IrcUser $user, $message, Channel $channel = null) : bool
     {
-        if (strpos($message, $connection->config->get('command_prefix')) === false) {
+        $location = $channel ?? $user;
+
+        if (strpos($message, $connection->config->get('command_prefix')) !== 0) {
             return true;
         }
 
@@ -95,13 +98,19 @@ class CommandManager
         $name = substr($info[0], 1);
 
         if (!($command = $this->findCommand($name))) {
-            console()->info("This command doesn't exist!");
+            $location->message("This command doesn't exist!");
+
+            return false;
+        }
+
+        if (!$this->canUseCommand($connection, $command, $user)) {
+            $location->message("You don't have the permissions to use this command.");
 
             return false;
         }
 
         if (is_null($channel) && !$command->isUsableInPrivate()) {
-            $connection->message($user, 'This command must be used in a channel.');
+            $location->message('This command must be used in a channel.');
 
             return false;
         }
@@ -215,7 +224,7 @@ class CommandManager
      *
      * @return \Dan\Connection\Handler|\Dan\Contracts\ConnectionContract|bool
      */
-    private function getIrcConnection(&$param)
+    protected function getIrcConnection(&$param)
     {
         if (strpos($param, ':') === false) {
             return false;
@@ -230,5 +239,32 @@ class CommandManager
         }
 
         return true;
+    }
+
+    /**
+     * Checks to see if a user can run a command.
+     *
+     * @param \Dan\Irc\Connection $connection
+     * @param \Dan\Commands\Command $command
+     * @param \Dan\Irc\Location\User $user
+     *
+     * @return bool
+     */
+    public function canUseCommand(Connection $connection, Command $command, IrcUser $user)
+    {
+        // x = basically anyone can use.
+        if (strpos($command->getRank(), 'x') !== false) {
+            return true;
+        }
+
+        if ($connection->isOwner($user)) {
+            return true;
+        }
+
+        if ($connection->isAdmin($user) && strpos($command->getRank(), 'S') !== false) {
+            return true;
+        }
+
+        return $user->hasOneOf($command->getRank());
     }
 }
