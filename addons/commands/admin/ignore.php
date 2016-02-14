@@ -29,7 +29,29 @@ command(['ignore'])
             return;
         }
 
-        $connection->database('ignore')->insertOrUpdate(['mask', $message], [
+        $table = $connection->database('ignore');
+
+        if (strpos($message, '-') === 0) {
+            $table->where('mask', $message)->delete();
+
+            $user->notice('This user is no longer ignored.');
+            return;
+        }
+
+        $query = $connection->database('users')->where('nick', $message);
+
+        if($query->count() != 0) {
+            $message = "*@".$query->first()->get('host');
+        }
+
+        if ($table->where('mask', $message)->count()) {
+            $user->notice('This user is already ignored.');
+            return;
+        }
+
+        $table->insertOrUpdate(['mask', $message], [
             'mask' => $message,
         ]);
+        
+        $user->notice('User has been ignored.');
     });
