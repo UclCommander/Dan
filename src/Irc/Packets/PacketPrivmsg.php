@@ -24,7 +24,7 @@ class PacketPrivmsg implements PacketContract
     public function handle(Connection $connection, array $from, array $data)
     {
         $user = new User($connection, $from);
-        $message = $data[1];
+        $message = $data[1] ?? null;
 
         if ($this->hasCTCP($message)) {
             if (!empty(($return = $this->handleCTCP($connection, $user, $message)))) {
