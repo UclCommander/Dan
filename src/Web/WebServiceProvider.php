@@ -14,7 +14,13 @@ class WebServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $listener = new Listener(config('web'));
+        $config = config('web');
+
+        if (!$config['enabled']) {
+            return;
+        }
+
+        $listener = new Listener($config);
         connection()->addConnection($listener);
         $this->app->instance('web', $listener);
     }

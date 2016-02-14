@@ -54,6 +54,8 @@ class PacketPrivmsg implements PacketContract
                 'message'    => $message,
             ]);
         }
+
+        console()->message("[<magenta>{$connection->getName()}</magenta>][<cyan>{$data[0]}</cyan>][<yellow>{$from[0]}</yellow>] {$message}");
     }
 
     /**
