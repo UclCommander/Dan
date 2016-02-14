@@ -78,7 +78,7 @@ class Client
 
     /**
      * Finds and runs the route if it exsits.
-     * 
+     *
      * @param $data
      * @param $headers
      *
