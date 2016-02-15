@@ -128,6 +128,15 @@ class Channel extends Location implements Savable, Arrayable
     }
 
     /**
+     * @param $mode
+     * @param null $user
+     */
+    public function mode($mode, $user = null)
+    {
+        $this->connection->send('MODE', $this, $mode, $user);
+    }
+
+    /**
      *
      */
     public function save()
