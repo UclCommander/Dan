@@ -6,6 +6,7 @@ use Dan\Contracts\ConnectionContract;
 use Dan\Contracts\DatabaseContract;
 use Dan\Contracts\PacketContract;
 use Dan\Database\Database;
+use Dan\Events\Event;
 use Dan\Events\Traits\EventTrigger;
 use Dan\Irc\Formatter\IrcOutputFormatter;
 use Dan\Irc\Formatter\IrcOutputFormatterStyle;
@@ -87,6 +88,14 @@ class Connection implements ConnectionContract, DatabaseContract
         $this->supported = new Collection();
         $this->serverInfo = new Collection();
         $this->channels = new Collection();
+
+        events()->subscribe('config.reload', function () {
+            $this->config = dotcollect(config("irc.servers.{$this->name}"));
+
+            if ($this->config->get('user.nick') !== $this->user->nick) {
+                $this->send('NICK', $this->config->get('user.nick'));
+            }
+        }, Event::VeryHigh);
     }
 
     /**
