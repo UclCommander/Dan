@@ -6,7 +6,6 @@
  * Do not directly edit this file.
  * If you want to change the rank, see commands.permissions in the configuration.
  */
-
 use Dan\Irc\Location\Channel;
 
 command(['lmgtfy', 'lazy'])
@@ -15,8 +14,9 @@ command(['lmgtfy', 'lazy'])
 
         if (!$message) {
             $channel->message('Can\'t get any lazier than that..');
+
             return;
         }
 
-        $channel->message('http://lmgtfy.com/?q=' . urlencode($message));
+        $channel->message('http://lmgtfy.com/?q='.urlencode($message));
     });

@@ -6,7 +6,6 @@
  * Do not directly edit this file.
  * If you want to change the rank, see commands.permissions in the configuration.
  */
-
 use Dan\Irc\Location\User;
 
 command(['fgtlist', 'fgts'])
@@ -16,10 +15,10 @@ command(['fgtlist', 'fgts'])
         $list = [
             'Chris',
             'Mirz <3',
-            'RoboDash'
+            'RoboDash',
         ];
 
-        foreach($list as $fgt) {
+        foreach ($list as $fgt) {
             $user->notice($fgt);
         }
     });

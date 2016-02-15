@@ -6,7 +6,6 @@
  * Do not directly edit this file.
  * If you want to change the rank, see commands.permissions in the configuration.
  */
-
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
@@ -16,7 +15,7 @@ command('lenny')
     ->handler(function (User $user, $message, Channel $channel = null) {
         $location = $channel ?? $user;
 
-        switch(trim($message)) {
+        switch (trim($message)) {
             case 'hugs':
                 $lenny = '(つ ͡° ͜ʖ ͡°)つ';
                 break;
