@@ -115,7 +115,7 @@ class CommandManager
             return false;
         }
 
-        $this->callCommand($command, [
+        $ran = $this->callCommand($command, [
             'connection'     => $connection,
             'user'           => $user,
             'message'        => $info[1] ?? null,
@@ -123,6 +123,17 @@ class CommandManager
             'command'        => $name,
             'commandManager' => $this,
         ]);
+
+        if ($ran === false) {
+            $this->callCommand($this->findCommand('help'), [
+                'connection'     => $connection,
+                'user'           => $user,
+                'message'        => $name,
+                'channel'        => $channel,
+                'command'        => 'help',
+                'commandManager' => $this,
+            ]);
+        }
 
         return false;
     }
