@@ -1,5 +1,6 @@
-<?php namespace Dan\Web;
+<?php
 
+namespace Dan\Web;
 
 class Route
 {
@@ -26,6 +27,7 @@ class Route
     public function path($path) : Route
     {
         $this->path = $path;
+
         return $this;
     }
 
@@ -78,5 +80,4 @@ class Route
     {
         return $this->path;
     }
-
 }

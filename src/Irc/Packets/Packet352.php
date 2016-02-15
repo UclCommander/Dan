@@ -2,7 +2,6 @@
 
 namespace Dan\Irc\Packets;
 
-
 class Packet352 extends Packet
 {
     /**
@@ -18,4 +17,3 @@ class Packet352 extends Packet
         ]);
     }
 }
-

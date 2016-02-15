@@ -21,7 +21,7 @@ class Setup
     protected $config;
 
     protected static $setupFiles = [
-        'dan' =>  \Dan\Setup\Configs\Dan::class,
+        'dan' => \Dan\Setup\Configs\Dan::class,
         'irc' => \Dan\Setup\Configs\Irc::class,
         'web' => \Dan\Setup\Configs\Web::class,
     ];
@@ -91,8 +91,8 @@ class Setup
      */
     protected function makeConfigFiles(Config $config)
     {
-        if (!file_exists(ROOT_DIR."/config/")) {
-            mkdir(ROOT_DIR."/config/");
+        if (!file_exists(ROOT_DIR.'/config/')) {
+            mkdir(ROOT_DIR.'/config/');
         }
 
         foreach ($config->toArray() as $key => $value) {

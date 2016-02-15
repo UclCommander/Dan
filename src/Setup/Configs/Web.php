@@ -39,6 +39,7 @@ class Web implements ConfigSetupContract
             ],
         ]);
     }
+
     /**
      * @return mixed
      */
