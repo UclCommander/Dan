@@ -22,6 +22,8 @@ class PacketPrivmsg extends Packet
         $user = new User($this->connection, $from);
         $message = $data[1] ?? null;
 
+        console()->message("[<magenta>{$this->connection->getName()}</magenta>][<cyan>{$data[0]}</cyan>][<yellow>{$from[0]}</yellow>] {$message}");
+
         if ($this->isIgnored($user)) {
             return;
         }
@@ -54,8 +56,6 @@ class PacketPrivmsg extends Packet
                 'message'    => $message,
             ]);
         }
-
-        console()->message("[<magenta>{$this->connection->getName()}</magenta>][<cyan>{$data[0]}</cyan>][<yellow>{$from[0]}</yellow>] {$message}");
     }
 
     /**

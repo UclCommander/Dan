@@ -14,9 +14,7 @@ class ConfigServiceProvider extends ServiceProvider
     public function register()
     {
         $config = new Config();
-
         $config->load();
-
         $this->app->instance('config', $config);
     }
 }
