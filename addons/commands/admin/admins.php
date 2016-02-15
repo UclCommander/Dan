@@ -28,6 +28,6 @@ command(['admins', 'owners', 'owner'])
             }
         }
 
-        $user->$method("Owners: ".implode(', ', $owners));
-        $user->$method("Admins: ".implode(', ', $admins));
+        $user->$method('Owners: '.implode(', ', $owners));
+        $user->$method('Admins: '.implode(', ', $admins));
     });

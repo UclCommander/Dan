@@ -1,5 +1,6 @@
-<?php namespace Dan\Irc\Packets;
+<?php
 
+namespace Dan\Irc\Packets;
 
 use Dan\Contracts\PacketContract;
 use Dan\Irc\Connection;

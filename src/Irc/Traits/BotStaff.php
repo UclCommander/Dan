@@ -6,7 +6,6 @@ use Dan\Irc\Location\User;
 
 trait BotStaff
 {
-
     /**
      * Checks to see if a user is an admin or owner.
      *
@@ -33,6 +32,7 @@ trait BotStaff
                 return true;
             }
         }
+
         return false;
     }
 
@@ -50,6 +50,7 @@ trait BotStaff
                 return true;
             }
         }
+
         return false;
     }
 }

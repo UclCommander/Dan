@@ -62,18 +62,18 @@ trait Mode
      */
     public function setMode($mode, $option = null)
     {
-        if(strlen($mode) > 2) {
+        if (strlen($mode) > 2) {
             throw new \Exception("Mode {$mode} is too long. Did you mean to use setModes()?");
         }
 
         if (strpos($mode, '-') === 0) {
             unset($this->modes[substr($mode, 1)]);
+
             return;
         }
 
         $this->modes[substr($mode, 1)] = $option;
     }
-
 
     /**
      * Sets modes. Must be in array format with mode and option keys.

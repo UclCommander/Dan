@@ -2,7 +2,6 @@
 
 namespace Dan\Irc\Packets;
 
-
 class Packet003 extends Packet
 {
     /**

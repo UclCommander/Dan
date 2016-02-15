@@ -113,8 +113,9 @@ class Connection implements ConnectionContract, DatabaseContract
      *
      * @param null $table
      *
-     * @return \Dan\Database\Database|\Dan\Database\Table
      * @throws \Exception
+     *
+     * @return \Dan\Database\Database|\Dan\Database\Table
      */
     public function database($table = null)
     {

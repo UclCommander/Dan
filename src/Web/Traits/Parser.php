@@ -1,9 +1,9 @@
-<?php namespace Dan\Web\Traits;
+<?php
 
+namespace Dan\Web\Traits;
 
 trait Parser
 {
-
     /**
      * Parses http headers.
      *
@@ -11,7 +11,7 @@ trait Parser
      *
      * @return array
      */
-    function parseHeaders($raw)
+    public function parseHeaders($raw)
     {
         $headers = [];
         $key = '';
@@ -40,7 +40,6 @@ trait Parser
                 }
 
                 $key = strtolower($h[0]);
-
             } else {
                 if (substr(strtolower($h[0]), 0, 1) == "\t") {
                     $headers[$key] .= "\r\n\t".trim(strtolower($h[0]));

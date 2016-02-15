@@ -1,4 +1,6 @@
-<?php namespace Dan\Irc\Packets;
+<?php
+
+namespace Dan\Irc\Packets;
 
 class Packet324 extends Packet
 {

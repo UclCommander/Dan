@@ -88,7 +88,6 @@ class Client
     {
         foreach ($this->listener->routes() as $name => $route) {
             /** @var Route $route */
-
             if ($route->getPath() != $data['path']) {
                 continue;
             }

@@ -1,5 +1,6 @@
-<?php namespace Dan\Irc\Traits;
+<?php
 
+namespace Dan\Irc\Traits;
 
 use Dan\Irc\Location\User;
 use Illuminate\Support\Collection;

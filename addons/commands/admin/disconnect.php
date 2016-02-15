@@ -22,7 +22,7 @@ command(['disconnect'])
                     return connection()->hasConnection($x);
                 };
 
-                $location->message("Connected Networks: ".implode(', ', array_filter(array_keys(config('irc.servers')), $func)));
+                $location->message('Connected Networks: '.implode(', ', array_filter(array_keys(config('irc.servers')), $func)));
 
                 return;
             }
@@ -35,11 +35,11 @@ command(['disconnect'])
 
             if (connection()->removeConnection($message)) {
                 $location->message("Disconnecting from {$message}");
+
                 return;
             }
 
             $location->message("Unable to disconnect from {$message}");
-
         } catch (Exception $e) {
             console()->exception($e);
         }

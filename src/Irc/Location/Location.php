@@ -44,7 +44,7 @@ abstract class Location
     }
 
     /**
-     * Sends a notice to the location
+     * Sends a notice to the location.
      *
      * @param $message
      */

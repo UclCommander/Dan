@@ -5,11 +5,11 @@ namespace Dan\Irc\Traits;
 trait Parser
 {
     protected $modesWithOptions = [
-        'j', 'k', 'l', 'v', 'h', 'o', 'a', 'q'
+        'j', 'k', 'l', 'v', 'h', 'o', 'a', 'q',
     ];
 
     /**
-     * Parses modes
+     * Parses modes.
      *
      * @param $modes
      * @param $options
@@ -23,7 +23,7 @@ trait Parser
         $parsed = [];
         $add = true;
 
-        foreach($modes as $mode) {
+        foreach ($modes as $mode) {
             if (in_array($mode, ['+', '-'])) {
                 $add = ($mode == '+');
                 continue;
@@ -31,7 +31,7 @@ trait Parser
 
             $option = null;
 
-            if(in_array($mode, $this->modesWithOptions)) {
+            if (in_array($mode, $this->modesWithOptions)) {
                 $option = $options[$index];
                 $index++;
             }
