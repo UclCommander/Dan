@@ -2,12 +2,15 @@
 
 namespace Dan\Config;
 
+use Dan\Events\Traits\EventTrigger;
 use Exception;
 use Illuminate\Config\Repository;
 use Illuminate\Contracts\Support\Arrayable;
 
 class Config extends Repository implements Arrayable
 {
+    use EventTrigger;
+
     /**
      * @throws \Exception
      */
@@ -24,6 +27,8 @@ class Config extends Repository implements Arrayable
 
             $this->items[$name] = $json;
         }
+
+        $this->triggerEvent('config.reload');
     }
 
     /**

@@ -10,7 +10,7 @@ command(['admins', 'owners', 'owner'])
     ->rank('*')
     ->helpText('Lists bot admins and owners')
     ->handler(function (Connection $connection, UserContract $user, Channel $channel = null) {
-        $location = $channel ?? $user;
+        $method = $channel ? 'notice' : 'message';
 
         $users = $connection->database('users')->get();
         $owners = [];
@@ -28,6 +28,6 @@ command(['admins', 'owners', 'owner'])
             }
         }
 
-        $location->notice("Owners: ".implode(', ', $owners));
-        $location->notice("Admins: ".implode(', ', $admins));
+        $user->$method("Owners: ".implode(', ', $owners));
+        $user->$method("Admins: ".implode(', ', $admins));
     });

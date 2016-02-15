@@ -15,6 +15,8 @@ trait Mode
     protected $permissions = [
         'kick'  => 'hoaq',
         'ban'   => 'hoaq',
+        'op'    => 'oaq',
+        'voice' => 'hoaq',
     ];
 
     /**

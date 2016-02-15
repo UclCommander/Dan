@@ -12,6 +12,10 @@ trait EventTrigger
      */
     public function triggerEvent($name, $args = [])
     {
-        return events()->fire($name, $args);
+        try {
+            return events()->fire($name, $args);
+        } catch (\ReflectionException $e) {
+            return false;
+        }
     }
 }
