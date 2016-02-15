@@ -8,7 +8,7 @@ command(['reloadaddons', 'rla'])
     ->helpText('Reloads all addons')
     ->rank('S')
     ->handler(function (UserContract $user) {
-        $user->notice("Reloading addons..");
+        $user->notice('Reloading addons..');
         dan()->make('addons')->loadAll();
-        $user->notice("Addons reloaded.");
+        $user->notice('Addons reloaded.');
     });

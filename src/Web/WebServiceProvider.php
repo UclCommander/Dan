@@ -6,7 +6,6 @@ use Illuminate\Support\ServiceProvider;
 
 class WebServiceProvider extends ServiceProvider
 {
-
     /**
      * Register the service provider.
      *

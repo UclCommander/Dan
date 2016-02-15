@@ -175,6 +175,5 @@ class Channel extends Location implements Savable, Arrayable
         //$this->maxUsers = $data->get('max_users');
         //$this->topic = $data->get('topic');
         $this->data = $data->get('data');
-
     }
 }

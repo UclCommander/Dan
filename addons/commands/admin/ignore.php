@@ -16,6 +16,7 @@ command(['ignore'])
 
             if (!$ignored->count()) {
                 $user->notice('No users are ignored');
+
                 return;
             }
 
@@ -26,6 +27,7 @@ command(['ignore'])
             }
 
             $user->notice(implode(', ', $masks));
+
             return;
         }
 
@@ -35,23 +37,25 @@ command(['ignore'])
             $table->where('mask', $message)->delete();
 
             $user->notice('This user is no longer ignored.');
+
             return;
         }
 
         $query = $connection->database('users')->where('nick', $message);
 
-        if($query->count() != 0) {
-            $message = "*@".$query->first()->get('host');
+        if ($query->count() != 0) {
+            $message = '*@'.$query->first()->get('host');
         }
 
         if ($table->where('mask', $message)->count()) {
             $user->notice('This user is already ignored.');
+
             return;
         }
 
         $table->insertOrUpdate(['mask', $message], [
             'mask' => $message,
         ]);
-        
+
         $user->notice('User has been ignored.');
     });

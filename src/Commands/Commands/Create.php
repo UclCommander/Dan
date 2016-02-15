@@ -1,5 +1,6 @@
-<?php namespace Dan\Commands\Commands;
+<?php
 
+namespace Dan\Commands\Commands;
 
 use Dan\Console\OutputStyle;
 use Dan\Core\Dan;
@@ -66,11 +67,11 @@ class Create
 
         $directories = filesystem()->directories(addonsPath('commands'));
 
-        foreach($directories as $k => $directory) {
+        foreach ($directories as $k => $directory) {
             $directories[$k] = basename($directory);
         }
 
-        $this->group = $this->output->choice("What group does the command belong in?", $directories);
+        $this->group = $this->output->choice('What group does the command belong in?', $directories);
 
         $this->createCommand();
 

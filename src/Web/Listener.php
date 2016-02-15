@@ -8,7 +8,6 @@ use Illuminate\Support\Collection;
 
 class Listener implements ConnectionContract
 {
-
     /**
      * @var
      */
@@ -62,8 +61,9 @@ class Listener implements ConnectionContract
     /**
      * Connects to the connection.
      *
-     * @return bool
      * @throws \Exception
+     *
+     * @return bool
      */
     public function connect() : bool
     {
@@ -133,6 +133,7 @@ class Listener implements ConnectionContract
         console()->info("Loading route {$name}");
         $route = new Route();
         $this->routes->put($name, $route);
+
         return $this->routes->get($name);
     }
 

@@ -1,5 +1,6 @@
-<?php namespace Dan\Setup\Configs;
+<?php
 
+namespace Dan\Setup\Configs;
 
 use Dan\Config\Config;
 use Dan\Console\OutputStyle;

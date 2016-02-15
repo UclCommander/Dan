@@ -22,6 +22,7 @@ command(['kick', 'k'])
         if ($connection->isChannel($theUser)) {
             if (!$connection->inChannel($theUser)) {
                 $location->message("I'm not in this channel!");
+
                 return;
             }
 

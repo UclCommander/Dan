@@ -17,16 +17,18 @@ command(['say', 'msg'])
 
         if (count($data) != 2 || empty($message)) {
             $location->message('I need something to say!');
+
             return;
         }
 
         if (strpos($data[0], ':') !== false) {
-            $srv    = explode(':', $data[0]);
-            $where  = $srv[0];
-            $chan   = $srv[1];
+            $srv = explode(':', $data[0]);
+            $where = $srv[0];
+            $chan = $srv[1];
 
             if (!connection()->hasConnection($where)) {
                 $location->message("I'm not connected there.");
+
                 return;
             }
 
@@ -36,11 +38,13 @@ command(['say', 'msg'])
 
         if (!$connection->isChannel($data[0])) {
             $connection->message($data[0], $data[1]);
+
             return;
         }
 
         if (!$connection->inChannel($data[0])) {
             $location->message("I'm not in that channel!");
+
             return;
         }
 
