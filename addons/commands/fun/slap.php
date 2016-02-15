@@ -6,7 +6,6 @@
  * Do not directly edit this file.
  * If you want to change the rank, see commands.permissions in the configuration.
  */
-
 use Dan\Irc\Connection;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
@@ -23,6 +22,7 @@ command('slap')
         if ($data[0] == $connection->user->nick) {
             $channel->message('Hey! That\'s rude!');
             $channel->action("smacks {$user->nick} on the back of the head");
+
             return;
         }
 
@@ -35,7 +35,7 @@ command('slap')
         $after = array_random([
             'into a wall', 'into space', 'to death', 'out of the channel',
             'into a pancake', 'into a bacon pancake',
-            'into a cupcake'
+            'into a cupcake',
         ]);
 
         $channel->action("{$verb} {$data[0]} {$after}");

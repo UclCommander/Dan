@@ -6,7 +6,6 @@
  * Do not directly edit this file.
  * If you want to change the rank, see commands.permissions in the configuration.
  */
-
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
@@ -23,14 +22,15 @@ command(['roll', 'rtd'])
 
         if ($sides == 1) {
             $location->message('One side? Isn\'t that a bit sketchy?');
+
             return;
         }
 
         $beginning = '*rolls dice*';
 
-        if (rand(0,5) == 2) {
+        if (rand(0, 5) == 2) {
             $beginning = '<bang>*rolling dice intensifies*</bang>';
         }
 
-        $location->message("<i>{$beginning}...</i> " . rand(1, $sides), ['bang' => ['red', null, ['b', 'i']]]);
+        $location->message("<i>{$beginning}...</i> ".rand(1, $sides), ['bang' => ['red', null, ['b', 'i']]]);
     });

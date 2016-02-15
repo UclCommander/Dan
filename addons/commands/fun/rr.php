@@ -6,7 +6,6 @@
  * Do not directly edit this file.
  * If you want to change the rank, see commands.permissions in the configuration.
  */
-
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
@@ -19,7 +18,7 @@ command(['roulette', 'rr'])
         $round = $location->getData('rr.round', 0);
         $bullets = $user->getData('rr.bullets', [false, false, false, true, false, false]);
 
-        $shuffle = function() use ($location, &$bullets) {
+        $shuffle = function () use ($location, &$bullets) {
             shuffle($bullets);
             $location->setData('rr.bullets', $bullets);
             $location->setData('rr.round', 0);
@@ -28,6 +27,7 @@ command(['roulette', 'rr'])
 
         if ($message == 'reload') {
             $shuffle();
+
             return;
         }
 
@@ -39,13 +39,13 @@ command(['roulette', 'rr'])
         $fire = $bullets[$round];
 
         if ($fire) {
-            $response = sprintf("<red>%s dies! D:</red>", $user->nick);
+            $response = sprintf('<red>%s dies! D:</red>', $user->nick);
             $shuffle();
         } else {
             $location->setData('rr.round', ($round + 1));
         }
 
-        $location->action(sprintf("<i>points the gun at %s</i> - <i>*pulls the trigger*</i> - <i>%s</i>", $user->nick, $response));
+        $location->action(sprintf('<i>points the gun at %s</i> - <i>*pulls the trigger*</i> - <i>%s</i>', $user->nick, $response));
 
         $location->save();
     });

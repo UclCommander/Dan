@@ -9,12 +9,11 @@
  * round booty, down for the booty, i want the booty,
  * huntin the booty, chasin the booty, casin the booty,
  * getting the booty, beautiful booty, smokin booty,
- * talk to the booty, more booty, fine booty
+ * talk to the booty, more booty, fine booty.
  *
  * Do not directly edit this file.
  * If you want to change the rank, see commands.permissions in the configuration.
  */
-
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
