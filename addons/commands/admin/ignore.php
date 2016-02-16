@@ -34,7 +34,7 @@ command(['ignore'])
         $table = $connection->database('ignore');
 
         if (strpos($message, '-') === 0) {
-            $table->where('mask', $message)->delete();
+            $table->where('mask', substr($message, 1))->delete();
 
             $user->notice('This user is no longer ignored.');
 
