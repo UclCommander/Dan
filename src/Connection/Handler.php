@@ -21,6 +21,8 @@ class Handler
     }
 
     /**
+     * Adds a connection to the handler.
+     *
      * @param \Dan\Contracts\ConnectionContract $connectionContract
      *
      * @return bool|null
@@ -55,7 +57,9 @@ class Handler
 
         /** @var ConnectionContract $connection */
         $connection = $this->connections->get($name);
-        $connection->disconnect();
+        if (!$connection->disconnect()) {
+            return false;
+        }
 
         $this->forgetConnection($name);
 
@@ -89,7 +93,17 @@ class Handler
     }
 
     /**
-     *
+     * Disconnects from all connections.
+     */
+    public function disconnectFromAll()
+    {
+        foreach ($this->connections as $connection) {
+            $this->removeConnection($connection);
+        }
+    }
+
+    /**
+     * Starts the connections.
      */
     public function start()
     {
@@ -102,7 +116,16 @@ class Handler
     }
 
     /**
-     *
+     * Stops everything.
+     */
+    public function stop()
+    {
+        $this->running = false;
+        $this->disconnectFromAll();
+    }
+
+    /**
+     * Reads all stream connections.
      */
     public function readConnections()
     {
@@ -127,7 +150,9 @@ class Handler
     }
 
     /**
-     * @param null $name
+     * Gets all connections or the one specified.
+     *
+     * @param string $name
      *
      * @return array
      */

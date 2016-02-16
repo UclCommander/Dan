@@ -77,7 +77,7 @@ class Connection implements ConnectionContract
      */
     public function disconnect() : bool
     {
-        // TODO: Implement disconnect() method.
+        return false;
     }
 
     /**
