@@ -10,6 +10,7 @@ use Dan\Irc\Connection as IrcConnection;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User as IrcUser;
 use Illuminate\Support\Collection;
+use SimilarText\Finder;
 
 class CommandManager
 {
@@ -94,12 +95,25 @@ class CommandManager
             return true;
         }
 
-        $info = explode(' ', $message, 2);
-        $name = substr($info[0], 1);
+        $clean = substr($message, 1);
+
+        if (empty($clean)) {
+            return true;
+        }
+
+        $info = explode(' ', $clean, 2);
+        $name = $info[0];
 
         if (!($command = $this->findCommand($name))) {
-            $location->message("This command doesn't exist!");
+            if ($connection->config->get('command_not_found_error', true)) {
+                $commands = $this->aliases->keys()->filter(function ($cmd) use ($connection, $user) {
+                    return $this->canUseCommand($connection, $this->findCommand($cmd), $user);
+                })->toArray();
 
+                $similar = new Finder($name, $commands);
+
+                $location->message("The command <i>{$name}</i> doesn't exist. Did you mean <i>{$similar->first()}</i>?");
+            }
             return false;
         }
 

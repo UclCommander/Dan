@@ -16,6 +16,7 @@
         "knplabs/github-api": "^1.5",
         "endroid/twitter": "^1.1",
         "nesbot/carbon": "^1.21",
-        "illuminate/config": "^5.2"
+        "illuminate/config": "^5.2",
+        "rap2hpoutre/similar-text-finder": "^0.1.2"
     }
 }

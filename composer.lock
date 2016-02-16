@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9cc35dde0d8b124f7dd546c835f50cb7",
-    "content-hash": "1406170663fef8e00395d62724dbea78",
+    "hash": "b4a676eac7bdbcce290d2cfaa07414ef",
+    "content-hash": "50171934e0a7a6cf79970717544a22e4",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -608,6 +608,50 @@
                 "time"
             ],
             "time": "2015-11-04 20:07:17"
+        },
+        {
+            "name": "rap2hpoutre/similar-text-finder",
+            "version": "v0.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rap2hpoutre/similar-text-finder.git",
+                "reference": "dda28ee042614a310e47e4665975c9dcb3850499"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rap2hpoutre/similar-text-finder/zipball/dda28ee042614a310e47e4665975c9dcb3850499",
+                "reference": "dda28ee042614a310e47e4665975c9dcb3850499",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SimilarText\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "rap2hpoutre",
+                    "email": "raphael@ornikar.com"
+                }
+            ],
+            "description": "Similar text finder: \"Did you mean `foo` ?\"",
+            "keywords": [
+                "find",
+                "laravel",
+                "levenshtein",
+                "search",
+                "similar_text",
+                "text"
+            ],
+            "time": "2015-05-08 13:27:02"
         },
         {
             "name": "symfony/console",
