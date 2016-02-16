@@ -77,7 +77,9 @@ class Updater
         }
 
         if(!is_callable($callback)) {
-            $callback = function() {};
+            $callback = function ($message) {
+                console()->message($message);
+            };
         }
 
         $shell = shell_exec(sprintf("cd %s && git pull origin {$this->branch}", ROOT_DIR));

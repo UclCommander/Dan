@@ -12,11 +12,15 @@ command(['update'])
     ->handler(function (UserContract $user, Updater $updater, Channel $channel = null) {
         $location = $channel ?? $user;
 
-        $update = $updater->update(true, function($message) use ($location) {
-            $location->message($message);
-        });
+        try {
+            $update = $updater->update(true, function ($message) use ($location) {
+                $location->message($message);
+            });
 
-        if (!$update) {
-            $location->message('No updates found.');
+            if (!$update) {
+                $location->message('No updates found.');
+            }
+        } catch (Exception $e) {
+            $location->message($e->getMessage());
         }
     });
