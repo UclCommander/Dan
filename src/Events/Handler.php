@@ -7,25 +7,42 @@ use Illuminate\Support\Collection;
 class Handler
 {
     /**
-     * @var array
+     * @var Collection
      */
-    protected $events = [];
+    protected $events;
 
     /**
-     * @var array
+     * @var Collection
      */
-    protected $names = [];
+    protected $names;
 
     /**
-     * @var array
+     * @var Collection
      */
-    protected $priorities = [];
+    protected $priorities;
 
+    /**
+     * @var Collection
+     */
+    protected $addonEvents;
+
+    /**
+     * Handler constructor.
+     */
     public function __construct()
     {
         $this->events = new Collection();
         $this->names = new Collection();
         $this->priorities = new Collection();
+        $this->addonEvents = new Collection();
+
+        $this->subscribe('addons.load', function() {
+            foreach ($this->addonEvents as $id => $name) {
+                $this->destroy($this->events[$id]);
+            }
+
+            $this->addonEvents = new Collection();
+        });
     }
 
     /**
@@ -35,7 +52,7 @@ class Handler
      *
      * @return \Dan\Events\Event
      */
-    public function subscribe($name, $handler, $priority = Event::Normal) : Event
+    public function subscribe($name, $handler = null, $priority = Event::Normal) : Event
     {
         $event = new Event($name, $handler, $priority);
 
@@ -44,6 +61,22 @@ class Handler
         $this->priorities->put($event->id, $priority);
 
         console()->debug("Creating event {$name} - ID: {$event->id} - Priority: {$priority}");
+
+        return $event;
+    }
+
+    /**
+     * Registers an addon event that will be automatically destroyed when addons are reloaded.
+     *
+     * @param $name
+     *
+     * @return \Dan\Events\Event
+     */
+    public function registerAddonEvent($name) : Event
+    {
+        console()->info("Registering addon event handler for {$name}");
+        $event = $this->subscribe($name);
+        $this->addonEvents->put($event->id, $name);
 
         return $event;
     }
@@ -65,7 +98,7 @@ class Handler
         })->keys()->toArray();
 
         if (empty($keys)) {
-            return;
+            return null;
         }
 
         $priorities = $this->priorities->only($keys)->toArray();
@@ -88,10 +121,6 @@ class Handler
                 $args = $result;
                 continue;
             }
-
-            if (!empty($result)) {
-                return $result;
-            }
         }
 
         return $args;
@@ -108,7 +137,10 @@ class Handler
             $event = $event->id;
         }
 
-        console()->debug("Destroying event {$this->names[$event]} - ID: {$event}");
-        unset($this->events[$event], $this->names[$event], $this->priorities[$event]);
+        console()->debug("Destroying event {$this->names->get($event)} - ID: {$event}");
+        $this->events->forget($event);
+        $this->names->forget($event);
+        $this->priorities->forget($event);
+        $this->addonEvents->forget($event);
     }
 }

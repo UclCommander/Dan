@@ -3,6 +3,7 @@
 use Dan\Commands\Command;
 use Dan\Console\Console;
 use Dan\Core\Dan;
+use Dan\Events\Event;
 use Dan\Support\DotCollection;
 use Dan\Web\Route;
 
@@ -288,6 +289,21 @@ if (!function_exists('route')) {
     function route($path) : Route
     {
         return dan('web')->registerRoute($path);
+    }
+}
+
+if (!function_exists('on')) {
+
+    /**
+     * Creates a new route.
+     *
+     * @param $event
+     *
+     * @return \Dan\Events\Event
+     */
+    function on($event) : Event
+    {
+        return dan('events')->registerAddonEvent($event);
     }
 }
 

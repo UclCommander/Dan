@@ -11,13 +11,42 @@ class Event
     const BelowNormal = 3;
     const Low = 1;
 
-    public function __construct($name, $function, $priority = self::Normal)
+    /**
+     * Event constructor.
+     *
+     * @param $name
+     * @param $function
+     * @param int $priority
+     */
+    public function __construct($name, $function = null, $priority = self::Normal)
     {
         $this->name = $name;
         $this->function = $function;
         $this->priority = $priority;
 
         $this->id = md5(microtime().$this->name.$this->priority);
+    }
+
+    /**
+     * @param $handler
+     *
+     * @return \Dan\Events\Event
+     */
+    public function handler($handler) : Event
+    {
+        $this->function = $handler;
+        return $this;
+    }
+
+    /**
+     * @param $priority
+     *
+     * @return \Dan\Events\Event
+     */
+    public function priority($priority) : Event
+    {
+        $this->priority = (int)$priority;
+        return $this;
     }
 
     /**
@@ -29,7 +58,13 @@ class Event
      */
     public function call($args)
     {
-        return dan()->call($this->function, $args);
+        $func = $this->function;
+
+        if (!($func instanceof \Closure) && !is_array($func)) {
+            $func = [$this->function, 'run'];
+        }
+
+        return dan()->call($func, $args);
     }
 
     /**
