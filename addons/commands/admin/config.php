@@ -33,7 +33,7 @@ command(['config'])
          *
          * @return bool
          */
-        public function run(UserContract $user, $message, Channel $channel)
+        public function run(UserContract $user, $message, Channel $channel = null)
         {
             $userMethod = $channel ? 'notice' : 'message';
 
