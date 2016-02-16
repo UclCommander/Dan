@@ -1,5 +1,6 @@
-<?php namespace Dan\Update;
+<?php
 
+namespace Dan\Update;
 
 use Dan\Events\Event;
 
@@ -23,36 +24,34 @@ class Updater
      */
     public function autoUpdate()
     {
-        if (!$this->check()) {
+        if (!config('dan.updates.auto_check')) {
             return;
         }
 
-        $this->update();
+        try {
+            $this->update(console());
+        } catch (\Exception $e) {
+            console()->error($e->getMessage());
+        }
     }
 
     /**
      * Checks for updates.
      *
      * @return bool
+     * @throws \Exception
      */
     public function check() : bool
     {
         if (!file_exists(rootPath('.git'))) {
-            console()->error('Unable to auto update. You must setup dan as a git clone.');
-            return false;
-        }
-
-        if (!config('dan.updates.auto_check')) {
-            return false;
+            throw new \Exception('Unable to auto update. You must setup Dan as a git clone.');
         }
 
         $status = shell_exec("git remote update && git status {$this->branch}");
 
         // RIP GitHub Jan 27th, 2016
         if (strpos($status, 'remote error')) {
-            console()->error('Unable to connect to GitHub to check for updates.');
-
-            return false;
+            throw new \Exception('Unable to connect to GitHub to check for updates.');
         }
 
         return (strpos($status, 'up-to-date') === false) === true;
@@ -60,45 +59,59 @@ class Updater
 
     /**
      * Updates and restarts the bot.
+     *
+     * @param bool $force
+     *
+     * @param callable $callback
+     *
+     * @return bool
      */
-    public function update()
+    public function update($force = false, $callback = null) : bool
     {
-        if (!config('dan.updates.auto_install')) {
-            return;
+        if (!$this->check()) {
+            return false;
+        }
+
+        if (!config('dan.updates.auto_install') && !$force) {
+            return false;
+        }
+
+        if(!is_callable($callback)) {
+            $callback = function() {};
         }
 
         $shell = shell_exec(sprintf("cd %s && git pull origin {$this->branch}", ROOT_DIR));
 
         // RIP GitHub Jan 27th, 2016
         if (strpos($shell, 'remote error')) {
-            console()->error('Unable to connect to GitHub to check for updates.');
-
-            return;
+            $callback('ERROR: Unable to connect to GitHub to check for updates.');
         }
 
         if (strpos($shell, 'composer.lock')) {
-            console()->notice('composer.lock changed, installing new packages.');
+            $callback('composer.lock changed, installing new packages.');
             shell_exec(sprintf('cd %s && composer install', ROOT_DIR));
         }
 
         if (strpos($shell, 'src/')) {
             if (!function_exists('pcntl_exec')) {
-                console()->notice('Core files have been changed, but was unable to restart. PHP needs to be compiled with --enable-pcntl for automatic restarts.');
-                return;
+                $callback('Core files have been changed, but was unable to restart. PHP needs to be compiled with --enable-pcntl for automatic restarts.');
+                return true;
             }
 
-            console()->notice('Core files changed, restarting bot.');
+            $callback('Core files changed, restarting bot.');
             connection()->disconnectFromAll();
 
             pcntl_exec(ROOT_DIR.'/dan');
 
-            return;
+            return true;
         }
 
         if (strpos($shell, 'addons/')) {
-            console()->notice('Addons changed, reloading.');
+            $callback('Addons changed, reloading.');
 
             dan()->make('addons')->loadAll();
         }
+
+        return true;
     }
 }
