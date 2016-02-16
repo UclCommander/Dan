@@ -35,6 +35,7 @@ class Event
     public function handler($handler) : Event
     {
         $this->function = $handler;
+
         return $this;
     }
 
@@ -45,7 +46,8 @@ class Event
      */
     public function priority($priority) : Event
     {
-        $this->priority = (int)$priority;
+        $this->priority = (int) $priority;
+
         return $this;
     }
 

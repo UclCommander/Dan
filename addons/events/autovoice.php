@@ -9,4 +9,3 @@ on('irc.join')
     ->handler(function (Connection $connection, Channel $channel, User $user) {
         $channel->mode('+v', $user);
     });
-
