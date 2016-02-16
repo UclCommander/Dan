@@ -5,7 +5,6 @@ namespace Dan\Irc;
 use Dan\Contracts\ConnectionContract;
 use Dan\Contracts\DatabaseContract;
 use Dan\Contracts\PacketContract;
-use Dan\Database\Database;
 use Dan\Events\Event;
 use Dan\Events\Traits\EventTrigger;
 use Dan\Irc\Formatter\IrcOutputFormatter;
@@ -381,7 +380,7 @@ class Connection implements ConnectionContract, DatabaseContract
     public function getChannel($channel)
     {
         if (!$this->inChannel(strtolower($channel))) {
-            return;
+            return null;
         }
 
         return $this->channels->get(strtolower($channel));
@@ -403,6 +402,16 @@ class Connection implements ConnectionContract, DatabaseContract
         $name = strtolower($channel);
 
         $this->channels->put($name, new Channel($this, $channel));
+    }
+
+    /**
+     * Gets all channels on this connection.
+     *
+     * @return \Dan\Irc\Location\Channel[]
+     */
+    public function channels()
+    {
+        return $this->channels;
     }
 
     /**

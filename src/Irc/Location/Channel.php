@@ -81,6 +81,18 @@ class Channel extends Location implements Savable, Arrayable
     }
 
     /**
+     * @param $user
+     */
+    public function removeUser($user)
+    {
+        if (!($user instanceof User)) {
+            $user = new User($this->connection, $user);
+        }
+
+        $this->users->forget($user->nick);
+    }
+
+    /**
      * Checks to see if the channel has the given user.
      *
      * @param $user
