@@ -36,7 +36,7 @@ class Handler
         $this->priorities = new Collection();
         $this->addonEvents = new Collection();
 
-        $this->subscribe('addons.load', function() {
+        $this->subscribe('addons.load', function () {
             foreach ($this->addonEvents as $id => $name) {
                 $this->destroy($this->events[$id]);
             }
