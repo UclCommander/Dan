@@ -114,6 +114,7 @@ class CommandManager
 
                 $location->message("The command <i>{$name}</i> doesn't exist. Did you mean <i>{$similar->first()}</i>?");
             }
+
             return false;
         }
 

@@ -11,6 +11,7 @@ use Dan\Core\Traits\Database;
 use Dan\Core\Traits\Paths;
 use Dan\Database\DatabaseServiceProvider;
 use Dan\Events\EventServiceProvider;
+use Dan\Update\UpdateServiceProvider;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\ServiceProvider;
@@ -35,6 +36,7 @@ class Dan extends Container implements DatabaseContract
         ConsoleServiceProvider::class,
         DatabaseServiceProvider::class,
         EventServiceProvider::class,
+        UpdateServiceProvider::class,
     ];
 
     /**
