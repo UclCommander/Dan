@@ -51,10 +51,17 @@ if (!function_exists('console')) {
     /**
      * Gets the console object.
      *
-     * @return Console
+     * @param null $text
+     *
+     * @return \Dan\Console\Console|null
      */
-    function console()
+    function console($text = null)
     {
+        if (!is_null($text)) {
+            console()->message($text);
+            return null;
+        }
+
         return Dan::getInstance()->make('console');
     }
 }

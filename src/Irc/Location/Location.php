@@ -25,11 +25,14 @@ abstract class Location
      * @param $message
      * @param array $styles
      *
+     * @return $this
      * @throws \Exception
      */
     public function message($message, $styles = [])
     {
         $this->connection->message($this, $message, $styles);
+
+        return $this;
     }
 
     /**
@@ -37,20 +40,28 @@ abstract class Location
      *
      * @param $message
      * @param array $styles
+     *
+     * @return $this
      */
     public function action($message, $styles = [])
     {
         $this->connection->action($this, $message, $styles);
+
+        return $this;
     }
 
     /**
      * Sends a notice to the location.
      *
      * @param $message
+     *
+     * @return $this
      */
     public function notice($message)
     {
         $this->connection->notice($this, $message);
+
+        return $this;
     }
 
     /**

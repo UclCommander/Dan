@@ -123,6 +123,14 @@ class CommandManager
             return false;
         }
 
+        if (!is_null($channel)) {
+            if (in_array($name, $channel->getData('info.commands.disabled', [])) && !$connection->isAdminOrOwner($user)) {
+                console()->debug("Ignoring command {$name} from {$channel} because it's set to be ignored.");
+
+                return false;
+            }
+        }
+
         if (!$this->canUseCommand($connection, $command, $user)) {
             $location->message("You don't have the permissions to use this command.");
 
