@@ -1,6 +1,7 @@
 <?php
 
 use Dan\Commands\Command;
+use Dan\Console\User as ConsoleUser;
 use Dan\Commands\CommandManager;
 use Dan\Contracts\UserContract;
 use Dan\Irc\Connection;
@@ -24,6 +25,12 @@ command(['help', 'commands'])
                 }
             }
 
+            if ($user instanceof ConsoleUser) {
+                if (!$command->isUsableInConsole()) {
+                    continue;
+                }
+            }
+
             if ($message != null && in_array($message, $aliases)) {
                 foreach ($command->getHelpText() as $help) {
                     $user->notice($help);
@@ -37,8 +44,9 @@ command(['help', 'commands'])
             $list = array_merge($list, [$cmd]);
         }
 
-        $i = 0;
+        sort($list);
 
+        $i = 0;
         $items = [];
 
         foreach ($list as $item) {
