@@ -2,6 +2,7 @@
 
 namespace Dan\Events;
 
+use Dan\Irc\Location\Channel;
 use Illuminate\Support\Collection;
 
 class Handler
@@ -109,6 +110,10 @@ class Handler
             /** @var Event $event */
             $event = $this->events->get($key);
 
+            if ($this->disabled($event, $key, $args)) {
+                continue;
+            }
+
             console()->debug("Calling event {$this->names[$key]} - ID: {$key}");
 
             $result = $event->call($args);
@@ -142,5 +147,30 @@ class Handler
         $this->names->forget($event);
         $this->priorities->forget($event);
         $this->addonEvents->forget($event);
+    }
+
+    /**
+     * @param \Dan\Events\Event $event
+     * @param $key
+     * @param $args
+     *
+     * @return bool
+     */
+    protected function disabled(Event $event, $key, $args)
+    {
+        if (!$this->addonEvents->has($key) || !isset($args['channel'])) {
+            return false;
+        }
+
+        /** @var Channel $channel */
+        $channel = $args['channel'];
+
+        $disabled = $channel->getData('info.hooks.disabled', []);
+
+        if (is_null($event->getName())) {
+            return false;
+        }
+
+        return in_array($event->getName(), $disabled);
     }
 }

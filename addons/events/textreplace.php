@@ -7,6 +7,7 @@ use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
 on('irc.message.public')
+    ->name('textreplace')
     ->priority(Event::Normal)
     ->handler(new class {
         /**

@@ -12,19 +12,51 @@ class Event
     const Low = 1;
 
     /**
+     * @var string
+     */
+    protected $name;
+
+    /**
+     * @var string
+     */
+    protected $type;
+
+    /**
+     * @var callable
+     */
+    protected $function;
+
+    /**
+     * @var int
+     */
+    protected $priority;
+
+    /**
      * Event constructor.
      *
-     * @param $name
+     * @param $type
      * @param $function
      * @param int $priority
      */
-    public function __construct($name, $function = null, $priority = self::Normal)
+    public function __construct($type, $function = null, $priority = self::Normal)
     {
-        $this->name = $name;
+        $this->type = $type;
         $this->function = $function;
         $this->priority = $priority;
 
-        $this->id = md5(microtime().$this->name.$this->priority);
+        $this->id = md5(microtime().$this->type.$this->priority);
+    }
+
+    /**
+     * @param $name
+     *
+     * @return \Dan\Events\Event
+     */
+    public function name($name) : Event
+    {
+        $this->name = $name;
+
+        return $this;
     }
 
     /**
@@ -76,4 +108,13 @@ class Event
     {
         events()->destroy($this);
     }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
 }
