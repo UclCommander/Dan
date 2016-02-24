@@ -5,6 +5,7 @@ use Dan\Console\User as ConsoleUser;
 use Dan\Commands\CommandManager;
 use Dan\Contracts\UserContract;
 use Dan\Irc\Connection;
+use Dan\Irc\Location\User as IrcUser;
 
 command(['help', 'commands'])
     ->allowConsole()
@@ -19,7 +20,7 @@ command(['help', 'commands'])
 
             $aliases = $command->getAliases();
 
-            if (!is_null($connection)) {
+            if ($user instanceof IrcUser) {
                 if (!$commandManager->canUseCommand($connection, $command, $user)) {
                     continue;
                 }

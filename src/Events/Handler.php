@@ -116,6 +116,10 @@ class Handler
 
             console()->debug("Calling event {$this->names[$key]} - ID: {$key}");
 
+            if ($this->regexMatches($event, $args) === false) {
+                continue;
+            }
+
             $result = $event->call($args);
 
             if ($result === false) {
@@ -156,7 +160,7 @@ class Handler
      *
      * @return bool
      */
-    protected function disabled(Event $event, $key, $args)
+    protected function disabled(Event $event, $key, $args) : bool
     {
         if (!$this->addonEvents->has($key) || !isset($args['channel'])) {
             return false;
@@ -172,5 +176,28 @@ class Handler
         }
 
         return in_array($event->getName(), $disabled);
+    }
+
+    /**
+     * @param \Dan\Events\Event $event
+     * @param $args
+     *
+     * @return bool|null
+     */
+    protected function regexMatches(Event $event, &$args)
+    {
+        $regex = $event->getRegex();
+
+        if (is_null($regex)) {
+            return null;
+        }
+
+        if (!preg_match_all($regex, $args['message'], $matches)) {
+            return false;
+        }
+
+        $args['matches'] = $matches;
+
+        return true;
     }
 }

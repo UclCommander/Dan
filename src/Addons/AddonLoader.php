@@ -24,7 +24,12 @@ class AddonLoader
                 include $file;
             } catch (\Error $error) {
                 $name = basename($file);
-                console()->error("Unable to load addon {$name}. {$error->getMessage()}");
+
+                if (!config('dan.debug')) {
+                    console()->error("Unable to load addon {$name}. {$error->getMessage()}");
+                } else {
+                    console()->exception($error);
+                }
             }
         }
 

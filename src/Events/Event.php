@@ -22,6 +22,11 @@ class Event
     protected $type;
 
     /**
+     * @var string
+     */
+    protected $regex;
+
+    /**
      * @var callable
      */
     protected $function;
@@ -55,6 +60,18 @@ class Event
     public function name($name) : Event
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @param $regex
+     *
+     * @return \Dan\Events\Event
+     */
+    public function match($regex) : Event
+    {
+        $this->regex = $regex;
 
         return $this;
     }
@@ -117,4 +134,11 @@ class Event
         return $this->name;
     }
 
+    /**
+     * @return string
+     */
+    public function getRegex()
+    {
+        return $this->regex;
+    }
 }
