@@ -9,7 +9,7 @@
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
-command('lenny')
+command(['lenny'])
     ->allowPrivate()
     ->helpText('lenny faces. Optional: hugs, no, lenninati, backward(s), pumped')
     ->handler(function (User $user, $message, Channel $channel = null) {

@@ -9,7 +9,7 @@
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
-command('dongers')
+command(['dongers'])
     ->allowPrivate()
     ->helpText('RAISE THE DONGERS')
     ->handler(function (User $user, Channel $channel = null) {

@@ -10,7 +10,7 @@ use Dan\Irc\Connection;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
-command('slap')
+command(['slap'])
     ->helpText('Slaps someone')
     ->handler(function (Connection $connection, User $user, $message, Channel $channel = null) {
         $data = explode(' ', $message, 2);

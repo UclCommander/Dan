@@ -10,7 +10,7 @@ use Dan\Irc\Connection;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
-command('whoopass')
+command(['whoopass'])
     ->helpText('When a normal beating just won\'t do!')
     ->handler(function (Connection $connection, User $user, $message, Channel $channel) {
         $data = explode(' ', $message);

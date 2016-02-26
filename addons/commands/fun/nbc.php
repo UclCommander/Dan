@@ -9,7 +9,7 @@
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
-command('nbc')
+command(['nbc'])
     ->allowPrivate()
     ->helpText('NOBODY CARS THAT YOU NEED HELP')
     ->handler(function (User $user, $message, Channel $channel = null) {

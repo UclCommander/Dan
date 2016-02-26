@@ -10,7 +10,7 @@
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
-command('hash')
+command(['hash'])
     ->allowPrivate()
     ->helpText([
         'hash <algo> <text> - Hashes <text> with <algo>',

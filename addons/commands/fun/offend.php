@@ -10,7 +10,7 @@
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
-command('offend')
+command(['offend'])
     ->allowPrivate()
     ->helpText('Offend command')
     ->handler(function (User $user, Channel $channel = null) {
