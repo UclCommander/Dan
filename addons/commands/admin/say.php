@@ -11,9 +11,15 @@ command(['say', 'msg'])
     ->rank('AS')
     ->helpText('Sends a message to the a interwebs location')
     ->handler(function (Connection $connection, UserContract $user, $message, Channel $channel = null) {
-        $data = explode(' ', $message, 2);
+        $data = array_filter(explode(' ', $message, 2));
 
         $location = $channel ?? $user;
+
+        if (count($data) == 1) {
+            $location->message($message);
+
+            return;
+        }
 
         if (count($data) != 2 || empty($message)) {
             $location->message('I need something to say!');
