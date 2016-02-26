@@ -20,7 +20,7 @@ on('irc.message.public')
     ])
     ->handler(function (Channel $channel, $matches, DotCollection $settings) {
         $return = null;
-        
+
         foreach($matches[1] as $match) {
             $json = Web::api('youtube/get', ['video' => $match]);
 

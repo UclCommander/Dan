@@ -12,6 +12,7 @@ command(['chaninfo', 'cinfo'])
         'cinfo hooks disabled - Lists disabled hooks',
         'cinfo hooks enable <hook> - Enables a hooks',
         'cinfo hooks disable <hook> - Disables a hooks',
+        'cinfo hooks settings <hook> <setting> [value] - Gets or sets a setting for the hook.',
         'cinfo commands disabled - Lists disabled commands',
         'cinfo commands enable <command> - Enables a command',
         'cinfo commands disable <command> - Disables a command',
@@ -81,6 +82,54 @@ command(['chaninfo', 'cinfo'])
 
             if ($data[0] == 'disable') {
                 return $this->doThing($channel, 'hook', $data[1], false);
+            }
+
+            if ($data[0] == 'settings') {
+                if (!isset($data[2])) {
+                    $channel->message('Please specify a setting key.');
+
+                    return null;
+                }
+
+                if (!$channel->getData("hooks.{$data[1]}")) {
+                    $channel->message('There is no settings for this hook.');
+
+                    return null;
+                }
+
+                if (!$channel->getData("hooks.{$data[1]}.{$data[2]}")) {
+                    $channel->message("The setting key <i>{$data[2]}</i> doesn't exist.");
+
+                    return null;
+                }
+
+                if (isset($data[3])) {
+                    $value = explode(',', $data[3]);
+                    $options = $channel->getData("hooks.{$data[1]}.{$data[2]}.options");
+
+                    foreach($value as $option) {
+                        if (!in_array($option, $options)) {
+                            $channel->message("Invalid option {$option}. See <i>hooks settings {$data[1]} {$data[2]}.options</i> for a list of available options.");
+
+                            return null;
+                        }
+                    }
+
+                    $channel->setData("hooks.{$data[1]}.{$data[2]}.default", $data[3])
+                        ->message("Settings saved.")
+                        ->save();
+
+                    return null;
+                }
+
+                if (last(explode('.', $data[2])) == 'options') {
+                    $options = $channel->getData("hooks.{$data[1]}.{$data[2]}");
+                    $channel->message("Options for {$data[2]}: ".implode(', ', $options));
+
+                    return null;
+                }
+
+                $channel->message("Current value for {$data[2]}: ".$channel->getData("hooks.{$data[1]}.{$data[2]}.default"));
             }
         }
 
