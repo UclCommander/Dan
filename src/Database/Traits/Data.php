@@ -16,7 +16,7 @@ trait Data
      *
      * @return bool
      */
-    public function hasDataKey($key)
+    public function hasData($key)
     {
         return Arr::has($this->data, $key);
     }

@@ -27,6 +27,11 @@ class Event
     protected $regex;
 
     /**
+     * @var array
+     */
+    protected $settings = [];
+
+    /**
      * @var callable
      */
     protected $function;
@@ -72,6 +77,18 @@ class Event
     public function match($regex) : Event
     {
         $this->regex = $regex;
+
+        return $this;
+    }
+
+    /**
+     * @param array $settings
+     *
+     * @return \Dan\Events\Event
+     */
+    public function settings(array $settings) : Event
+    {
+        $this->settings = $settings;
 
         return $this;
     }
@@ -140,5 +157,13 @@ class Event
     public function getRegex()
     {
         return $this->regex;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSettings()
+    {
+        return $this->settings;
     }
 }

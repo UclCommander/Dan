@@ -120,6 +120,8 @@ class Handler
                 continue;
             }
 
+            $this->configureSettings($event, $args);
+
             $result = $event->call($args);
 
             if ($result === false) {
@@ -199,5 +201,30 @@ class Handler
         $args['matches'] = $matches;
 
         return true;
+    }
+
+    /**
+     * @param \Dan\Events\Event $event
+     * @param $args
+     */
+    protected function configureSettings(Event $event, &$args)
+    {
+        if (is_null($event->getName())) {
+            return;
+        }
+
+        if (!array_key_exists('channel', $args)) {
+            return;
+        }
+
+        if (empty($event->getSettings())) {
+            return;
+        }
+
+        if (!$args['channel']->hasData("hooks.{$event->getName()}")) {
+            $args['channel']->setData("hooks.{$event->getName()}", $event->getSettings())->save();
+        }
+
+        $args['settings'] = dotcollect($args['channel']->getData("hooks.{$event->getName()}"));
     }
 }
