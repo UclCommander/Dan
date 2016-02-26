@@ -29,7 +29,7 @@ on('irc.message.public')
     });
 
 on('irc.message.public')
-    ->name('twitter_tweet')
+    ->name('twitter_user')
     ->match("/https?:\/\/twitter\.com\/([a-zA-Z0-9_]+)\/?/")
     ->handler(function (Channel $channel, $matches)  {
         $user = last($matches);
