@@ -1,11 +1,12 @@
 <?php namespace Dan\Web;
 
+use Dan\Support\DotCollection;
 use Illuminate\Contracts\Support\Arrayable;
 
 class Request implements Arrayable
 {
     /**
-     * @var
+     * @var DotCollection
      */
     protected $data;
 
@@ -22,7 +23,7 @@ class Request implements Arrayable
      */
     public function __construct($data, $headers)
     {
-        $this->data = $data;
+        $this->data = dotcollect($data);
         $this->headers = $headers;
     }
 
@@ -80,11 +81,7 @@ class Request implements Arrayable
      */
     public function get($key, $default = '')
     {
-        if (!isset($this->data['query'][$key])) {
-            return $default;
-        }
-
-        return $this->data['query'][$key];
+        return $this->data->get($key, $default);
     }
 
     /**
