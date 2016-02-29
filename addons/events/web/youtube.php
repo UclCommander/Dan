@@ -65,7 +65,7 @@ on('irc.message.public')
                 $enabled[$item] = $data[$item];
             }
 
-            $channel->message("[ Youtube ] " . implode(' - ', $enabled));
+            $channel->message("[ YouTube ] " . implode(' - ', $enabled));
             $return = false;
         }
 
