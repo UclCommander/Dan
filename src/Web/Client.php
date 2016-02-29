@@ -51,6 +51,10 @@ class Client
 
         $this->formatHeaders($headers);
 
+        if (is_array($headers['data'])) {
+            $data['query'] = array_merge($data['query'] ?? [], $headers['data']);
+        }
+
         $response = $this->gotoRoute($data, $headers);
 
         $this->write($response);
@@ -96,7 +100,7 @@ class Client
                 continue;
             }
 
-            return $this->handleRoute($route, $headers);
+            return $this->handleRoute($route, $headers, $data);
         }
 
         return new Response('Route not found', 404);
@@ -110,9 +114,11 @@ class Client
      *
      * @return \Dan\Web\Response
      */
-    protected function handleRoute(Route $route, $headers) : Response
+    protected function handleRoute(Route $route, $headers, $data) : Response
     {
-        $response = dan()->call($route->getHandler());
+        $response = dan()->call($route->getHandler(), [
+            'request' => new Request($data, $headers),
+        ]);
 
         if ($response instanceof Response) {
             return $response;
