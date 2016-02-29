@@ -81,7 +81,7 @@ class Client
     }
 
     /**
-     * Finds and runs the route if it exsits.
+     * Finds and runs the route if it exists.
      *
      * @param $data
      * @param $headers
@@ -116,7 +116,14 @@ class Client
      */
     protected function handleRoute(Route $route, $headers, $data) : Response
     {
-        $response = dan()->call($route->getHandler(), [
+        $handler = $route->getHandler();
+        $func = $handler;
+
+        if (!($handler instanceof \Closure)) {
+            $func = [$handler, 'run'];
+        }
+
+        $response = dan()->call($func, [
             'request' => new Request($data, $headers),
         ]);
 
