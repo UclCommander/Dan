@@ -81,7 +81,7 @@ class Request implements Arrayable
      */
     public function get($key, $default = '')
     {
-        return $this->data->get($key, $default);
+        return $this->data->get("query.{$key}", $default);
     }
 
     /**
