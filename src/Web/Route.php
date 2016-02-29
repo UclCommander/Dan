@@ -20,6 +20,21 @@ class Route
     protected $path;
 
     /**
+     * @var
+     */
+    protected $name;
+
+    /**
+     * Route constructor.
+     *
+     * @param $name
+     */
+    public function __construct($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
      * @param $path
      *
      * @return \Dan\Web\Route
@@ -27,6 +42,20 @@ class Route
     public function path($path) : Route
     {
         $this->path = $path;
+
+        return $this;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return \Dan\Web\Route
+     */
+    public function config(array $data) : Route
+    {
+        if (!file_exists(configPath(str_replace('.', '_', $this->name).'.json'))) {
+            filesystem()->put(configPath(str_replace('.', '_', $this->name).'.json'), json_encode($data, JSON_PRETTY_PRINT));
+        }
 
         return $this;
     }

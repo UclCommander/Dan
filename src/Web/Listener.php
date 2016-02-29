@@ -131,7 +131,7 @@ class Listener implements ConnectionContract
     public function registerRoute($name) : Route
     {
         console()->info("Loading route {$name}");
-        $route = new Route();
+        $route = new Route($name);
         $this->routes->put($name, $route);
 
         return $this->routes->get($name);
