@@ -289,13 +289,13 @@ if (!function_exists('route')) {
     /**
      * Creates a new route.
      *
-     * @param $path
+     * @param $name
      *
      * @return \Dan\Web\Route
      */
-    function route($path) : Route
+    function route($name) : Route
     {
-        return dan('web')->registerRoute($path);
+        return dan('web')->registerRoute($name);
     }
 }
 

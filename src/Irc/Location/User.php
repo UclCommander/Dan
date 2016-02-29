@@ -14,6 +14,11 @@ class User extends Location implements Savable, Arrayable, UserContract
     use Data;
 
     /**
+     * @var int
+     */
+    protected $id;
+
+    /**
      * @var string
      */
     protected $nick;
@@ -63,6 +68,7 @@ class User extends Location implements Savable, Arrayable, UserContract
             if (is_null($data->get('user')) && !is_null($nick)) {
                 $connection->send('WHO', $nick);
             } else {
+                $id = $data->get('id');
                 $user = $data->get('user');
                 $host = $data->get('host');
                 $real = $data->get('real');
@@ -107,6 +113,9 @@ class User extends Location implements Savable, Arrayable, UserContract
             ->insertOrUpdate([
                 'nick', '=', $this->nick,
             ], $this->toArray());
+
+        $data = $this->connection->database('users')->where('nick', $this->nick)->first();
+        $this->id = $data->get('id');
     }
 
     /**

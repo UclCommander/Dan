@@ -21,7 +21,6 @@ class PacketQuit extends Packet
             'connection'    => $this->connection,
             'user'          => $user,
             'message'       => ($data[0] ?? null),
-
         ]);
 
         foreach ($this->connection->channels() as $channel) {
