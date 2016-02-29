@@ -76,12 +76,21 @@ command(['chaninfo', 'cinfo'])
                 return null;
             }
 
-            if ($data[0] == 'enable') {
-                return $this->doThing($channel, 'hook', $data[1]);
+            $hooks = explode(',', $data[1]);
+            $return = null;
+
+            foreach ($hooks as $hook) {
+                if ($data[0] == 'enable') {
+                    $return = $this->doThing($channel, 'hook', $hook);
+                }
+
+                if ($data[0] == 'disable') {
+                    $return = $this->doThing($channel, 'hook', $hook, false);
+                }
             }
 
-            if ($data[0] == 'disable') {
-                return $this->doThing($channel, 'hook', $data[1], false);
+            if ($return) {
+                return $return;
             }
 
             if ($data[0] == 'settings') {
@@ -107,7 +116,7 @@ command(['chaninfo', 'cinfo'])
                     $value = explode(',', $data[3]);
                     $options = $channel->getData("hooks.{$data[1]}.{$data[2]}.options");
 
-                    foreach($value as $option) {
+                    foreach ($value as $option) {
                         if (!in_array($option, $options)) {
                             $channel->message("Invalid option {$option}. See <i>hooks settings {$data[1]} {$data[2]}.options</i> for a list of available options.");
 
