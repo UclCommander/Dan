@@ -3,6 +3,7 @@
 namespace Dan\Web;
 
 use Dan\Core\Dan;
+use Illuminate\Contracts\Support\Arrayable;
 
 class Response
 {
@@ -36,6 +37,11 @@ class Response
     protected $status = 200;
 
     /**
+     * @var array
+     */
+    protected $headers = [];
+
+    /**
      * Response constructor.
      *
      * @param string $message
@@ -48,23 +54,58 @@ class Response
     }
 
     /**
+     * @param $key
+     * @param string $value
+     *
+     * @return \Dan\Web\Response
+     * @internal param $headers
+     *
+     */
+    public function header($key, $value = '') : Response
+    {
+        if (is_array($key)) {
+            $this->headers = array_merge($this->headers, $key);
+        } else {
+            $this->headers[$key] = $value;
+        }
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function make()
     {
+        $message = $this->message;
+
+        if ($message instanceof Arrayable) {
+            $message = $message->toArray();
+        }
+
+        if (is_array($message)) {
+            $message = json_encode($message);
+            $this->header('content-type', 'application/json');
+        }
+
         $headers = [
             'HTTP/1.1 '.$this->statusCodes[$this->status],
-            'content-length'    => strlen($this->message),
+            'content-length'    => strlen($message),
             'content-type'      => 'text/html; charset=UTF-8',
             'date'              => date('r'),
             'expires'           => date('r', strtotime('+1 second')),
             'server'            => 'Dan '.Dan::VERSION,
             'version'           => 'HTTP/1.1',
-            '',
-            $this->message,
         ];
 
         $compiled = [];
+
+        foreach ($this->headers as $key => $header) {
+            $headers[$key] = $header;
+        }
+
+        $headers[] = '';
+        $headers[] = $message;
 
         foreach ($headers as $key => $header) {
             if (is_int($key)) {
