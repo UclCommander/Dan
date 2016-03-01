@@ -122,7 +122,7 @@ route('github.event')
 
             $message = $this->cleanString($request->get('head_commit.message')) ?? '(no description)';
             $author = $request->get('head_commit.author.name');
-            $commitId = substr($request->get('head_commit.commit_id'), 0, 7);
+            $commitId = substr($request->get('head_commit.id'), 0, 7);
             $url = shortLink($request->get('head_commit.url'));
 
             return "[ GitHub - {$repo} ] New commit by <orange>{$author}</orange> - <yellow>{$commitId}</yellow> - <light_cyan>{$message}</light_cyan> - {$url}";
