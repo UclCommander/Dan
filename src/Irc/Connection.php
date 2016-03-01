@@ -65,9 +65,9 @@ class Connection implements ConnectionContract, DatabaseContract
     protected $quitting = false;
 
     /**
-     * @var Collection
+     * @var Collection|Channel[]
      */
-    protected $channels;
+    public $channels;
 
     /**
      * Connection constructor.

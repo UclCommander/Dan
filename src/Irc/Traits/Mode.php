@@ -53,6 +53,16 @@ trait Mode
     }
 
     /**
+     * Used when copying modes from one object to another.
+     *
+     * @param $modes
+     */
+    public function setRawModes(array $modes)
+    {
+        $this->modes = $modes;
+    }
+
+    /**
      * Sets a single mode.
      *
      * @param $mode
