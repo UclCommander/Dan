@@ -87,6 +87,14 @@ class Updater
         // RIP GitHub Jan 27th, 2016
         if (strpos($shell, 'remote error')) {
             $callback('ERROR: Unable to connect to GitHub to check for updates.');
+
+            return true;
+        }
+
+        if (strpos($shell, 'error: Your local changes')) {
+            $callback("ERROR: There's local changes that are preventing the update.");
+
+            return true;
         }
 
         if (strpos($shell, 'composer.lock')) {
