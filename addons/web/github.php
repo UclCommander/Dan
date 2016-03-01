@@ -108,7 +108,7 @@ route('github.event')
             $repo = $request->get('repository.full_name');
             $url = shortLink($request->get('comment.html_url'));
 
-            return "[ GitHub - New Comment ] <cyan>{$repo}</cyan> - <light_cyan>{$title}</light_cyan> - <orange>{$commenter}</orange> - <light_cyan>{$comment}</light_cyan> - {$url}";
+            return "[ GitHub - New Comment ] <cyan>{$repo}</cyan> - <yellow>{$title}</yellow> - <orange>{$commenter}</orange> - <light_cyan>{$comment}</light_cyan> - {$url}";
         }
 
         /**
@@ -122,9 +122,10 @@ route('github.event')
 
             $message = $this->cleanString($request->get('head_commit.message')) ?? '(no description)';
             $author = $request->get('head_commit.author.name');
+            $commitId = substr($request->get('head_commit.commit_id'), 0, 7);
             $url = shortLink($request->get('head_commit.url'));
 
-            return "[ GitHub - New Commit ] <cyan>{$repo}</cyan> - <light_cyan>{$message}</light_cyan> - <orange>{$author}</orange> - {$url}";
+            return "[ GitHub - New Commit ] <cyan>{$repo}</cyan> - <yellow>{$commitId}</yellow> - <light_cyan>{$message}</light_cyan> - <orange>{$author}</orange> - {$url}";
         }
 
         /**
