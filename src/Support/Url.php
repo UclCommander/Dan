@@ -1,10 +1,11 @@
-<?php namespace Dan\Support;
+<?php
 
+namespace Dan\Support;
 
 class Url
 {
     /**
-     * Gets all headers from a URL
+     * Gets all headers from a URL.
      *
      * @param $url
      *

@@ -98,9 +98,6 @@ class DatabaseManager
         return array_key_exists($database, static::$databases);
     }
 
-    /**
-     *
-     */
     public function backupAll()
     {
         if ($this->lastBackup instanceof Carbon) {

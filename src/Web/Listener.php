@@ -87,6 +87,7 @@ class Listener implements ConnectionContract
     public function disconnect() : bool
     {
         fclose($this->stream);
+
         return true;
     }
 

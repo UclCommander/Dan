@@ -9,9 +9,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CreateCommandCommand extends Command
 {
-    /**
-     *
-     */
     protected function configure()
     {
         $this->setName('make:command');

@@ -88,9 +88,6 @@ class Dan extends Container implements DatabaseContract
         $this->registerProviders();
     }
 
-    /**
-     *
-     */
     public function run()
     {
         $this->make('addons')->loadAll();

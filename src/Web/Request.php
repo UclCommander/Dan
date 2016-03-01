@@ -1,4 +1,6 @@
-<?php namespace Dan\Web;
+<?php
+
+namespace Dan\Web;
 
 use Dan\Support\DotCollection;
 use Illuminate\Contracts\Support\Arrayable;
@@ -38,6 +40,7 @@ class Request implements Arrayable
         if (!isset($this->headers[$header])) {
             return $default;
         }
+
         return $this->headers[$header];
     }
 
@@ -65,9 +68,6 @@ class Request implements Arrayable
         return $this->data['host'];
     }
 
-    /**
-     *
-     */
     public function path()
     {
         return $this->data['path'];
@@ -92,7 +92,7 @@ class Request implements Arrayable
     public function toArray()
     {
         return [
-            'data' => $this->data,
+            'data'    => $this->data,
             'headers' => $this->headers,
         ];
     }

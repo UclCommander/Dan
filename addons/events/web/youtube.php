@@ -15,13 +15,13 @@ on('irc.message.public')
                 'views', 'published', 'duration', 'rating',
                 'comment_count', 'favorite_count', 'dimension',
                 'caption', 'definition', 'thumbnail',
-            ]
-        ]
+            ],
+        ],
     ])
     ->handler(function (Channel $channel, $matches, DotCollection $settings) {
         $return = null;
 
-        foreach($matches[1] as $match) {
+        foreach ($matches[1] as $match) {
             $json = Web::api('youtube/get', ['video' => $match]);
 
             if (!is_array($json)) {
@@ -42,18 +42,18 @@ on('irc.message.public')
             $published = $d->format('F j, Y');
 
             $data = [
-                'video_title'   => "<cyan>{$videoTitle}</cyan>",
-                'channel_title' => "<yellow>{$channelTitle}</yellow>",
-                'published'     => "<cyan>{$published}</cyan>",
-                'thumbnail'     => $json['snippet']['thumbnails']['default']['url'],
-                'definition'    => "<red>{$json['contentDetails']['definition']}</red>",
-                'caption'       => "<orange>{$json['contentDetails']['caption']}</orange>",
-                'dimension'     => "<orange>{$json['contentDetails']['dimension']}</orange>",
-                'duration'      => "<light_cyan>{$duration}</light_cyan>",
-                'views'         => "<cyan>{$views} views</cyan>",
-                'likes'         => "<green>+{$likes}</green>",
-                'dislikes'      => "<red>-{$dislikes}</red>",
-                'rating'        => $rating,
+                'video_title'    => "<cyan>{$videoTitle}</cyan>",
+                'channel_title'  => "<yellow>{$channelTitle}</yellow>",
+                'published'      => "<cyan>{$published}</cyan>",
+                'thumbnail'      => $json['snippet']['thumbnails']['default']['url'],
+                'definition'     => "<red>{$json['contentDetails']['definition']}</red>",
+                'caption'        => "<orange>{$json['contentDetails']['caption']}</orange>",
+                'dimension'      => "<orange>{$json['contentDetails']['dimension']}</orange>",
+                'duration'       => "<light_cyan>{$duration}</light_cyan>",
+                'views'          => "<cyan>{$views} views</cyan>",
+                'likes'          => "<green>+{$likes}</green>",
+                'dislikes'       => "<red>-{$dislikes}</red>",
+                'rating'         => $rating,
                 'comment_count'  => number_format($json['statistics']['commentCount']),
                 'favorite_count' => number_format($json['statistics']['favoriteCount']),
             ];
@@ -65,7 +65,7 @@ on('irc.message.public')
                 $enabled[$item] = $data[$item];
             }
 
-            $channel->message("[ YouTube ] " . implode(' - ', $enabled));
+            $channel->message('[ YouTube ] '.implode(' - ', $enabled));
             $return = false;
         }
 

@@ -16,5 +16,4 @@ command(['memory'])
 
         $location->message("[ <cyan>Memory Usage:</cyan> <yellow>{$memory}</yellow> | <cyan>Peak Usage:</cyan> <yellow>{$peak}</yellow> ]");
 
-        return;
     });

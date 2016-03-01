@@ -10,9 +10,6 @@ namespace Dan\Irc\Traits;
  */
 trait IrcDatabase
 {
-    /**
-     *
-     */
     public function createDatabase()
     {
         if (!database()->exists($this->name)) {

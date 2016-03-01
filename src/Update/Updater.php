@@ -38,8 +38,9 @@ class Updater
     /**
      * Checks for updates.
      *
-     * @return bool
      * @throws \Exception
+     *
+     * @return bool
      */
     public function check() : bool
     {
@@ -61,7 +62,6 @@ class Updater
      * Updates and restarts the bot.
      *
      * @param bool $force
-     *
      * @param callable $callback
      *
      * @return bool
@@ -76,7 +76,7 @@ class Updater
             return false;
         }
 
-        if(!is_callable($callback)) {
+        if (!is_callable($callback)) {
             $callback = function ($message) {
                 console()->message($message);
             };
@@ -97,6 +97,7 @@ class Updater
         if (strpos($shell, 'src/')) {
             if (!function_exists('pcntl_exec')) {
                 $callback('Core files have been changed, but was unable to restart. PHP needs to be compiled with --enable-pcntl for automatic restarts.');
+
                 return true;
             }
 

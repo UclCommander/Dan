@@ -63,7 +63,7 @@ class Dan implements ConfigSetupContract
                     \Dan\Irc\IrcServiceProvider::class,
                 ],
                 'use_short_links' => true,
-                'short_link_api' => Links::class,
+                'short_link_api'  => Links::class,
             ],
         ]);
     }

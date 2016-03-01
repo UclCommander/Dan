@@ -134,9 +134,6 @@ class User extends Location implements Savable, Arrayable, UserContract
         ];
     }
 
-    /**
-     *
-     */
     public function __toString()
     {
         return "{$this->nick}!{$this->user}@{$this->host}";

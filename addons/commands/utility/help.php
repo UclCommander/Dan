@@ -1,8 +1,8 @@
 <?php
 
 use Dan\Commands\Command;
-use Dan\Console\User as ConsoleUser;
 use Dan\Commands\CommandManager;
+use Dan\Console\User as ConsoleUser;
 use Dan\Contracts\UserContract;
 use Dan\Irc\Connection;
 use Dan\Irc\Location\User as IrcUser;

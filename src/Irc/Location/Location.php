@@ -25,8 +25,9 @@ abstract class Location
      * @param $message
      * @param array $styles
      *
-     * @return $this
      * @throws \Exception
+     *
+     * @return $this
      */
     public function message($message, $styles = [])
     {
