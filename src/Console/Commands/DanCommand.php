@@ -10,9 +10,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class DanCommand extends Command
 {
-    /**
-     *
-     */
     protected function configure()
     {
         $this->setName('dan')

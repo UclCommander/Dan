@@ -20,9 +20,6 @@ class IrcServiceProvider extends ServiceProvider
         $this->loadAutoConnectServers();
     }
 
-    /**
-     *
-     */
     protected function loadAutoConnectServers()
     {
         foreach ($this->config['auto_connect'] as $server) {

@@ -23,7 +23,7 @@ on('irc.message.public')
             "<light_cyan>{$text}</light_cyan>",
         ];
 
-        $channel->message("[ Twitter ] ".implode(' - ', $data));
+        $channel->message('[ Twitter ] '.implode(' - ', $data));
 
         return false;
     });
@@ -31,7 +31,7 @@ on('irc.message.public')
 on('irc.message.public')
     ->name('twitter_user')
     ->match("/https?:\/\/twitter\.com\/([a-zA-Z0-9_]+)\/?/")
-    ->handler(function (Channel $channel, $matches)  {
+    ->handler(function (Channel $channel, $matches) {
         $user = last($matches);
 
         $data = Web::api('twitter/user', ['user' => $user]);
@@ -46,7 +46,7 @@ on('irc.message.public')
             "<orange>{$tweets} tweets</orange>",
         ];
 
-        $channel->message("[ Twitter ] ".implode(' - ', array_filter($data)));
+        $channel->message('[ Twitter ] '.implode(' - ', array_filter($data)));
 
         return false;
     });

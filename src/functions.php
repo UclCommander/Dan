@@ -60,6 +60,7 @@ if (!function_exists('console')) {
     {
         if (!is_null($text)) {
             console()->message($text);
+
             return null;
         }
 
@@ -364,6 +365,7 @@ if (!function_exists('shortLink')) {
 
         /** @var \Dan\Contracts\ShortLinkContract $creator */
         $creator = new $class();
+
         return $creator->create($link);
     }
 }

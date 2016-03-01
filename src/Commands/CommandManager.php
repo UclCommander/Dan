@@ -101,7 +101,6 @@ class CommandManager
             return true;
         }
 
-
         if (preg_match('/^([a-zA-Z0-9:]+)/', $clean) !== 1) {
             return true;
         }
