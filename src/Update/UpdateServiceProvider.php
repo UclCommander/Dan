@@ -1,12 +1,11 @@
-<?php namespace Dan\Update;
+<?php
 
+namespace Dan\Update;
 
 use Illuminate\Support\ServiceProvider;
 
 class UpdateServiceProvider extends ServiceProvider
 {
-
-
     /**
      * Register the service provider.
      *

@@ -43,9 +43,6 @@ class Create
         $this->aliases = new Collection();
     }
 
-    /**
-     *
-     */
     public function create()
     {
         $this->aliases->push($this->output->ask('Name of the command'));
@@ -78,9 +75,6 @@ class Create
         $this->output->success('Command created. Happy coding!');
     }
 
-    /**
-     *
-     */
     protected function createCommand()
     {
         $aliases = $this->aliases->implode("', '");

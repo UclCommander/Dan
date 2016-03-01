@@ -58,8 +58,8 @@ class Response
      * @param string $value
      *
      * @return \Dan\Web\Response
-     * @internal param $headers
      *
+     * @internal param $headers
      */
     public function header($key, $value = '') : Response
     {

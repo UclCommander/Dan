@@ -5,7 +5,7 @@ use Dan\Support\Url;
 use Dan\Support\Web;
 
 $ignored = [
-    '*speedtest.net', '*youtube.*', 'youtu.be', '*newegg.com', 'twitter.com'
+    '*speedtest.net', '*youtube.*', 'youtu.be', '*newegg.com', 'twitter.com',
 ];
 
 $mime = [
@@ -65,7 +65,6 @@ on('irc.message.public')
                 $titles[] = $title;
 
                 $channel->message("[ Webpage ] {$title}");
-
             } elseif (strpos($mimeType, 'image') === 0) {
                 $type = $headers['content-type'];
 

@@ -148,9 +148,6 @@ class Channel extends Location implements Savable, Arrayable
         $this->connection->send('MODE', $this, $mode, $user);
     }
 
-    /**
-     *
-     */
     public function save()
     {
         $this->connection->database('channels')
