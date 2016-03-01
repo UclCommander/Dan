@@ -71,11 +71,11 @@ route('github.event')
             $sender = $request->get('sender.login');
 
             if ($request->get('action') == 'opened') {
-                return "[ GitHub - {$repo} ] New issue created by <orange>{$user}</orange> - <light_cyan>{$title}</light_cyan> - <light_cyan>{$body}</light_cyan> - {$url}";
+                return "[ GitHub - {$repo} ] New issue created by <orange>{$user}</orange> - <cyan>{$title}</cyan> - <light_cyan>{$body}</light_cyan> - {$url}";
             }
 
             if ($request->get('action') == 'closed') {
-                return "[ GitHub - {$repo} ] Issue <light_cyan>{$title}</light_cyan> closed by <orange>{$sender}</orange> - {$url}";
+                return "[ GitHub - {$repo} ] Issue <cyan>{$title}</cyan> closed by <orange>{$sender}</orange> - {$url}";
             }
         }
 
@@ -92,7 +92,7 @@ route('github.event')
             $repo = $request->get('repository.full_name');
             $url = shortLink($request->get('comment.html_url'));
 
-            return "[ GitHub - {$repo} ] New comment by <orange>{$commenter}</orange> on issue <light_cyan>{$title}</light_cyan> - <light_cyan>{$comment}</light_cyan> - {$url}";
+            return "[ GitHub - {$repo} ] New comment by <orange>{$commenter}</orange> on issue <cyan>{$title}</cyan> - <light_cyan>{$comment}</light_cyan> - {$url}";
         }
 
         /**
@@ -144,11 +144,11 @@ route('github.event')
             $by = $request->get('sender.login');
 
             if ($request->get('action') == 'opened') {
-                return "[ GitHub - {$repo} ] <orange>{$author}</orange> opened a new Pull Request. - <light_cyan>{$title}</light_cyan> - <light_cyan>{$message}</light_cyan> - {$url}";
+                return "[ GitHub - {$repo} ] <orange>{$author}</orange> opened a new Pull Request. - <cyan>{$title}</cyan> - <light_cyan>{$message}</light_cyan> - {$url}";
             }
 
             if ($request->get('action') == 'closed') {
-                return "[ GitHub - {$repo} ] Pull request <light_cyan>{$title}</light_cyan> closed by <orange>{$by}</orange> - {$url}";
+                return "[ GitHub - {$repo} ] Pull request <cyan>{$title}</cyan> closed by <orange>{$by}</orange> - {$url}";
             }
         }
 
