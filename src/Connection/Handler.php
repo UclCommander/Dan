@@ -94,12 +94,26 @@ class Handler
 
     /**
      * Disconnects from all connections.
+     *
+     * @param bool $quit
+     *
+     * @return bool
      */
-    public function disconnectFromAll()
+    public function disconnectFromAll($quit = false)
     {
-        foreach ($this->connections as $connection) {
-            $this->removeConnection($connection);
+        if ($quit) {
+            $this->running = false;
         }
+
+        foreach ($this->connections as $connection) {
+            if (!$this->removeConnection($connection)) {
+                if (!fclose($connection->getStream())) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     /**
