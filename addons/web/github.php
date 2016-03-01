@@ -71,11 +71,11 @@ route('github.event')
             $sender = $request->get('sender.login');
 
             if ($request->get('action') == 'opened') {
-                return "[ GitHub - New issue ] <cyan>{$repo}</cyan> - <light_cyan>{$title}</light_cyan> - <orange>{$user}</orange> - <light_cyan>{$body}</light_cyan> - {$url}";
+                return "[ GitHub - {$repo} ] New issue created by <orange>{$user}</orange> - <light_cyan>{$title}</light_cyan> - <light_cyan>{$body}</light_cyan> - {$url}";
             }
 
             if ($request->get('action') == 'closed') {
-                return "[ GitHub - Closed issue ] <cyan>{$repo}</cyan> - <light_cyan>{$title}</light_cyan> - <orange>{$sender}</orange> - {$url}";
+                return "[ GitHub - {$repo} ] Issue <light_cyan>{$title}</light_cyan> closed by <orange>{$sender}</orange> - {$url}";
             }
         }
 
@@ -92,7 +92,7 @@ route('github.event')
             $repo = $request->get('repository.full_name');
             $url = shortLink($request->get('comment.html_url'));
 
-            return "[ GitHub - New Comment ] <cyan>{$repo}</cyan> - <light_cyan>{$title}</light_cyan> - <orange>{$commenter}</orange> - <light_cyan>{$comment}</light_cyan> - {$url}";
+            return "[ GitHub - {$repo} ] New comment by <orange>{$commenter}</orange> on issue <light_cyan>{$title}</light_cyan> - <light_cyan>{$comment}</light_cyan> - {$url}";
         }
 
         /**
@@ -108,7 +108,7 @@ route('github.event')
             $repo = $request->get('repository.full_name');
             $url = shortLink($request->get('comment.html_url'));
 
-            return "[ GitHub - New Comment ] <cyan>{$repo}</cyan> - <yellow>{$title}</yellow> - <orange>{$commenter}</orange> - <light_cyan>{$comment}</light_cyan> - {$url}";
+            return "[ GitHub - {$repo} ] New comment by <orange>{$commenter}</orange> on commit <yellow>{$title}</yellow> - <light_cyan>{$comment}</light_cyan> - {$url}";
         }
 
         /**
@@ -125,7 +125,7 @@ route('github.event')
             $commitId = substr($request->get('head_commit.commit_id'), 0, 7);
             $url = shortLink($request->get('head_commit.url'));
 
-            return "[ GitHub - New Commit ] <cyan>{$repo}</cyan> - <yellow>{$commitId}</yellow> - <light_cyan>{$message}</light_cyan> - <orange>{$author}</orange> - {$url}";
+            return "[ GitHub - {$repo} ] New commit by <orange>{$author}</orange> - <yellow>{$commitId}</yellow> - <light_cyan>{$message}</light_cyan> - {$url}";
         }
 
         /**
@@ -141,14 +141,43 @@ route('github.event')
             $message = $this->cleanString($request->get('pull_request.body')) ?? '(no description)';
             $author = $request->get('pull_request.user.login');
             $url = shortLink($request->get('pull_request.url'));
+            $by = $request->get('sender.login');
 
             if ($request->get('action') == 'opened') {
-                return "[ GitHub - New Pull Request ] <cyan>{$repo}</cyan> - <light_cyan>{$title}</light_cyan> - <orange>{$author}</orange> - <light_cyan>{$message}</light_cyan> - {$url}";
+                return "[ GitHub - {$repo} ] <orange>{$author}</orange> opened a new Pull Request. - <light_cyan>{$title}</light_cyan> - <light_cyan>{$message}</light_cyan> - {$url}";
             }
 
             if ($request->get('action') == 'closed') {
-                return "[ GitHub - Closed Pull Request ] <cyan>{$repo}</cyan> - <light_cyan>{$title}</light_cyan> - <orange>{$author}</orange> - {$url}";
+                return "[ GitHub - {$repo} ] Pull request <light_cyan>{$title}</light_cyan> closed by <orange>{$by}</orange> - {$url}";
             }
+        }
+
+        /**
+         * @param \Dan\Web\Request $request
+         *
+         * @return string
+         */
+        protected function create(Request $request)
+        {
+            $repo = $request->get('repository.full_name');
+            $branch = $request->get('ref');
+            $by = $request->get('sender.login');
+
+            return "[ GitHub - {$repo} ] Branch <light_cyan>{$branch}</light_cyan> created by <orange>{$by}</orange>";
+        }
+
+        /**
+         * @param \Dan\Web\Request $request
+         *
+         * @return string
+         */
+        protected function delete(Request $request)
+        {
+            $repo = $request->get('repository.full_name');
+            $branch = $request->get('ref');
+            $by = $request->get('sender.login');
+
+            return "[ GitHub - {$repo} ] Branch <light_cyan>{$branch}</light_cyan> deleted by <orange>{$by}</orange>";
         }
 
         /**
