@@ -91,6 +91,8 @@ class Irc implements ConfigSetupContract
                             '#DanControl',
                         ],
                         'command_prefix' => '$',
+                        'command_not_found_error' => true,
+                        'join_on_invite' => false,
                     ],
                 ],
             ],
