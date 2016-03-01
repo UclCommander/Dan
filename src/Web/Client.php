@@ -117,13 +117,12 @@ class Client
     protected function handleRoute(Route $route, $headers, $data) : Response
     {
         $handler = $route->getHandler();
-        $func = $handler;
 
         if (!($handler instanceof \Closure)) {
-            $func = [$handler, 'run'];
+            $handler = [$handler, 'run'];
         }
 
-        $response = dan()->call($func, [
+        $response = dan()->call($handler, [
             'request' => new Request($data, $headers),
         ]);
 

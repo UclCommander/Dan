@@ -4,6 +4,7 @@ use Dan\Commands\Command;
 use Dan\Console\Console;
 use Dan\Core\Dan;
 use Dan\Events\Event;
+use Dan\Services\ShortLinks\Links;
 use Dan\Support\DotCollection;
 use Dan\Web\Route;
 
@@ -341,5 +342,28 @@ if (!function_exists('array_random')) {
     function array_random($array)
     {
         return $array[array_rand($array)];
+    }
+}
+
+if (!function_exists('shortLink')) {
+
+    /**
+     * Because array_rand doesn't do what's expected of it.
+     *
+     * @param $link
+     *
+     * @return string
+     */
+    function shortLink($link)
+    {
+        if (!config('dan.use_short_links', true)) {
+            return $link;
+        }
+
+        $class = config('dan.short_link_api', Links::class);
+
+        /** @var \Dan\Contracts\ShortLinkContract $creator */
+        $creator = new $class();
+        return $creator->create($link);
     }
 }

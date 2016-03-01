@@ -5,6 +5,7 @@ namespace Dan\Setup\Configs;
 use Dan\Config\Config;
 use Dan\Console\OutputStyle;
 use Dan\Contracts\ConfigSetupContract;
+use Dan\Services\ShortLinks\Links;
 
 class Dan implements ConfigSetupContract
 {
@@ -61,6 +62,8 @@ class Dan implements ConfigSetupContract
                     \Dan\Web\WebServiceProvider::class,
                     \Dan\Irc\IrcServiceProvider::class,
                 ],
+                'use_short_links' => true,
+                'short_link_api' => Links::class,
             ],
         ]);
     }
