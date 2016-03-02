@@ -24,7 +24,7 @@ route('github.event')
 
             $message = $this->$type($request);
 
-            if (is_null($message)) {
+            if (empty($message)) {
                 return;
             }
 
@@ -42,7 +42,11 @@ route('github.event')
                     continue;
                 }
 
-                $connection->getChannel($channel)->message("{$message}");
+                $channel = $connection->getChannel($channel);
+
+                foreach ((array) $message as $send) {
+                    $channel->message($send);
+                }
             }
         }
 
@@ -118,14 +122,17 @@ route('github.event')
          */
         protected function push(Request $request)
         {
-            $repo = $request->get('repository.full_name');
+            // Pushing to a branch
+            if (strpos($request->get('ref'), 'refs/heads') === 0) {
+                $repo = $request->get('repository.full_name');
 
-            $message = $this->cleanString($request->get('head_commit.message')) ?? '(no description)';
-            $author = $request->get('head_commit.author.name');
-            $commitId = substr($request->get('head_commit.id'), 0, 7);
-            $url = shortLink($request->get('head_commit.url'));
+                $message = $this->cleanString($request->get('head_commit.message')) ?? '(no description)';
+                $author = $request->get('head_commit.author.name');
+                $commitId = substr($request->get('head_commit.id'), 0, 7);
+                $url = shortLink($request->get('head_commit.url'));
 
-            return "[ GitHub - {$repo} ] New commit by <orange>{$author}</orange> - <yellow>{$commitId}</yellow> - <light_cyan>{$message}</light_cyan> - {$url}";
+                return "[ GitHub - {$repo} ] New commit by <orange>{$author}</orange> - <yellow>{$commitId}</yellow> - <light_cyan>{$message}</light_cyan> - {$url}";
+            }
         }
 
         /**
@@ -163,7 +170,13 @@ route('github.event')
             $branch = $request->get('ref');
             $by = $request->get('sender.login');
 
-            return "[ GitHub - {$repo} ] Branch <light_cyan>{$branch}</light_cyan> created by <orange>{$by}</orange>";
+            if ($request->get('ref_type') == 'branch') {
+                return "[ GitHub - {$repo} ] Branch <light_cyan>{$branch}</light_cyan> created by <orange>{$by}</orange>";
+            }
+
+            if ($request->get('ref_type') == 'tag') {
+                return "[ GitHub - {$repo} ] Tag <light_cyan>{$branch}</light_cyan> created by <orange>{$by}</orange>";
+            }
         }
 
         /**
@@ -178,6 +191,38 @@ route('github.event')
             $by = $request->get('sender.login');
 
             return "[ GitHub - {$repo} ] Branch <light_cyan>{$branch}</light_cyan> deleted by <orange>{$by}</orange>";
+        }
+
+        /**
+         * @param \Dan\Web\Request $request
+         *
+         * @return array|string
+         */
+        protected function release(Request $request)
+        {
+            if ($request->get('action') == 'published') {
+                $url = shortLink($request->get('release.html_url'));
+                $title = $request->get('release.name');
+                $tag = $request->get('release.tag_name');
+                $author = $request->get('release.author.login');
+                $description = $request->get('release.body');
+                $repo = $request->get('repository.full_name');
+                $downloads = (array) $request->get('release.assets');
+
+                $lines = " [ GitHub - {$repo} ] New release by <orange>{$author}</orange> - <yellow>{$tag}</yellow> - <cyan>{$title}</cyan> - <light_cyan>{$description}</light_cyan> - {$url}";
+
+                $list = [];
+
+                foreach ($downloads as $download) {
+                    $url = shortLink($download['browser_download_url']);
+                    $readable = convert($download['size']);
+                    $list[] = "<orange>{$download['name']}</orange> - {$url} - <yellow>{$readable}</yellow>";
+                }
+
+                $lines[] = '[ ' .  implode(' | ', $list ). ' ]';
+
+                return $lines;
+            }
         }
 
         /**
