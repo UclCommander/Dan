@@ -23,7 +23,23 @@ class Web implements ConfigSetupContract
      */
     public function setup() : Config
     {
-        return $this->defaultConfig();
+        $config = $this->defaultConfig();
+
+        if (!$this->output->confirm('Should the web listener be enabled? This will allow things like a basic web server and GitHub Webhook support.')) {
+            $config->set('web.enabled', false);
+
+            return $config;
+        }
+
+        $config->set('web.enabled', true);
+
+        $host = $this->output->ask("What host should I bind to? If you plan on using a domain, use that, otherwise please put the public IP of the server.", '127.0.0.1');
+        $config->set('web.host', $host);
+
+        $port = $this->output->ask('What port should the web listener use?', 6969);
+        $config->set('web.post', $port);
+
+        return $config;
     }
 
     /**
@@ -45,6 +61,6 @@ class Web implements ConfigSetupContract
      */
     public function introText()
     {
-        return 'Let me setup the defaults for the web listener..';
+        return "Let's setup the web listener..";
     }
 }
