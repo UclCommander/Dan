@@ -18,9 +18,10 @@ class PacketNick extends Packet
         $user = new User($this->connection, $from);
         $nick = $data[0];
 
-        $this->triggerEvent('irc.packets.nick', [
-            'user'  => $user,
-            'nick'  => $data[0],
+        $this->triggerEvent('irc.nick', [
+            'connection' => $this->connection,
+            'user'       => $user,
+            'nick'       => $data[0],
         ]);
 
         $this->connection->database('users')->insertOrUpdate(['nick', $user->nick], [
