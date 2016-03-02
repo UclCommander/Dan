@@ -1,5 +1,6 @@
-<?php namespace Dan\Irc\Packets;
+<?php
 
+namespace Dan\Irc\Packets;
 
 use Dan\Events\Traits\EventTrigger;
 use Dan\Irc\Location\Channel;

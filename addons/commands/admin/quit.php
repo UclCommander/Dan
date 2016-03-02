@@ -10,6 +10,6 @@ command(['quit'])
     ->helpText('Quits the bot.')
     ->handler(function (UserContract $user, Channel $channel = null) {
         $location = $channel ?? $user;
-        $location->message("Bye!");
+        $location->message('Bye!');
         connection()->disconnectFromAll(true);
     });
