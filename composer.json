@@ -1,13 +1,10 @@
 {
-    "autoload": {
-        "psr-4": {
-            "Dan\\": "src/"
-        },
-        "files": [
-            "src/functions.php"
-        ]
-    },
+    "name": "uclcommander/dan",
+    "description": "Dan the IRC Bot.",
+    "license": "MIT",
+    "type": "project",
     "require": {
+        "php": ">=7.0",
         "illuminate/container": "^5.2",
         "illuminate/filesystem": "^5.2",
         "illuminate/support": "^5.2",
@@ -18,5 +15,13 @@
         "nesbot/carbon": "^1.21",
         "illuminate/config": "^5.2",
         "rap2hpoutre/similar-text-finder": "^0.1.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dan\\": "src/"
+        },
+        "files": [
+            "src/functions.php"
+        ]
     }
 }
