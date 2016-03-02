@@ -122,6 +122,11 @@ route('github.event')
          */
         protected function push(Request $request)
         {
+            // Ignored deleted commits
+            if ($request->get('deleted', false)) {
+                return null;
+            }
+
             // Pushing to a branch
             if (strpos($request->get('ref'), 'refs/heads') === 0) {
                 $repo = $request->get('repository.full_name');
