@@ -190,7 +190,13 @@ route('github.event')
             $branch = $request->get('ref');
             $by = $request->get('sender.login');
 
-            return "[ GitHub - {$repo} ] Branch <light_cyan>{$branch}</light_cyan> deleted by <orange>{$by}</orange>";
+            if ($request->get('ref_type') == 'branch') {
+                return "[ GitHub - {$repo} ] Branch <light_cyan>{$branch}</light_cyan> deleted by <orange>{$by}</orange>";
+            }
+
+            if ($request->get('ref_type') == 'tag') {
+                return "[ GitHub - {$repo} ] Tag <light_cyan>{$branch}</light_cyan> deleted by <orange>{$by}</orange>";
+            }
         }
 
         /**
