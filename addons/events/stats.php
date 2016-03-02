@@ -10,9 +10,9 @@ $messageHandler = function (Channel $channel, User $user) {
     $channel->setData("stats.messages.{$user->id}", $total);
     $channel->save();
 
-    $total = $user->getData("stats.messages", 0);
+    $total = $user->getData('stats.messages', 0);
     $total++;
-    $user->setData("stats.messages", $total);
+    $user->setData('stats.messages', $total);
     $user->save();
 };
 

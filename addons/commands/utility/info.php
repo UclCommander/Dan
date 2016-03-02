@@ -9,7 +9,7 @@ command(['info'])
     ->allowPrivate()
     ->allowConsole()
     ->helpText('Gives information on the bot.')
-    ->handler(function(UserContract $user, Channel $channel = null, Connection $connection = null) {
+    ->handler(function (UserContract $user, Channel $channel = null, Connection $connection = null) {
         $location = $channel ?? $user;
 
         $version = Dan::VERSION;

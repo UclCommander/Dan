@@ -8,11 +8,12 @@ command(['geoip'])
     ->allowPrivate()
     ->allowConsole()
     ->helpText('Gets geographic information for the given IP.')
-    ->handler(function(UserContract $user, $message, Channel $channel = null) {
+    ->handler(function (UserContract $user, $message, Channel $channel = null) {
         $location = $channel ?? $user;
 
         if (empty($message)) {
             $location->message('I need an IP to get information for!');
+
             return;
         }
 
@@ -20,11 +21,13 @@ command(['geoip'])
 
         if ($data == null) {
             $location->message('Unable to fetch IP information.');
+
             return;
         }
 
         if (isset($data['success']) && !$data['success']) {
             $location->message($data['message']);
+
             return;
         }
 

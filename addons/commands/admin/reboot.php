@@ -12,14 +12,16 @@ command(['reboot', 'restart'])
         $location = $channel ?? $user;
 
         if (!function_exists('pcntl_exec')) {
-            $location->notice("Unable to restart. PHP needs to be compiled with --enable-pcntl for automatic restarts.");
+            $location->notice('Unable to restart. PHP needs to be compiled with --enable-pcntl for automatic restarts.');
+
             return;
         }
 
-        $location->message("Bye!");
+        $location->message('Bye!');
 
         if (!connection()->disconnectFromAll(true)) {
-            $location->message("Unable to disconnect from all the connections.");
+            $location->message('Unable to disconnect from all the connections.');
+
             return;
         }
 
