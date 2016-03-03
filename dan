@@ -16,6 +16,10 @@ date_default_timezone_set("UTC");
 
 define("ROOT_DIR", __DIR__);
 
+if (!file_exists(ROOT_DIR . '/vendor/autoload.php')) {
+    shell_exec('composer install');
+}
+
 require(ROOT_DIR . '/vendor/autoload.php');
 
 $app = new \Dan\Application();

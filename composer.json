@@ -18,7 +18,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Dan\\": "src/"
+            "Dan\\": "src/",
+            "Plugins\\": "plugins/"
         },
         "files": [
             "src/functions.php"
