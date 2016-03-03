@@ -8,7 +8,7 @@ use Dan\Hooks\HookManager;
 
 class Update
 {
-    protected static $repo = 'dan5.1';
+    protected static $repo = '5.1';
 
     /**
      * Returns true if there is an update. False otherwise.

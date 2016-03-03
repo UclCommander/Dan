@@ -54,6 +54,14 @@ class PacketPrivmsg implements PacketContract
                 return;
             }
 
+            $ignored = config('ignore.masks');
+
+            foreach ($ignored as $ignore) {
+                if (fnmatch($ignore, $event->get('user')->string())) {
+                    return;
+                }
+            }
+
             if ($event instanceof EventArgs) {
                 $hookData['user'] = $event->get('user');
                 $hookData['channel'] = $event->get('channel');
