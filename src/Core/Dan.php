@@ -2,7 +2,9 @@
 
 namespace Dan\Core;
 
+use Contracts\PluginContract;
 use Dan\Addons\AddonLoader;
+use Dan\Config\Config;
 use Dan\Config\ConfigServiceProvider;
 use Dan\Connection\Handler as ConnectionHandler;
 use Dan\Console\ConsoleServiceProvider;
@@ -149,6 +151,7 @@ class Dan extends Container implements DatabaseContract
 
         foreach ($providers as $provider) {
             console()->debug("Loading provider {$provider}");
+
             $this->loadProvider($provider);
         }
     }
@@ -158,10 +161,34 @@ class Dan extends Container implements DatabaseContract
      */
     protected function loadProvider($provider)
     {
-        /** @var ServiceProvider $provider */
+        /** @var ServiceProvider|PluginContract $provider */
         $provider = new $provider($this);
+
+        if ($provider instanceof PluginContract) {
+            $this->registerPlugin($provider);
+        }
+
         $provider->register();
         $this->providers[get_class($provider)] = $provider;
+    }
+
+    /**
+     * @param \Contracts\PluginContract $contract
+     */
+    protected function registerPlugin(PluginContract $contract)
+    {
+        $config = $contract->config();
+        $name = $contract->getName();
+
+        if (empty($config) || empty($name)) {
+            return;
+        }
+
+        if (filesystem()->exists(configPath("{$name}.json"))) {
+            return;
+        }
+
+        file_put_contents(configPath("{$name}.json"), json_encode($config, JSON_PRETTY_PRINT));
     }
 
     /**
