@@ -9,7 +9,7 @@ class Updater
     /**
      * @var string
      */
-    protected $branch = 'dan6.0';
+    protected $branch = '6.0';
 
     /**
      * Updater constructor.
