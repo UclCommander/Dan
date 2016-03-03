@@ -2,7 +2,7 @@
 
 namespace Dan\Core;
 
-use Contracts\PluginContract;
+use Dan\Contracts\PluginContract;
 use Dan\Addons\AddonLoader;
 use Dan\Config\Config;
 use Dan\Config\ConfigServiceProvider;
@@ -173,7 +173,7 @@ class Dan extends Container implements DatabaseContract
     }
 
     /**
-     * @param \Contracts\PluginContract $contract
+     * @param \Dan\Contracts\PluginContract $contract
      */
     protected function registerPlugin(PluginContract $contract)
     {
