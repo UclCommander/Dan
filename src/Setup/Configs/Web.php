@@ -33,7 +33,7 @@ class Web implements ConfigSetupContract
 
         $config->set('web.enabled', true);
 
-        $host = $this->output->ask("What host should I bind to? If you plan on using a domain, use that, otherwise please put the public IP of the server.", '127.0.0.1');
+        $host = $this->output->ask('What host should I bind to? If you plan on using a domain, use that, otherwise please put the public IP of the server.', '127.0.0.1');
         $config->set('web.host', $host);
 
         $port = $this->output->ask('What port should the web listener use?', 6969);
