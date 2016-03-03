@@ -50,8 +50,9 @@ class Dan implements ConfigSetupContract
     {
         return new Config([
             'dan' => [
-                'debug'   => false,
-                'updates' => [
+                'debug'     => false,
+                'branch'    => 'master',
+                'updates'   => [
                     'auto_check'   => false,
                     'auto_install' => false,
                 ],

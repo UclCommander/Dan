@@ -9,13 +9,15 @@ class Updater
     /**
      * @var string
      */
-    protected $branch = '6.0';
+    protected $branch = 'master';
 
     /**
      * Updater constructor.
      */
     public function __construct()
     {
+        $this->branch = config('dan.branch', 'master');
+
         events()->subscribe('irc.ping', [$this, 'autoUpdate'], Event::VeryHigh);
     }
 
