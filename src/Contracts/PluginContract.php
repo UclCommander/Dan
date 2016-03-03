@@ -1,5 +1,6 @@
-<?php namespace Contracts;
+<?php
 
+namespace Dan\Contracts;
 
 interface PluginContract
 {
