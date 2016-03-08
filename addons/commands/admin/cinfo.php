@@ -65,13 +65,13 @@ command(['chaninfo', 'cinfo'])
         {
             if ($data[0] == 'disabled') {
                 $list = $channel->getData('info.hooks.disabled', []);
-                $channel->message('Disabled hooks: '.implode(', ', $list))->save();
+                $user->notice('Disabled hooks: '.implode(', ', $list))->save();
 
                 return null;
             }
 
             if (!isset($data[1])) {
-                $channel->message('Please specify a hook.');
+                $user->notice('Please specify a hook.');
 
                 return null;
             }
@@ -81,11 +81,11 @@ command(['chaninfo', 'cinfo'])
 
             foreach ($hooks as $hook) {
                 if ($data[0] == 'enable') {
-                    $return = $this->doThing($channel, 'hook', $hook);
+                    $return = $this->doThing($channel, $user, 'hook', $hook);
                 }
 
                 if ($data[0] == 'disable') {
-                    $return = $this->doThing($channel, 'hook', $hook, false);
+                    $return = $this->doThing($channel, $user, 'hook', $hook, false);
                 }
             }
 
@@ -95,19 +95,19 @@ command(['chaninfo', 'cinfo'])
 
             if ($data[0] == 'settings') {
                 if (!isset($data[2])) {
-                    $channel->message('Please specify a setting key.');
+                    $user->notice('Please specify a setting key.');
 
                     return null;
                 }
 
                 if (!$channel->getData("hooks.{$data[1]}")) {
-                    $channel->message('There is no settings for this hook.');
+                    $user->notice('There are no settings for this hook.');
 
                     return null;
                 }
 
                 if (!$channel->getData("hooks.{$data[1]}.{$data[2]}")) {
-                    $channel->message("The setting key <i>{$data[2]}</i> doesn't exist.");
+                    $user->notice("The setting key <i>{$data[2]}</i> doesn't exist.");
 
                     return null;
                 }
@@ -118,7 +118,7 @@ command(['chaninfo', 'cinfo'])
 
                     foreach ($value as $option) {
                         if (!in_array($option, $options)) {
-                            $channel->message("Invalid option {$option}. See <i>hooks settings {$data[1]} {$data[2]}.options</i> for a list of available options.");
+                            $user->notice("Invalid option {$option}. See <i>hooks settings {$data[1]} {$data[2]}.options</i> for a list of available options.");
 
                             return null;
                         }
@@ -133,12 +133,12 @@ command(['chaninfo', 'cinfo'])
 
                 if (last(explode('.', $data[2])) == 'options') {
                     $options = $channel->getData("hooks.{$data[1]}.{$data[2]}");
-                    $channel->message("Options for {$data[2]}: ".implode(', ', $options));
+                    $user->notice("Options for {$data[2]}: ".implode(', ', $options));
 
                     return null;
                 }
 
-                $channel->message("Current value for {$data[2]}: ".$channel->getData("hooks.{$data[1]}.{$data[2]}.default"));
+                $user->notice("Current value for {$data[2]}: ".$channel->getData("hooks.{$data[1]}.{$data[2]}.default"));
             }
         }
 
@@ -153,37 +153,38 @@ command(['chaninfo', 'cinfo'])
         {
             if ($data[0] == 'disabled') {
                 $list = $channel->getData('info.commands.disabled', []);
-                $channel->message('Disabled commands: '.implode(', ', $list))->save();
+                $user->notice('Disabled commands: '.implode(', ', $list))->save();
 
                 return null;
             }
 
             if (!isset($data[1])) {
-                $channel->message('Please specify a command.');
+                $user->notice('Please specify a command.');
 
                 return null;
             }
 
             if ($data[0] == 'enable') {
-                return $this->doThing($channel, 'command', $data[1]);
+                return $this->doThing($channel, $user, 'command', $data[1]);
             }
 
             if ($data[0] == 'disable') {
-                return $this->doThing($channel, 'command', $data[1], false);
+                return $this->doThing($channel, $user, 'command', $data[1], false);
             }
 
-            $channel->message("Invalid command {$data[0]}.");
+            $user->notice("Invalid command {$data[0]}.");
         }
 
         /**
          * @param \Dan\Irc\Location\Channel $channel
+         * @param \Dan\Irc\Location\User $user
          * @param $type
          * @param $name
          * @param bool $enable
          *
          * @return bool
          */
-        public function doThing(Channel $channel, $type, $name, $enable = true)
+        public function doThing(Channel $channel, User $user, $type, $name, $enable = true)
         {
             $plual = Pluralizer::plural($type);
 
@@ -197,14 +198,13 @@ command(['chaninfo', 'cinfo'])
             $in = $enable ? !$in : $in;
 
             if ($in) {
-                $channel->message("{$type} {$name} is already {$what}.");
+                $user->notice("{$type} {$name} is already {$what}.");
 
                 return true;
             }
 
-            $channel->$method("info.{$plual}.disabled", $name)
-                    ->message("{$type} <b>{$name}</b> has been {$what}.")
-                    ->save();
+            $channel->$method("info.{$plual}.disabled", $name)->save();
+            $user->notice("{$type} <b>{$name}</b> has been {$what}.")
 
             return true;
         }
