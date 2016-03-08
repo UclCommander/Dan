@@ -204,7 +204,7 @@ command(['chaninfo', 'cinfo'])
             }
 
             $channel->$method("info.{$plual}.disabled", $name)->save();
-            $user->notice("{$type} <b>{$name}</b> has been {$what}.")
+            $user->notice("{$type} <b>{$name}</b> has been {$what}.");
 
             return true;
         }
