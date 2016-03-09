@@ -21,7 +21,7 @@ class PacketNotice extends Packet
         if ($data[0] == $this->connection->user->nick) {
             $user = $this->makeUser($from);
             $message = $data[1];
-            
+
             $this->triggerEvent('irc.notice.private', [
                 'connection'    => $this->connection,
                 'user'          => $user,

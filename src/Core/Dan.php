@@ -13,6 +13,7 @@ use Dan\Core\Traits\Database;
 use Dan\Core\Traits\Paths;
 use Dan\Database\DatabaseServiceProvider;
 use Dan\Events\EventServiceProvider;
+use Dan\Irc\IrcServiceProvider;
 use Dan\Update\UpdateServiceProvider;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
@@ -88,8 +89,12 @@ class Dan extends Container implements DatabaseContract
     public function boot()
     {
         $this->registerProviders();
+        $this->loadProvider(IrcServiceProvider::class);
     }
 
+    /**
+     *
+     */
     public function run()
     {
         $this->make('addons')->loadAll();
@@ -150,6 +155,11 @@ class Dan extends Container implements DatabaseContract
         $providers = config('dan.providers', []);
 
         foreach ($providers as $provider) {
+            if ($provider == IrcServiceProvider::class) {
+                console()->warn('IrcServiceProvider is in the providers array. Please remove it.');
+                continue;
+            }
+
             console()->debug("Loading provider {$provider}");
 
             $this->loadProvider($provider);

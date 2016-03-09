@@ -22,5 +22,9 @@ if (!file_exists(ROOT_DIR . '/vendor/autoload.php')) {
 
 require(ROOT_DIR . '/vendor/autoload.php');
 
+if (file_exists(ROOT_DIR.'/plugins/autoload.php')) {
+    require(ROOT_DIR.'/plugins/autoload.php');
+}
+
 $app = new \Dan\Application();
 $app->run();

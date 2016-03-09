@@ -4,6 +4,9 @@ namespace Dan;
 
 use Dan\Console\Commands\CreateCommandCommand;
 use Dan\Console\Commands\DanCommand;
+use Dan\Console\Commands\PluginEnableCommand;
+use Dan\Console\Commands\PluginInstallCommand;
+use Dan\Console\Commands\PluginUpdateCommand;
 use Dan\Console\Commands\SetupCommand;
 use Dan\Setup\Setup;
 use Symfony\Component\Console\Application as SymfonyApplication;
@@ -27,6 +30,9 @@ class Application extends SymfonyApplication
         $defaultCommands[] = new CreateCommandCommand();
         $defaultCommands[] = new DanCommand();
         $defaultCommands[] = new SetupCommand();
+        $defaultCommands[] = new PluginInstallCommand();
+        $defaultCommands[] = new PluginUpdateCommand();
+        $defaultCommands[] = new PluginEnableCommand();
 
         return $defaultCommands;
     }
