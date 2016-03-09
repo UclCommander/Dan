@@ -160,6 +160,11 @@ class Dan extends Container implements DatabaseContract
                 continue;
             }
 
+            if (!class_exists($provider)) {
+                console()->warn("Class {$provider} does not exist.");
+                continue;
+            }
+
             console()->debug("Loading provider {$provider}");
 
             $this->loadProvider($provider);
