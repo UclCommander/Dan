@@ -13,6 +13,7 @@ class DanCommand extends Command
     protected function configure()
     {
         $this->setName('dan')
+            ->setDescription('Runs the bot.')
             ->addOption('debug', 'd', InputOption::VALUE_NONE, 'Turn debug on');
     }
 

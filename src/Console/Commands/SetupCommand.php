@@ -11,7 +11,8 @@ class SetupCommand extends Command
 {
     protected function configure()
     {
-        $this->setName('setup');
+        $this->setName('setup')
+            ->setDescription('Sets the bot up.');
     }
 
     /**

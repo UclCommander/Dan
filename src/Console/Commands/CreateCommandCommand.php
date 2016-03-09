@@ -11,7 +11,8 @@ class CreateCommandCommand extends Command
 {
     protected function configure()
     {
-        $this->setName('make:command');
+        $this->setName('make:command')
+            ->setDescription('Creates a new command');
     }
 
     /**
