@@ -26,13 +26,16 @@ class Application extends SymfonyApplication
     protected function getDefaultCommands()
     {
         $defaultCommands = parent::getDefaultCommands();
-
-        $defaultCommands[] = new CreateCommandCommand();
+        
         $defaultCommands[] = new DanCommand();
         $defaultCommands[] = new SetupCommand();
-        $defaultCommands[] = new PluginInstallCommand();
-        $defaultCommands[] = new PluginUpdateCommand();
-        $defaultCommands[] = new PluginEnableCommand();
+
+        if (Setup::isSetup()) {
+            $defaultCommands[] = new CreateCommandCommand();
+            $defaultCommands[] = new PluginInstallCommand();
+            $defaultCommands[] = new PluginUpdateCommand();
+            $defaultCommands[] = new PluginEnableCommand();
+        }
 
         return $defaultCommands;
     }
