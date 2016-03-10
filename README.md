@@ -6,7 +6,7 @@ With the 6th version in the series of what-am-i-doing-with-my-life, I add more I
  
 ### Requirements
  - PHP 7.0 (If you're not already running this, you need help..)
- - Composer
+ - Composer (Globally installed)
  - Knowledge in JSON (sorry YAML people)
  - Basic PHP understanding for making custom commands (why wouldn't you want to make some?)
  - Knowing how GitHub works

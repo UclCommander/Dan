@@ -24,5 +24,4 @@ interface PluginContract
      * @return array
      */
     public function config() : array;
-
 }

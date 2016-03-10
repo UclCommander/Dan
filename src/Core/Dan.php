@@ -18,6 +18,7 @@ use Dan\Update\UpdateServiceProvider;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\ServiceProvider;
+use ReflectionObject;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -194,6 +195,15 @@ class Dan extends Container implements DatabaseContract
     {
         $config = $contract->config();
         $name = $contract->getName();
+
+        $object = new ReflectionObject($contract);
+        $path = dirname(dirname($object->getFileName()));
+
+        $pluginConfig = json_decode(file_get_contents("{$path}/plugin.json"), true);
+
+        if ($pluginConfig['commands']) {
+            $this->make('addons')->addPath("{$path}/commands");
+        }
 
         if (empty($config) || empty($name)) {
             return;
