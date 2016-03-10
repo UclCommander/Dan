@@ -114,6 +114,8 @@ class Event
     {
         $this->priority = (int) $priority;
 
+        events()->updatePriority($this->id, $this->priority);
+
         return $this;
     }
 

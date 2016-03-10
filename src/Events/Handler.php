@@ -47,6 +47,18 @@ class Handler
     }
 
     /**
+     * Updates a priority by id.
+     *
+     * @param $id
+     * @param $priority
+     */
+    public function updatePriority($id, $priority)
+    {
+        $this->priorities->put($id, $priority);
+        console()->debug("Event {$id} priority changed: {$priority}");
+    }
+
+    /**
      * @param $name
      * @param $handler
      * @param $priority
@@ -129,7 +141,9 @@ class Handler
             }
 
             if ($result instanceof EventArgs) {
-                $args = $result;
+                foreach ($result as $k => $v) {
+                    $args[$k] = $v;
+                }
                 continue;
             }
         }
