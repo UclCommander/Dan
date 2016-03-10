@@ -1,4 +1,4 @@
-#! /usr/bin/env php7
+#! /usr/bin/env php
 <?php
 
 if (phpversion() < '7') {
