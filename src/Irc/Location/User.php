@@ -108,8 +108,7 @@ class User extends Location implements Savable, Arrayable, UserContract
      */
     public function save()
     {
-        database($this->connection->getName())
-            ->table('users')
+        $this->connection->database('users')
             ->insertOrUpdate([
                 'nick', '=', $this->nick,
             ], $this->toArray());

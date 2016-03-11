@@ -16,15 +16,15 @@ command(['admins', 'owners', 'owner'])
         $owners = [];
         $admins = [];
 
-        foreach ($users as $user) {
-            $user = new User($connection, $user);
+        foreach ($users as $dbuser) {
+            $dbuser = new User($connection, $dbuser);
 
-            if ($connection->isOwner($user)) {
-                $owners[] = $user->nick;
+            if ($connection->isOwner($dbuser)) {
+                $owners[] = $dbuser->nick;
             }
 
-            if ($connection->isAdmin($user)) {
-                $admins[] = $user->nick;
+            if ($connection->isAdmin($dbuser)) {
+                $admins[] = $dbuser->nick;
             }
         }
 

@@ -117,11 +117,24 @@ class Channel extends Location implements Savable, Arrayable
      */
     public function getUser($user)
     {
+        $nick = $user;
+
         if ($user instanceof User) {
-            $user = $user->nick;
+            $nick = $user->nick;
         }
 
-        return $this->users->get($user);
+        /** @var User $current */
+        $current = $this->users->get($nick);
+
+        if (is_null($current)) {
+            return null;
+        }
+
+        $user->setData($current->data)->setRawModes($current->modes);
+
+        $this->users->put($nick, $user);
+
+        return $user;
     }
 
     /**

@@ -27,8 +27,14 @@ trait Data
      *
      * @return $this
      */
-    public function setData($key, $value)
+    public function setData($key, $value = null)
     {
+        if ($value == null) {
+            $this->data = $key;
+
+            return $this;
+        }
+
         Arr::set($this->data, $key, $value);
 
         return $this;
