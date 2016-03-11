@@ -9,7 +9,7 @@
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
-command(['ping'])
+command(['trp'])
     ->allowPrivate()
     ->helpText('Gives popcorn.')
     ->handler(function (User $user, Channel $channel = null) {
