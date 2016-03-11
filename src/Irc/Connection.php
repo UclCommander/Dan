@@ -70,6 +70,11 @@ class Connection implements ConnectionContract, DatabaseContract
     public $channels;
 
     /**
+     * @var bool
+     */
+    protected $slackLine = false;
+
+    /**
      * Connection constructor.
      *
      * @param $name
@@ -177,11 +182,23 @@ class Connection implements ConnectionContract, DatabaseContract
     {
         $lines = $this->socket->read();
 
+        $slackLine = false;
+
         foreach ($lines as $line) {
             $line = trim($line);
 
             if (empty($line)) {
                 continue;
+            }
+
+            if (strlen($line) == 1) {
+                $this->slackLine = $line;
+                continue;
+            }
+
+            if ($this->slackLine) {
+                $line = $this->slackLine.$line;
+                $this->slackLine = false;
             }
 
             console()->debug("[<magenta>{$this->name}</magenta>] >> {$line}");
@@ -304,6 +321,10 @@ class Connection implements ConnectionContract, DatabaseContract
         $nick = $this->config->get('user.nick');
         $name = $this->config->get('user.name');
         $real = $this->config->get('user.real');
+
+        if (!empty($this->config->get('pass'))) {
+            $this->send('PASS', $this->config->get('pass'));
+        }
 
         $this->send('USER', $name, $name, '*', $real);
         $this->send('NICK', $nick);
