@@ -3,6 +3,7 @@
 namespace Dan\Irc\Packets;
 
 use Dan\Events\Traits\EventTrigger;
+use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 use Dan\Irc\Traits\CTCP;
 use Dan\Irc\Traits\Ignore;
@@ -28,20 +29,16 @@ class PacketPrivmsg extends Packet
             return;
         }
 
-        if ($this->hasCTCP($message)) {
-            if (!empty(($return = $this->handleCTCP($user, $message)))) {
-                $this->connection->notice($user, $this->prepareCTCP(...$return));
-            }
-
-            return;
-        }
-
         if ($this->connection->isChannel($data[0])) {
             if (!$this->connection->inChannel($data[0])) {
                 return;
             }
 
             $channel = $this->connection->getChannel($data[0]);
+
+            if ($this->ctcp($user, $message, $channel)) {
+                return;
+            }
 
             $this->triggerEvent('irc.message.public', [
                 'connection' => $this->connection,
@@ -50,6 +47,10 @@ class PacketPrivmsg extends Packet
                 'message'    => $message,
             ]);
         } else {
+            if ($this->ctcp($user, $message)) {
+                return;
+            }
+
             $this->triggerEvent('irc.message.private', [
                 'connection' => $this->connection,
                 'user'       => $user,
@@ -59,14 +60,35 @@ class PacketPrivmsg extends Packet
     }
 
     /**
+     * @param \Dan\Irc\Location\User $user
+     * @param $message
+     * @param \Dan\Irc\Location\Channel|null $channel
+     *
+     * @return bool
+     */
+    protected function ctcp(User $user, $message, Channel $channel = null)
+    {
+        if ($this->hasCTCP($message)) {
+            if (!empty(($return = $this->handleCTCP($user, $message, $channel)))) {
+                $this->connection->notice($user, $this->prepareCTCP(...$return));
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Handles a CTCP event.
      *
      * @param \Dan\Irc\Location\User $user
      * @param $message
+     * @param \Dan\Irc\Location\Channel $channel
      *
      * @return array
      */
-    protected function handleCTCP(User $user, $message) : array
+    protected function handleCTCP(User $user, $message, Channel $channel = null) : array
     {
         $ctcp = $this->parseCTCP($message);
 
@@ -76,9 +98,10 @@ class PacketPrivmsg extends Packet
             return [$ctcp['command'], $this->{'ctcp'.$normalized}()];
         }
 
-        $response = $this->triggerEvent('irc.ctcp.'.strtolower($ctcp['command']), [
+        $response = $this->triggerEvent('irc.ctcp.'.strtolower($ctcp['command'].'.'.($channel ? 'public' : 'private')), [
             'connection' => $this->connection,
             'user'       => $user,
+            'channel'    => $channel,
             'message'    => $ctcp['message'],
         ]);
 
