@@ -51,7 +51,7 @@ route('twitter.update')
             }
 
             foreach ($data as $tweet) {
-                if (in_array($data->id_str, $cache)) {
+                if (in_array($tweet->id_str, $cache)) {
                     continue;
                 }
 
@@ -66,7 +66,7 @@ route('twitter.update')
                     continue;
                 }
 
-                $text = htmlspecialchars_decode(cleanString($data->text), ENT_QUOTES);
+                $text = htmlspecialchars_decode(cleanString($tweet->text), ENT_QUOTES);
                 $link = shortLink("https://twitter.com/{$tweet->user->screen_name}/status/{$tweet->id_str}");
 
                 $connection->getChannel($user['channel'])
