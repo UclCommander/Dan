@@ -369,3 +369,18 @@ if (!function_exists('shortLink')) {
         return $creator->create($link);
     }
 }
+
+if (!function_exists('cleanString')) {
+
+    /**
+     * Removes double spaces and line breaks from a string.
+     *
+     * @param $string
+     *
+     * @return string
+     */
+    function cleanString($string)
+    {
+        return str_replace(["\n", "\r", '  '], ' ', $string);
+    }
+}
