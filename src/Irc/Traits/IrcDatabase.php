@@ -44,5 +44,14 @@ trait IrcDatabase
                 ->schema('ignore')
                 ->create(['mask'  => '']);
         }
+
+        if (!database($this->name)->tableExists('cache')) {
+            database($this->name)
+                ->schema('cache')
+                ->create([
+                    'key'  => '',
+                    'value' => []
+                ]);
+        }
     }
 }
