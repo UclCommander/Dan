@@ -7,19 +7,21 @@ use Illuminate\Support\Collection;
 route('twitter.update')
     ->config([
         'access' => [
-            'api_key' => '',
-            'api_secret' => '',
-            'access_token' => '',
-            'access_secret' => '',
+            'api_key' => 'null',
+            'api_secret' => 'null',
+            'access_token' => 'null',
+            'access_secret' => 'null',
             'api_url' => '',
             'proxy' => '',
             'timeout' => 5,
         ],
         'users' => [
-            'name'  => 'uclcommander',
-            'replies' => true,
-            'network' => 'byteirc',
-            'channel' => '#example',
+            [
+                'name'  => 'uclcommander',
+                'replies' => true,
+                'network' => 'byteirc',
+                'channel' => '#example',
+            ]
         ],
     ])
     ->path('/twitter/update')
