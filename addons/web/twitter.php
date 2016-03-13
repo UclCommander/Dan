@@ -31,14 +31,6 @@ route('twitter.update')
 
         $twitter = new Twitter($access['api_key'], $access['api_secret'], $access['access_token'], $access['access_secret'], $access['api_url'], $access['proxy'], $access['timeout']);
 
-        $db = database()->table('cache')->where('key', 'twitter_posted_tweets');
-        $cache = $db->first()->get('value');
-
-        if($db->count() == 0) {
-            $db->insert(['key' => 'twitter_posted_tweets', 'value' => []]);
-            $cache = [];
-        }
-
         foreach($users as $user) {
             $data = $twitter->getTimeline([
                 'screen_name'       => $user['name'],
@@ -48,6 +40,14 @@ route('twitter.update')
 
             if (count($data) == 0) {
                 continue;
+            }
+
+            $db = database($user['network'])->table('cache')->where('key', 'twitter_posted_tweets');
+            $cache = $db->first()->get('value');
+
+            if($db->count() == 0) {
+                $db->insert(['key' => 'twitter_posted_tweets', 'value' => []]);
+                $cache = [];
             }
 
             foreach ($data as $tweet) {
@@ -74,7 +74,7 @@ route('twitter.update')
 
                 $cache[] = $tweet->id_str;
             }
-        }
 
-        $db->update(['value' => $cache]);
+            $db->update(['value' => $cache]);
+        }
     });
