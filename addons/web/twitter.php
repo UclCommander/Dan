@@ -29,7 +29,7 @@ route('twitter.update')
         $access = config('twitter_update.access');
         $users = config('twitter_update.users');
 
-        $twitter = new Twitter(...$access);
+        $twitter = new Twitter($access['api_key'], $access['api_secret'], $access['access_token'], $access['access_secret'], $access['api_url'], $access['proxy'], $access['timeout']);
 
         $db = database()->table('cache')->where('key', 'twitter_posted_tweets');
         $cache = $db->first()->get('value');
