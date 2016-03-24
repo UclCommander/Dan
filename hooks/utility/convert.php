@@ -17,6 +17,8 @@ hook('convert')
             $channel->message("No conversion results.");
             return;
         }
+        
+        $answerData = $request['Answer']['data'];
 
-        $channel->message("[ <yellow>{$message}</yellow> is <cyan>{$request['Answer']['data']['raw_answer']} {$request['Answer']['data']['right_unit']}</cyan> ]");
+        $channel->message("[ <yellow>{$answerData['markup_input']} {$answerData['left_unit']}</yellow> is <cyan>{$answerData['raw_answer']} {$answerData['right_unit']}</cyan> ]");
     });
