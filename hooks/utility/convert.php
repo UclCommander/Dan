@@ -13,10 +13,10 @@ hook('convert')
         $query = urlencode("convert {$message}");
         $request = Web::json("http://api.duckduckgo.com/?q={$query}&format=json&pretty=1");
 
-        if (empty($request) || $request['Answer'] == '')  {
+        if (empty($request) || !is_array($request['Answer']))  {
             $channel->message("No conversion results.");
             return;
         }
 
-        $channel->message("[ <yellow>{$message}</yellow> is <cyan>{$request['Answer']}</cyan> ]");
+        $channel->message("[ <yellow>{$message}</yellow> is <cyan>{$request['Answer']['data']['raw_answer']} {$request['Answer']['data']['right_unit']}</cyan> ]");
     });
