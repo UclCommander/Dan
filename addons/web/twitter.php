@@ -34,7 +34,7 @@ route('twitter.update')
         foreach($users as $user) {
             $data = $twitter->getTimeline([
                 'screen_name'       => $user['name'],
-                'count'             => 3,
+                'count'             => 5,
                 'exclude_replies'   => !($user['replies'] ?? true)
             ]);
 
