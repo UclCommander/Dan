@@ -51,7 +51,7 @@ class Client
 
         $this->formatHeaders($headers);
 
-        if (is_array($headers['data'])) {
+        if (isset($headers['data']) && is_array($headers['data'])) {
             $data['query'] = array_merge($data['query'] ?? [], $headers['data']);
         }
 
