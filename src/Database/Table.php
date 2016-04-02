@@ -78,11 +78,7 @@ class Table
                         throw new Exception("Column {$key} is an array, value given is not.");
                     }
 
-                    if (isset($new[$key])) {
-                        $new[$key] = array_merge($new[$key], $value);
-                    } else {
-                        $new[$key] = $value;
-                    }
+                    $new[$key] = $value;
                 } else {
                     if (is_string($this->database->config[$this->table]['columns'][$key])) {
                         if (is_array($value)) {
