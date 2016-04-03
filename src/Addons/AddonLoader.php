@@ -2,6 +2,7 @@
 
 namespace Dan\Addons;
 
+use Dan\Contracts\UserContract;
 use Dan\Events\Traits\EventTrigger;
 
 class AddonLoader
@@ -17,15 +18,17 @@ class AddonLoader
 
     /**
      * Loads all addons
+     *
+     * @param \Dan\Contracts\UserContract $userContract
      */
-    public function loadAll()
+    public function loadAll(UserContract $userContract = null)
     {
         console()->info('Loading all addons...');
 
         $this->triggerEvent('addons.load');
 
         foreach ($this->paths as $path) {
-            $this->loadFromPath($path);
+            $this->loadFromPath($path, $userContract);
         }
 
         console()->success('All addons loaded.');
@@ -47,8 +50,9 @@ class AddonLoader
      * Loads the given path.
      *
      * @param $path
+     * @param \Dan\Contracts\UserContract $userContract
      */
-    protected function loadFromPath($path)
+    protected function loadFromPath($path, UserContract $userContract = null)
     {
         foreach (filesystem()->allFiles($path) as $file) {
             // This hook was disabled, ignore it.
@@ -60,6 +64,10 @@ class AddonLoader
                 include $file;
             } catch (\Error $error) {
                 $name = basename($file);
+
+                if (!is_null($userContract)) {
+                    $userContract->notice("Unable to load addon {$name}. {$error->getMessage()}");
+                }
 
                 if (!config('dan.debug')) {
                     console()->error("Unable to load addon {$name}. {$error->getMessage()}");
