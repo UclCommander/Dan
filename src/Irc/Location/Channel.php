@@ -111,11 +111,11 @@ class Channel extends Location implements Savable, Arrayable
     /**
      * Gets a user from the channel.
      *
-     * @param $user
+     * @param User|string $user
      *
      * @return User|null
      */
-    public function getUser($user)
+    public function getUser($user) : User
     {
         $nick = $user;
 
@@ -130,11 +130,14 @@ class Channel extends Location implements Savable, Arrayable
             return null;
         }
 
-        $user->setData($current->data)->setRawModes($current->modes);
+        if ($user instanceof User) {
+            $user->setData($current->data)->setRawModes($current->modes);
+            $this->users->put($nick, $user);
 
-        $this->users->put($nick, $user);
+            return $user;
+        }
 
-        return $user;
+        return $current;
     }
 
     /**
