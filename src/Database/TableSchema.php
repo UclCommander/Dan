@@ -71,6 +71,10 @@ class TableSchema
             throw new Exception("Table {$this->table} doesn't exist.");
         }
 
+        if ($column == 'id') {
+            return true;
+        }
+
         return array_key_exists($column, $this->database->config[$this->table]['columns']);
     }
 
