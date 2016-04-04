@@ -3,7 +3,6 @@
 namespace Dan\Irc\Packets;
 
 use Dan\Events\Traits\EventTrigger;
-use Dan\Irc\Location\User;
 
 class PacketQuit extends Packet
 {
@@ -15,7 +14,7 @@ class PacketQuit extends Packet
      */
     public function handle(array $from, array $data)
     {
-        $user = new User($this->connection, ...$from);
+        $user = $this->makeUser($from);
 
         $this->triggerEvent('irc.quit', [
             'connection'    => $this->connection,
