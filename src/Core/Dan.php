@@ -40,6 +40,7 @@ class Dan extends Container implements DatabaseContract
         ConsoleServiceProvider::class,
         DatabaseServiceProvider::class,
         EventServiceProvider::class,
+        ExceptionServiceProvider::class,
         UpdateServiceProvider::class,
     ];
 

@@ -90,7 +90,7 @@ class CommandManager
     public function handleCommand(IrcConnection $connection, IrcUser $user, $message, Channel $channel = null) : bool
     {
         $location = $channel ?? $user;
-
+        
         if (strpos($message, $connection->config->get('command_prefix')) !== 0) {
             return true;
         }
@@ -133,6 +133,10 @@ class CommandManager
         if (!$this->canUseCommand($connection, $command, $user)) {
             $location->message("You don't have the permissions to use this command.");
 
+            $permission = implode('', $user->modes());
+            $netChan = "{$connection->getName()}:{$channel->getLocation()}";
+            controlLog("[ <red>Permission Error</red> ] <cyan>{$user->nick}</cyan> attempted to use the command <i>{$name}</i> in {$netChan} - Permissions: +{$permission}");
+
             return false;
         }
 
@@ -162,6 +166,8 @@ class CommandManager
             ]);
         }
 
+        controlLog("[ <red>Command Log</red> ] <cyan>{$user->nick}</cyan> used the command <i>{$name}</i> in {$connection->getName()}:{$channel->getLocation()}");
+        
         return false;
     }
 

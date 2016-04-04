@@ -69,11 +69,8 @@ class AddonLoader
                     $userContract->notice("Unable to load addon {$name}. {$error->getMessage()}");
                 }
 
-                if (!config('dan.debug')) {
-                    console()->error("Unable to load addon {$name}. {$error->getMessage()}");
-                } else {
-                    console()->exception($error);
-                }
+                console()->error("Unable to load addon {$name}. {$error->getMessage()}");
+                console()->exception($error);
             }
         }
     }

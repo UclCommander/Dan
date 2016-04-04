@@ -16,7 +16,7 @@ if (!function_exists('dan')) {
      * @param null  $make
      * @param array $parameters
      *
-     * @return Dan|mixed
+     * @return \Dan\Core\Dan|object
      */
     function dan($make = null, $parameters = [])
     {
@@ -52,9 +52,9 @@ if (!function_exists('console')) {
     /**
      * Gets the console object.
      *
-     * @param null $text
+     * @param string $text
      *
-     * @return \Dan\Console\Console|null
+     * @return \Dan\Console\Console
      */
     function console($text = null)
     {
@@ -215,7 +215,7 @@ if (!function_exists('events')) {
      *
      * @return \Dan\Events\Handler
      */
-    function events()
+    function events() : \Dan\Events\Handler
     {
         return dan('events');
     }
@@ -382,5 +382,67 @@ if (!function_exists('cleanString')) {
     function cleanString($string)
     {
         return str_replace(["\n", "\r", '  '], ' ', $string);
+    }
+}
+
+if (!function_exists('formatLocation')) {
+
+    /**
+     * @param $string
+     *
+     * @return array|\Dan\Irc\Location\Channel[]|\Dan\Irc\Connection[]
+     */
+    function formatLocation($string) : array
+    {
+        $data = explode(':', $string);
+
+        if (!connection()->hasConnection($data[0])) {
+            return [];
+        }
+
+        /** @var \Dan\Irc\Connection $connection */
+        $connection = connection($data[0]);
+
+        if (!$connection->inChannel($data[1])) {
+            return [];
+        }
+
+        $channel = $connection->getChannel($data[1]);
+
+        return [
+            'connection' => $connection,
+            'channel'   => $channel,
+        ];
+    }
+}
+if (!function_exists('controlLog')) {
+
+    /**
+     * @param $string
+     */
+    function controlLog($string)
+    {
+        $data = formatLocation(config('dan.network_console'));
+
+        if (empty($data)) {
+            return;
+        }
+
+        $data['channel']->message($string);
+    }
+}
+
+if (!function_exists('relativePath')) {
+
+    /**
+     * Gets relative path from executable.
+     *
+     * @param $path
+     *
+     * @return string
+     */
+    function relativePath($path)
+    {
+        return str_replace(ROOT_DIR, '', $path);
     }
 }

@@ -65,6 +65,7 @@ class Dan implements ConfigSetupContract
                 ],
                 'use_short_links' => true,
                 'short_link_api'  => Links::class,
+                'network_console' => 'network:#channel',
             ],
         ]);
     }

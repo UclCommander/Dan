@@ -319,5 +319,9 @@ class Console
             echo $exception->getTraceAsString();
             echo PHP_EOL;
         }
+
+        events()->fire('console.exception', [
+            'exception' => $exception
+        ]);
     }
 }
