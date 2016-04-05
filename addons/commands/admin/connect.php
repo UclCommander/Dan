@@ -25,6 +25,12 @@ command(['connect'])
                 return;
             }
 
+            if (connection()->hasConnection($message)) {
+                $location->message("I'm already connected to this network.");
+
+                return;
+            }
+
             $location->message("Connecting to the network <i>{$message}</i>");
 
             if (dan()->provider(\Dan\Irc\IrcServiceProvider::class)->connect($message)) {
