@@ -178,7 +178,7 @@ class Handler
      */
     protected function disabled(Event $event, $key, $args) : bool
     {
-        if (!$this->addonEvents->has($key) || !isset($args['channel'])) {
+        if (!isset($args['channel'])) {
             return false;
         }
 
@@ -186,7 +186,7 @@ class Handler
         $channel = $args['channel'];
 
         $disabled = $channel->getData('info.hooks.disabled', []);
-
+        
         if (is_null($event->getName())) {
             return false;
         }
