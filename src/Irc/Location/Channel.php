@@ -77,7 +77,7 @@ class Channel extends Location implements Savable, Arrayable
 
         $user->setPrefix($prefix);
 
-        $this->users->put($user->nick, $user);
+        $this->users->put(strtolower($user->nick), $user);
     }
 
     /**
@@ -89,7 +89,7 @@ class Channel extends Location implements Savable, Arrayable
             $user = new User($this->connection, $user);
         }
 
-        $this->users->forget($user->nick);
+        $this->users->forget(strtolower($user->nick));
     }
 
     /**
@@ -105,7 +105,7 @@ class Channel extends Location implements Savable, Arrayable
             $user = $user->nick;
         }
 
-        return $this->users->has($user);
+        return $this->users->has(strtolower($user));
     }
 
     /**
@@ -124,7 +124,7 @@ class Channel extends Location implements Savable, Arrayable
         }
 
         /** @var User $current */
-        $current = $this->users->get($nick);
+        $current = $this->users->get(strtolower($nick));
 
         if (is_null($current)) {
             return null;
@@ -132,7 +132,7 @@ class Channel extends Location implements Savable, Arrayable
 
         if ($user instanceof User) {
             $user->setData($current->data)->setRawModes($current->modes);
-            $this->users->put($nick, $user);
+            $this->users->put(strtolower($nick), $user);
 
             return $user;
         }
@@ -152,7 +152,7 @@ class Channel extends Location implements Savable, Arrayable
             $user = $user->nick;
         }
 
-        $this->users->get($user)->setMode($mode);
+        $this->users->get(strtolower($user))->setMode($mode);
     }
 
     /**

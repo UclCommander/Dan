@@ -205,6 +205,10 @@ class Dan extends Container implements DatabaseContract
         if ($pluginConfig['commands']) {
             $this->make('addons')->addPath("{$path}/commands");
         }
+        
+        if ($pluginConfig['addons']) {
+            $this->make('addons')->addPath("{$path}/addons");
+        }
 
         if (empty($config) || empty($name)) {
             return;
