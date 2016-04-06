@@ -80,6 +80,8 @@ command(['chaninfo', 'cinfo'])
             $return = null;
 
             foreach ($hooks as $hook) {
+                $hook = trim($hook);
+
                 if ($data[0] == 'enable') {
                     $return = $this->doThing($channel, $user, 'hook', $hook);
                 }
@@ -117,6 +119,8 @@ command(['chaninfo', 'cinfo'])
                     $options = $channel->getData("hooks.{$data[1]}.{$data[2]}.options");
 
                     foreach ($value as $option) {
+                        $option = trim($option);
+
                         if (!in_array($option, $options)) {
                             $user->notice("Invalid option {$option}. See <i>hooks settings {$data[1]} {$data[2]}.options</i> for a list of available options.");
 

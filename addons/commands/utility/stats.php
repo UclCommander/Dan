@@ -5,7 +5,7 @@ use Dan\Irc\Location\User;
 
 command(['stats'])
     ->helpText('Gets stats for the current channel.')
-    ->rank('*')
+    ->rank('vhoaq')
     ->handler(function (\Dan\Irc\Connection $connection, User $user, Channel $channel, $message) {
         if ($message == 'reset') {
             if (!$user->hasOneOf('oaq')) {
@@ -21,6 +21,15 @@ command(['stats'])
         $stats = $channel->getData('stats');
         $messages = array_sum($stats['messages']);
         $users = $stats['messages'];
+
+        if ($channel->hasUser($message)) {
+            $userInfo = $connection->database('users')->where('nick', $message)->first();
+            $messages = $users[$userInfo->get('id')];
+
+            $channel->message("[ Stats ] {$message} has sent {$messages} messages");
+
+            return;
+        }
 
         arsort($users);
 
