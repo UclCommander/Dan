@@ -21,9 +21,10 @@ class PacketTopic extends Packet
         $channel = $this->connection->getChannel($data[0]);
 
         $this->triggerEvent('irc.topic', [
-            'user'      => $this->makeUser($from),
-            'channel'   => $channel,
-            'topic'     => $data[1],
+            'connection'    => $this->connection,
+            'user'          => $this->makeUser($from),
+            'channel'       => $channel,
+            'topic'         => $data[1],
         ]);
     }
 }

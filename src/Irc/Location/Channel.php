@@ -204,4 +204,12 @@ class Channel extends Location implements Savable, Arrayable
         //$this->topic = $data->get('topic');
         $this->data = $data->get('data');
     }
+
+    /**
+     * @param $topic
+     */
+    public function setTopic($topic)
+    {
+        $this->connection->send('TOPIC', $this, $topic);
+    }
 }
