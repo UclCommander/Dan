@@ -152,6 +152,18 @@ class Command
     }
 
     /**
+     * Get a command alias.
+     *
+     * @param int $index
+     *
+     * @return string
+     */
+    public function getAlias($index = 0)
+    {
+        return $this->aliases[$index];
+    }
+
+    /**
      * Get command aliases.
      *
      * @return array

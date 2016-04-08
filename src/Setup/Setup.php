@@ -24,6 +24,7 @@ class Setup
         'dan' => \Dan\Setup\Configs\Dan::class,
         'irc' => \Dan\Setup\Configs\Irc::class,
         'web' => \Dan\Setup\Configs\Web::class,
+        'rate' => \Dan\Setup\Configs\Rate::class,
     ];
 
     /**
@@ -70,7 +71,11 @@ class Setup
             /** @var ConfigSetupContract $class */
             $class = new $setup($this->output);
 
-            $this->output->section($class->introText());
+            $intro = $class->introText();
+
+            if ($intro !== false) {
+                $this->output->section($intro);
+            }
 
             $config = ($skip ? $class->defaultConfig() : $class->setup());
             $config = $config->toArray();

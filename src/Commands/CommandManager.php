@@ -2,6 +2,7 @@
 
 namespace Dan\Commands;
 
+use Dan\Commands\Traits\RateLimiter;
 use Dan\Console\Connection as ConsoleConnection;
 use Dan\Console\User as ConsoleUser;
 use Dan\Events\Event;
@@ -14,6 +15,8 @@ use SimilarText\Finder;
 
 class CommandManager
 {
+    use RateLimiter;
+    
     /**
      * @var \Illuminate\Support\Collection
      */
@@ -23,7 +26,7 @@ class CommandManager
      * @var \Illuminate\Support\Collection
      */
     protected $aliases;
-
+    
     public function __construct()
     {
         events()->subscribe('addons.load', function () {
@@ -145,6 +148,16 @@ class CommandManager
 
             return false;
         }
+        
+        if ($this->checkRate($user, $command)) {
+            controlLog("[ <red>Rate Limiter</red> ] <cyan>{$user->nick}</cyan> attempted to use the command <i>{$name}</i> - Rate Limit exceeded.");
+
+            if ($this->isSpamming($user) && $channel->getUser($connection->user)->hasPermissionTo('kick')) {
+                $channel->kick($user, 'Stop spamming commands!');
+            }
+
+            return false;
+        }
 
         $ran = $this->callCommand($command, [
             'connection'     => $connection,
@@ -165,6 +178,8 @@ class CommandManager
                 'commandManager' => $this,
             ]);
         }
+
+        $this->addRate($user, $command);
 
         controlLog("[ <red>Command Log</red> ] <cyan>{$user->nick}</cyan> used the command <i>{$name}</i> in {$connection->getName()}:{$channel->getLocation()}");
         

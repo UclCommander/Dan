@@ -446,3 +446,18 @@ if (!function_exists('relativePath')) {
         return str_replace(ROOT_DIR, '', $path);
     }
 }
+
+if (!function_exists('parseUserString')) {
+
+    /**
+     * Parses a user string
+     *
+     * @param $string
+     *
+     * @return string
+     */
+    function parseUserString($string)
+    {
+        return preg_split( "/(!|@)/", $string);
+    }
+}

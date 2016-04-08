@@ -202,11 +202,11 @@ class Dan extends Container implements DatabaseContract
 
         $pluginConfig = json_decode(file_get_contents("{$path}/plugin.json"), true);
 
-        if ($pluginConfig['commands']) {
+        if (isset($pluginConfig['commands']) && $pluginConfig['commands'])  {
             $this->make('addons')->addPath("{$path}/commands");
         }
         
-        if ($pluginConfig['addons']) {
+        if (isset($pluginConfig['addons']) && $pluginConfig['addons']) {
             $this->make('addons')->addPath("{$path}/addons");
         }
 
