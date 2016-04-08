@@ -461,3 +461,18 @@ if (!function_exists('parseUserString')) {
         return preg_split( "/(!|@)/", $string);
     }
 }
+
+if (!function_exists('noInteractionSetup')) {
+
+    /**
+     * Checks for no interaction setup arg.
+     *
+     * @return string
+     */
+    function noInteractionSetup()
+    {
+        global $argv;
+        
+        return in_array('--no-interaction-setup', $argv);
+    }
+}

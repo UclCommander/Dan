@@ -90,6 +90,28 @@ class Setup
     }
 
     /**
+     * 
+     */
+    public function silentSetup()
+    {
+        $configs = new Config();
+
+        foreach (static::$setupFiles as $key => $setup) {
+            if (file_exists(ROOT_DIR."/config/{$key}.json")) {
+                continue;
+            }
+
+            /** @var ConfigSetupContract $class */
+            $class = new $setup($this->output);
+            $config = $class->defaultConfig()->toArray();
+            $key = key($config);
+            $configs->set($key, reset($config));
+        }
+
+        $this->makeConfigFiles($configs);
+    }
+
+    /**
      * Make the config files.
      *
      * @param $config

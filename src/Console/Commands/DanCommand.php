@@ -14,7 +14,8 @@ class DanCommand extends Command
     {
         $this->setName('dan')
             ->setDescription('Runs the bot.')
-            ->addOption('debug', 'd', InputOption::VALUE_NONE, 'Turn debug on');
+            ->addOption('debug', 'd', InputOption::VALUE_NONE, 'Turn debug on')
+            ->addOption('no-interaction-setup', '', InputOption::VALUE_NONE, "Don't interactively setup the bot");
     }
 
     /**

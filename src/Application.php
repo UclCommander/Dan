@@ -16,8 +16,8 @@ class Application extends SymfonyApplication
     public function __construct($name = 'UNKNOWN', $version = 'UNKNOWN')
     {
         parent::__construct($name, $version);
-
-        $this->setDefaultCommand(Setup::isSetup() ? 'dan' : 'setup');
+        
+        $this->setDefaultCommand(Setup::isSetup() || noInteractionSetup() ? 'dan' : 'setup');
     }
 
     /**
@@ -27,7 +27,7 @@ class Application extends SymfonyApplication
     {
         $defaultCommands = parent::getDefaultCommands();
 
-        if (!Setup::isSetup()) {
+        if (!Setup::isSetup() && !noInteractionSetup()) {
             $defaultCommands[] = new SetupCommand();
 
             return $defaultCommands;

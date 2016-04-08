@@ -14,6 +14,7 @@ use Dan\Core\Traits\Paths;
 use Dan\Database\DatabaseServiceProvider;
 use Dan\Events\EventServiceProvider;
 use Dan\Irc\IrcServiceProvider;
+use Dan\Setup\Setup;
 use Dan\Update\UpdateServiceProvider;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
@@ -64,10 +65,14 @@ class Dan extends Container implements DatabaseContract
     public function __construct(InputInterface $input, OutputInterface $output, $command = false)
     {
         $input->setInteractive(true);
-
+        
+        if (!Setup::isSetup() && noInteractionSetup()) {
+            (new Setup($input, $output))->silentSetup();
+        }
+        
         $this->instance('input', $input);
         $this->instance('output', $output);
-
+        
         $this->bindPathsInContainer();
         $this->registerCoreAliases();
         $this->registerCoreBindings();
