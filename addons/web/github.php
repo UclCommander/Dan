@@ -74,6 +74,8 @@ route('github.event')
             $url = shortLink($request->get('issue.html_url'));
             $sender = $request->get('sender.login');
 
+            $body = substr($body, 0, 64);
+
             if ($request->get('action') == 'opened') {
                 return "[ GitHub - {$repo} ] New issue created by <orange>{$user}</orange> - <cyan>{$title}</cyan> - <light_cyan>{$body}</light_cyan> - {$url}";
             }
@@ -96,6 +98,8 @@ route('github.event')
             $repo = $request->get('repository.full_name');
             $url = shortLink($request->get('comment.html_url'));
 
+            $comment = substr($comment, 0, 64);
+
             return "[ GitHub - {$repo} ] New comment by <orange>{$commenter}</orange> on issue <cyan>{$title}</cyan> - <light_cyan>{$comment}</light_cyan> - {$url}";
         }
 
@@ -111,6 +115,8 @@ route('github.event')
             $comment = $this->cleanString($request->get('comment.body')) ?? '(no description)';
             $repo = $request->get('repository.full_name');
             $url = shortLink($request->get('comment.html_url'));
+
+            $comment = substr($comment, 0, 64);
 
             return "[ GitHub - {$repo} ] New comment by <orange>{$commenter}</orange> on commit <yellow>{$title}</yellow> - <light_cyan>{$comment}</light_cyan> - {$url}";
         }
@@ -136,6 +142,8 @@ route('github.event')
                 $commitId = substr($request->get('head_commit.id'), 0, 7);
                 $url = shortLink($request->get('head_commit.url'));
 
+                $message = substr($message, 0, 64);
+
                 return "[ GitHub - {$repo} ] New commit by <orange>{$author}</orange> - <yellow>{$commitId}</yellow> - <light_cyan>{$message}</light_cyan> - {$url}";
             }
         }
@@ -154,6 +162,8 @@ route('github.event')
             $author = $request->get('pull_request.user.login');
             $url = shortLink($request->get('pull_request.url'));
             $by = $request->get('sender.login');
+
+            $message = substr($message, 0, 64);
 
             if ($request->get('action') == 'opened') {
                 return "[ GitHub - {$repo} ] <orange>{$author}</orange> opened a new Pull Request. - <cyan>{$title}</cyan> - <light_cyan>{$message}</light_cyan> - {$url}";
@@ -219,6 +229,8 @@ route('github.event')
                 $description = $request->get('release.body');
                 $repo = $request->get('repository.full_name');
                 $downloads = (array) $request->get('release.assets');
+
+                $description = substr($description, 0, 64);
 
                 $lines = " [ GitHub - {$repo} ] New release by <orange>{$author}</orange> - <yellow>{$tag}</yellow> - <cyan>{$title}</cyan> - <light_cyan>{$description}</light_cyan> - {$url}";
 
