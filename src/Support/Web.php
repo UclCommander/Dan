@@ -82,6 +82,21 @@ class Web
         return $dom;
     }
 
+
+    /**
+     * Returns a DOMXPath object for the given uri.
+     * 
+     * @param $uri
+     * @param array $params
+     * @param array $headers
+     *
+     * @return \DOMXPath
+     */
+    public static function xpath($uri, $params = [], $headers = []) : \DOMXPath
+    {
+        return new \DOMXPath(static::dom($uri, $params, $headers));
+    }
+
     /**
      * Sends a GET Request.
      *
