@@ -32,7 +32,7 @@ command(['compliment'])
         else if ($website == "http://toykeeper.net/programs/mad/compliments"){
         $compliment = cleanString($compliment->query('//*[@class="blurb_title_1"]')->item(0)->textContent);
         }
-/* In case the script fucks up */
+/* In case the chosen website fails top load */
         else{
         $compliment = "You are very lovely and everyone cares about you!";
         }
