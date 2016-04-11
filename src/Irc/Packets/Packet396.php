@@ -12,7 +12,9 @@ class Packet396 extends Packet
      */
     public function handle(array $from, array $data)
     {
-        if ($data[0] == config('irc.user.nick')) {
+        if ($data[0] == $this->connection->user->nick) {
+            $this->connection->user->setHost($data[1]);
+            
             $this->connection->database('users')->where('nick', $data[0])->update([
                 'host'  => $data[1],
             ]);

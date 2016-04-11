@@ -88,6 +88,16 @@ class User extends Location implements Savable, Arrayable, UserContract
     }
 
     /**
+     * Updates the users host.
+     *
+     * @param $host
+     */
+    public function setHost($host)
+    {
+        $this->host = $host;
+    }
+
+    /**
      * Gets a user property.
      *
      * @param $name

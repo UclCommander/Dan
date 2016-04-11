@@ -181,8 +181,7 @@ class Connection implements ConnectionContract, DatabaseContract
     public function read($resource)
     {
         $lines = $this->socket->read();
-
-        $slackLine = false;
+        $slackLine = null;
 
         foreach ($lines as $line) {
             $line = trim($line);
@@ -328,6 +327,7 @@ class Connection implements ConnectionContract, DatabaseContract
 
         $this->send('USER', $name, $name, '*', $real);
         $this->send('NICK', $nick);
+        $this->send('WHO', $nick);
     }
 
     /**

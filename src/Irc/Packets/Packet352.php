@@ -15,5 +15,9 @@ class Packet352 extends Packet
             'user' => $data[2],
             'host' => $data[3],
         ]);
+
+        if ($data[5] == $this->connection->user->nick) {
+            $this->connection->user->setHost($data[3]);
+        }
     }
 }

@@ -91,7 +91,7 @@ trait Parser
                 continue;
             }
 
-            if ($data[$i] == ':' && (!$inString && !$in005 && !$userStr && !$inMode)) {
+            if ($data[$i] == ':' && (!$inString && !$in005 && !$userStr && !$inMode) && $data[$i-1] == ' ') {
                 $inString = true;
                 continue;
             }
