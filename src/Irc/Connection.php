@@ -524,7 +524,7 @@ class Connection implements ConnectionContract, DatabaseContract
      */
     public function notice($location, $message)
     {
-        $this->send('NOTICE', $location, $message);
+        $this->send('NOTICE', $location, strip_tags($message));
     }
 
     /**
