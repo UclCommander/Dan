@@ -16,7 +16,7 @@ class Application extends SymfonyApplication
     public function __construct($name = 'UNKNOWN', $version = 'UNKNOWN')
     {
         parent::__construct($name, $version);
-        
+
         $this->setDefaultCommand(Setup::isSetup() || noInteractionSetup() ? 'dan' : 'setup');
     }
 

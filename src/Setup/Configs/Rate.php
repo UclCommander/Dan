@@ -5,7 +5,6 @@ namespace Dan\Setup\Configs;
 use Dan\Config\Config;
 use Dan\Console\OutputStyle;
 use Dan\Contracts\ConfigSetupContract;
-use Dan\Services\ShortLinks\Links;
 
 class Rate implements ConfigSetupContract
 {
@@ -35,11 +34,11 @@ class Rate implements ConfigSetupContract
         return new Config([
             'rate' => [
                 'kick_from_spam' => 8,
-                'default'        => [2,5],
+                'default'        => [2, 5],
                 'commands'       => [
-                    'command'    => [1,8]
+                    'command'    => [1, 8],
                 ],
-            ]
+            ],
         ]);
     }
 

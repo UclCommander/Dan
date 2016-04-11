@@ -82,10 +82,9 @@ class Web
         return $dom;
     }
 
-
     /**
      * Returns a DOMXPath object for the given uri.
-     * 
+     *
      * @param $uri
      * @param array $params
      * @param array $headers

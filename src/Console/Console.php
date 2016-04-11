@@ -321,7 +321,7 @@ class Console
         }
 
         events()->fire('console.exception', [
-            'exception' => $exception
+            'exception' => $exception,
         ]);
     }
 }

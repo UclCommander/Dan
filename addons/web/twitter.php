@@ -2,41 +2,40 @@
 
 use Dan\Web\Request;
 use Endroid\Twitter\Twitter;
-use Illuminate\Support\Collection;
 
 route('twitter.update')
     ->config([
         'access' => [
-            'api_key' => 'null',
-            'api_secret' => 'null',
-            'access_token' => 'null',
+            'api_key'       => 'null',
+            'api_secret'    => 'null',
+            'access_token'  => 'null',
             'access_secret' => 'null',
-            'api_url' => '',
-            'proxy' => '',
-            'timeout' => 5,
+            'api_url'       => '',
+            'proxy'         => '',
+            'timeout'       => 5,
         ],
         'users' => [
             [
-                'name'  => 'uclcommander',
+                'name'    => 'uclcommander',
                 'replies' => true,
                 'network' => 'byteirc',
                 'channel' => '#example',
-            ]
+            ],
         ],
     ])
     ->path('/twitter/update')
-    ->get(function(Request $request) {
+    ->get(function (Request $request) {
         $access = config('twitter_update.access');
         $users = config('twitter_update.users');
 
         $twitter = new Twitter($access['api_key'], $access['api_secret'], $access['access_token'], $access['access_secret'], $access['api_url'], $access['proxy'], $access['timeout']);
 
-        foreach($users as $user) {
+        foreach ($users as $user) {
             try {
                 $data = $twitter->getTimeline([
-                    'screen_name' => $user['name'],
-                    'count' => 5,
-                    'exclude_replies' => !($user['replies'] ?? true)
+                    'screen_name'     => $user['name'],
+                    'count'           => 5,
+                    'exclude_replies' => !($user['replies'] ?? true),
                 ]);
 
                 if (count($data) == 0) {
