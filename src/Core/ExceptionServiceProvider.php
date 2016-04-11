@@ -22,7 +22,11 @@ class ExceptionServiceProvider extends ServiceProvider
                 $to = formatLocation(config('dan.network_console'));
                 
                 $file = relativePath($exception->getFile());
-                
+
+                if (empty($to)) {
+                    return;
+                }
+
                 $to['channel']->message("Exception was thrown. {$exception->getMessage()} - On line {$exception->getLine()} of {$file}");
             });
     }
