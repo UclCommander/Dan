@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Dan\Core;
 
 use Dan\Events\Event;
@@ -20,7 +19,7 @@ class ExceptionServiceProvider extends ServiceProvider
             ->handler(function (\Throwable $exception) {
 
                 $to = formatLocation(config('dan.network_console'));
-                
+
                 $file = relativePath($exception->getFile());
 
                 if (empty($to)) {

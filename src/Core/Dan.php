@@ -2,13 +2,13 @@
 
 namespace Dan\Core;
 
-use Dan\Contracts\PluginContract;
 use Dan\Addons\AddonLoader;
 use Dan\Config\Config;
 use Dan\Config\ConfigServiceProvider;
 use Dan\Connection\Handler as ConnectionHandler;
 use Dan\Console\ConsoleServiceProvider;
 use Dan\Contracts\DatabaseContract;
+use Dan\Contracts\PluginContract;
 use Dan\Core\Traits\Database;
 use Dan\Core\Traits\Paths;
 use Dan\Database\DatabaseServiceProvider;
@@ -65,14 +65,14 @@ class Dan extends Container implements DatabaseContract
     public function __construct(InputInterface $input, OutputInterface $output, $command = false)
     {
         $input->setInteractive(true);
-        
+
         if (!Setup::isSetup() && noInteractionSetup()) {
             (new Setup($input, $output))->silentSetup();
         }
-        
+
         $this->instance('input', $input);
         $this->instance('output', $output);
-        
+
         $this->bindPathsInContainer();
         $this->registerCoreAliases();
         $this->registerCoreBindings();
@@ -99,9 +99,6 @@ class Dan extends Container implements DatabaseContract
         $this->loadProvider(IrcServiceProvider::class);
     }
 
-    /**
-     *
-     */
     public function run()
     {
         $this->make('addons')->loadAll();
@@ -207,10 +204,10 @@ class Dan extends Container implements DatabaseContract
 
         $pluginConfig = json_decode(file_get_contents("{$path}/plugin.json"), true);
 
-        if (isset($pluginConfig['commands']) && $pluginConfig['commands'])  {
+        if (isset($pluginConfig['commands']) && $pluginConfig['commands']) {
             $this->make('addons')->addPath("{$path}/commands");
         }
-        
+
         if (isset($pluginConfig['addons']) && $pluginConfig['addons']) {
             $this->make('addons')->addPath("{$path}/addons");
         }

@@ -9,24 +9,25 @@
  * Do not directly edit this file.
  * If you want to change the rank, see commands.permissions in the configuration.
  */
-
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 use Dan\Support\Web;
 
 command(['insult'])
     ->helpText('Insults someone.')
-    ->handler(function(\Dan\Irc\Connection $connection, Channel $channel, User $user, $message) {
+    ->handler(function (\Dan\Irc\Connection $connection, Channel $channel, User $user, $message) {
         $insult = Web::xpath('http://www.insultgenerator.org/');
         $insult = trim($insult->query('//*[@class="wrap"]')->item(0)->textContent);
 
         if (empty($message)) {
             $channel->message($insult);
+
             return;
         }
 
         if (!$channel->hasUser($message)) {
             $channel->message("I can't insult someone who isn't here!");
+
             return;
         }
 

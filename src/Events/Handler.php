@@ -186,7 +186,7 @@ class Handler
         $channel = $args['channel'];
 
         $disabled = $channel->getData('info.hooks.disabled', []);
-        
+
         if (is_null($event->getName())) {
             return false;
         }

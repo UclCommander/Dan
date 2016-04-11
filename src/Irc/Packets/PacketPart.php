@@ -21,7 +21,6 @@ class PacketPart extends Packet
             'connection'    => $this->connection,
         ]);
 
-
         if ($from[0] != $this->connection->user->nick) {
             $channel = $this->connection->getChannel($data[0]);
             $channel->removeUser($from[0]);

@@ -411,7 +411,7 @@ if (!function_exists('formatLocation')) {
 
         return [
             'connection' => $connection,
-            'channel'   => $channel,
+            'channel'    => $channel,
         ];
     }
 }
@@ -450,7 +450,7 @@ if (!function_exists('relativePath')) {
 if (!function_exists('parseUserString')) {
 
     /**
-     * Parses a user string
+     * Parses a user string.
      *
      * @param $string
      *
@@ -458,7 +458,7 @@ if (!function_exists('parseUserString')) {
      */
     function parseUserString($string)
     {
-        return preg_split( "/(!|@)/", $string);
+        return preg_split('/(!|@)/', $string);
     }
 }
 
@@ -472,7 +472,7 @@ if (!function_exists('noInteractionSetup')) {
     function noInteractionSetup()
     {
         global $argv;
-        
+
         return in_array('--no-interaction-setup', $argv);
     }
 }

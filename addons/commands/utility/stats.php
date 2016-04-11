@@ -10,11 +10,13 @@ command(['stats'])
         if ($message == 'reset') {
             if (!$user->hasOneOf('oaq')) {
                 $channel->message("You don't have permissions to reset stats.");
+
                 return;
             }
 
             $channel->setData('data', []);
             $channel->message('Stats reset');
+
             return;
         }
 
@@ -40,19 +42,19 @@ command(['stats'])
 
         $user = $userInfo['nick'];
 
-        $nick   = $stats['nick'] ?? 0;
-        $join   = $stats['join'] ?? 0;
-        $part   = $stats['part'] ?? 0;
-        $topic  = $stats['topic'] ?? 0;
+        $nick = $stats['nick'] ?? 0;
+        $join = $stats['join'] ?? 0;
+        $part = $stats['part'] ?? 0;
+        $topic = $stats['topic'] ?? 0;
 
         $info = [
-            "<yellow>{$messages}</yellow> <cyan>message" . ($messages == 1 ? '' : 's') . " have been sent</cyan>",
-            "<yellow>{$user}</yellow> <cyan>is the most active with</cyan> <yellow>{$userMessages}</yellow> <cyan>message" . ($userMessages == 1 ? '' : 's') . "</cyan>",
-            "<yellow>{$nick}</yellow> <cyan>nick change" . ($nick == 1 ? '' : 's') . "</cyan>",
-            "<yellow>{$join}</yellow> <cyan>join" . ($join == 1 ? '' : 's') . "</cyan>",
-            "<yellow>{$part}</yellow> <cyan>part" . ($part == 1 ? '' : 's') . "</cyan>",
-            "<yellow>{$topic}</yellow> <cyan>topic change" . ($topic == 1 ? '' : 's') . "</cyan>",
+            "<yellow>{$messages}</yellow> <cyan>message".($messages == 1 ? '' : 's').' have been sent</cyan>',
+            "<yellow>{$user}</yellow> <cyan>is the most active with</cyan> <yellow>{$userMessages}</yellow> <cyan>message".($userMessages == 1 ? '' : 's').'</cyan>',
+            "<yellow>{$nick}</yellow> <cyan>nick change".($nick == 1 ? '' : 's').'</cyan>',
+            "<yellow>{$join}</yellow> <cyan>join".($join == 1 ? '' : 's').'</cyan>',
+            "<yellow>{$part}</yellow> <cyan>part".($part == 1 ? '' : 's').'</cyan>',
+            "<yellow>{$topic}</yellow> <cyan>topic change".($topic == 1 ? '' : 's').'</cyan>',
         ];
 
-        $channel->message("[ " . implode(' | ', $info) . " ]");
+        $channel->message('[ '.implode(' | ', $info).' ]');
     });

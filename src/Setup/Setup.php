@@ -21,9 +21,9 @@ class Setup
     protected $config;
 
     protected static $setupFiles = [
-        'dan' => \Dan\Setup\Configs\Dan::class,
-        'irc' => \Dan\Setup\Configs\Irc::class,
-        'web' => \Dan\Setup\Configs\Web::class,
+        'dan'  => \Dan\Setup\Configs\Dan::class,
+        'irc'  => \Dan\Setup\Configs\Irc::class,
+        'web'  => \Dan\Setup\Configs\Web::class,
         'rate' => \Dan\Setup\Configs\Rate::class,
     ];
 
@@ -89,9 +89,6 @@ class Setup
         $this->makeConfigFiles($configs);
     }
 
-    /**
-     * 
-     */
     public function silentSetup()
     {
         $configs = new Config();

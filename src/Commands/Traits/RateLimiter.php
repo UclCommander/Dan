@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Dan\Commands\Traits;
 
 use Carbon\Carbon;
@@ -36,7 +35,7 @@ trait RateLimiter
         $diff = (new Carbon())->diffInSeconds($userRate[$command][1]);
 
         $commandRate = config("rate.commands.{$command}", config('rate.default'));
-        
+
         // So I remember what this does in the future:
         // If the command is used more than the command rate limit
         // and the diff is less than or equal to the rate in seconds
@@ -82,5 +81,4 @@ trait RateLimiter
     {
         return $this->spamCheck[$user->id] > config('rate.kick_from_spam');
     }
-
 }

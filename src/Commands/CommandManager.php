@@ -16,7 +16,7 @@ use SimilarText\Finder;
 class CommandManager
 {
     use RateLimiter;
-    
+
     /**
      * @var \Illuminate\Support\Collection
      */
@@ -26,7 +26,7 @@ class CommandManager
      * @var \Illuminate\Support\Collection
      */
     protected $aliases;
-    
+
     public function __construct()
     {
         events()->subscribe('addons.load', function () {
@@ -93,7 +93,7 @@ class CommandManager
     public function handleCommand(IrcConnection $connection, IrcUser $user, $message, Channel $channel = null) : bool
     {
         $location = $channel ?? $user;
-        
+
         if (strpos($message, $connection->config->get('command_prefix')) !== 0) {
             return true;
         }
@@ -148,7 +148,7 @@ class CommandManager
 
             return false;
         }
-        
+
         if ($this->checkRate($user, $command)) {
             controlLog("[ <red>Rate Limiter</red> ] <cyan>{$user->nick}</cyan> attempted to use the command <i>{$name}</i> - Rate Limit exceeded.");
 
@@ -182,7 +182,7 @@ class CommandManager
         $this->addRate($user, $command);
 
         controlLog("[ <red>Command Log</red> ] <cyan>{$user->nick}</cyan> used the command <i>{$name}</i> in {$connection->getName()}:{$channel->getLocation()}");
-        
+
         return false;
     }
 

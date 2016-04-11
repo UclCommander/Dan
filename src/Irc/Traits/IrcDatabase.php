@@ -49,8 +49,8 @@ trait IrcDatabase
             database($this->name)
                 ->schema('cache')
                 ->create([
-                    'key'  => '',
-                    'value' => []
+                    'key'   => '',
+                    'value' => [],
                 ]);
         }
     }

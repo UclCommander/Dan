@@ -6,7 +6,7 @@ use Dan\Network\Exceptions\BrokenPipeException;
 
 class Socket
 {
-    /** @var resource $socket  */
+    /** @var resource $socket */
     protected $socket;
 
     /**

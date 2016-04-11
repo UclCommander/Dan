@@ -6,9 +6,9 @@
  * Do not directly edit this file.
  * If you want to change the rank, see commands.permissions in the configuration.
  */
-use Dan\Support\Web;
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
+use Dan\Support\Web;
 
 command(['urban'])
     ->allowPrivate()
@@ -64,6 +64,6 @@ command(['urban'])
         $location->message("[ <yellow>{$item['word']}</yellow> - {$listN}/{$listTotal} ] <cyan>{$split}</cyan> - <green>+{$item['thumbs_up']}</green>/<red>-{$item['thumbs_down']}</red>");
 
         if (strlen($cleanDef) > 350) {
-            $location->message("Read more: ".shortLink($item['permalink']));
+            $location->message('Read more: '.shortLink($item['permalink']));
         }
     });

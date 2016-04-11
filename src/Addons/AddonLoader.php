@@ -17,7 +17,7 @@ class AddonLoader
     }
 
     /**
-     * Loads all addons
+     * Loads all addons.
      *
      * @param \Dan\Contracts\UserContract $userContract
      */
