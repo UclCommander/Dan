@@ -22,7 +22,7 @@ command(['pickup'])
         $pickup = Web::xpath($website);
         if ($website == 'http://www.pickuplinegen.com') {
             $pickup = cleanString($pickup->query('//*[@id="content"]')->item(0)->textContent);
-        } else if ($website == 'http://toykeeper.net/programs/mad/pickup') {
+        } elseif ($website == 'http://toykeeper.net/programs/mad/pickup') {
             $pickup = cleanString($pickup->query('//*[@class="blurb_title_1"]')->item(0)->textContent);
         }
 /* In case the chosen website fails to load (I will admit this is not my finest pickup line)*/
