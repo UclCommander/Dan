@@ -15,7 +15,7 @@ use Dan\Irc\Location\User;
 use Dan\Support\Web;
 
 command(['pickup'])
-    ->helpText('Uses a snazy pickup lines from the love doctor Dan himself to pick someone up.')
+    ->helpText('Uses a snazy pickup line from the love doctor Dan himself to pick someone up.')
     ->handler(function (\Dan\Irc\Connection $connection, Channel $channel, User $user, $message) {
         $websites = ['http://www.pickuplinegen.com', 'http://toykeeper.net/programs/mad/pickup'];
         $website = array_random($websites);
