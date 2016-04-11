@@ -23,11 +23,11 @@ command(['compliment'])
         $class = array_random($classes);
         $compliment = Web::xpath($website);
         if ($website == 'http://www.chainofgood.co.uk/passiton') {
-          $compliment = cleanString($compliment->query("//*[@class='{$class}']")->item(0)->textContent);
+            $compliment = cleanString($compliment->query("//*[@class='{$class}']")->item(0)->textContent);
         } elseif ($website == 'http://www.madsci.org/cgi-bin/cgiwrap/~lynn/jardin/SCG') {
-          $compliment = cleanString($compliment->query('//h2')->item(0)->textContent);
+            $compliment = cleanString($compliment->query('//h2')->item(0)->textContent);
         } elseif ($website == 'http://toykeeper.net/programs/mad/compliments') {
-          $compliment = cleanString($compliment->query('//*[@class="blurb_title_1"]')->item(0)->textContent);
+            $compliment = cleanString($compliment->query('//*[@class="blurb_title_1"]')->item(0)->textContent);
         }
 /* In case the chosen website fails top load */
         else {
