@@ -1,7 +1,6 @@
 <?php
 
 use Dan\Commands\Command;
-use Dan\Console\Console;
 use Dan\Core\Dan;
 use Dan\Events\Event;
 use Dan\Services\ShortLinks\Links;
@@ -381,7 +380,7 @@ if (!function_exists('cleanString')) {
      */
     function cleanString($string)
     {
-        return str_replace(["\n", "\r", '  '], ' ', $string);
+        return str_replace(["\n", "\r", '  '], ' ', trim($string));
     }
 }
 
@@ -415,6 +414,7 @@ if (!function_exists('formatLocation')) {
         ];
     }
 }
+
 if (!function_exists('controlLog')) {
 
     /**
