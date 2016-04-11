@@ -104,12 +104,12 @@ class CommandManager
             return true;
         }
 
-        if (preg_match('/^([a-zA-Z0-9:]+)/', $clean) !== 1) {
-            return true;
-        }
-
         $info = explode(' ', $clean, 2);
         $name = $info[0];
+
+        if (preg_match('/[^a-zA-Z0-9:]/', $name) > 0) {
+            return true;
+        }
 
         if (!($command = $this->findCommand($name))) {
             if ($connection->config->get('command_not_found_error', true)) {
