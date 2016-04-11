@@ -10,32 +10,29 @@
  * Do not directly edit this file.
  * If you want to change the rank, see commands.permissions in the configuration.
  */
-
 use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 use Dan\Support\Web;
 
 command(['compliment'])
     ->helpText('Compliments someone.')
-    ->handler(function(\Dan\Irc\Connection $connection, Channel $channel, User $user, $message) {
-        $websites = array('http://toykeeper.net/programs/mad/compliments', 'http://www.chainofgood.co.uk/passiton', 'http://www.madsci.org/cgi-bin/cgiwrap/~lynn/jardin/SCG');
+    ->handler(function (\Dan\Irc\Connection $connection, Channel $channel, User $user, $message) {
+        $websites = ['http://toykeeper.net/programs/mad/compliments', 'http://www.chainofgood.co.uk/passiton', 'http://www.madsci.org/cgi-bin/cgiwrap/~lynn/jardin/SCG'];
         $website = array_random($websites);
-        $classes = array('large', 'medium', 'small');
+        $classes = ['large', 'medium', 'small'];
         $class = array_random($classes);
         $compliment = Web::xpath($website);
-        if ($website == "http://www.chainofgood.co.uk/passiton"){
+        if ($website == 'http://www.chainofgood.co.uk/passiton') {
         $compliment = cleanString($compliment->query('//*[@class="large"]')->item(0)->textContent);
-        }
-        else if ($website == "http://www.madsci.org/cgi-bin/cgiwrap/~lynn/jardin/SCG"){
+        } elseif ($website == 'http://www.madsci.org/cgi-bin/cgiwrap/~lynn/jardin/SCG') {
         $compliment = cleanString($compliment->query('//h2')->item(0)->textContent);
-        }
-        else if ($website == "http://toykeeper.net/programs/mad/compliments"){
+        } elseif ($website == 'http://toykeeper.net/programs/mad/compliments') {
         $compliment = cleanString($compliment->query('//*[@class="blurb_title_1"]')->item(0)->textContent);
         }
 /* In case the chosen website fails top load */
-        else{
-        $compliment = "You are very lovely and everyone cares about you!";
-        }
+        else {
+            $compliment = 'You are very lovely and everyone cares about you!';
+         }
 
         if (empty($message)) {
             $channel->message($compliment);
