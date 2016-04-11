@@ -36,11 +36,13 @@ command(['compliment'])
 
         if (empty($message)) {
             $channel->message($compliment);
+
             return;
         }
 
         if (!$channel->hasUser($message)) {
             $channel->message("I can't compliment someone who isn't here!");
+
             return;
         }
 
