@@ -13,7 +13,7 @@ use Dan\Irc\Location\User;
 command(['urban'])
     ->allowPrivate()
     ->helpText('urban <text> - Searches the only dictionary known to man.')
-    ->handler(function (User $user, $message, Channel $channel = null){
+    ->handler(function (User $user, $message, Channel $channel = null) {
         $location = $channel ?? $user;
 
         $index = 0;
