@@ -14,7 +14,7 @@ class Packet396 extends Packet
     {
         if ($data[0] == $this->connection->user->nick) {
             $this->connection->user->setHost($data[1]);
-            
+
             $this->connection->database('users')->where('nick', $data[0])->update([
                 'host'  => $data[1],
             ]);
