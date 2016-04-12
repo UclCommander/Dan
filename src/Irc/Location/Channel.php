@@ -115,7 +115,7 @@ class Channel extends Location implements Savable, Arrayable
      *
      * @return User|null
      */
-    public function getUser($user) : User
+    public function getUser($user)
     {
         $nick = $user;
 

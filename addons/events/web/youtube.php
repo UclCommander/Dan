@@ -9,7 +9,7 @@ on('irc.message.public')
     ->match("/(?:.*)(?:www\.)?youtu(?:be\.com|\.be)\/(?:(?:watch\?v=)?([a-zA-Z0-9\-_]+)(?:[a-zA-Z0-9\&\=\?]+)?)(?:.*)/")
     ->settings([
         'format' => [
-            'default' => 'video_title,channel_title,likes,views,published,duration',
+            'default' => 'video_title,channel_title,rating,views,published,duration',
             'options' => [
                 'video_title', 'channel_title', 'likes',
                 'views', 'published', 'duration', 'rating',
