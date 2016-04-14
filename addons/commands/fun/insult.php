@@ -9,13 +9,13 @@
  * Do not directly edit this file.
  * If you want to change the rank, see commands.permissions in the configuration.
  */
+
 use Dan\Irc\Location\Channel;
-use Dan\Irc\Location\User;
 use Dan\Support\Web;
 
 command(['insult'])
     ->helpText('Insults someone.')
-    ->handler(function (\Dan\Irc\Connection $connection, Channel $channel, User $user, $message) {
+    ->handler(function (Channel $channel, $message) {
         $insult = Web::xpath('http://www.insultgenerator.org/');
         $insult = trim($insult->query('//*[@class="wrap"]')->item(0)->textContent);
 
@@ -30,12 +30,6 @@ command(['insult'])
 
             return;
         }
-
-        $insulting = $channel->getUser($message)->nick;
-
-        if ($message == $connection->user->nick) {
-            $insulting = $user->nick;
-        }
-
-        $channel->message("{$insulting}: {$insult}");
+        
+        $channel->message("{$message}: {$insult}");
     });

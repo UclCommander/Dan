@@ -4,6 +4,7 @@ namespace Dan\Commands\Traits;
 
 use Carbon\Carbon;
 use Dan\Commands\Command;
+use Dan\Irc\Connection;
 use Dan\Irc\Location\User;
 
 trait RateLimiter
@@ -13,13 +14,18 @@ trait RateLimiter
     protected $spamCheck = [];
 
     /**
+     * @param \Dan\Irc\Connection $connection
      * @param \Dan\Irc\Location\User $user
      * @param \Dan\Commands\Command $command
      *
      * @return bool
      */
-    public function checkRate(User $user, Command $command)
+    public function checkRate(Connection $connection, User $user, Command $command)
     {
+        if ($connection->isAdminOrOwner($user)) {
+            return false;
+        }
+
         if (!array_key_exists($user->id, $this->rateCheck)) {
             return false;
         }

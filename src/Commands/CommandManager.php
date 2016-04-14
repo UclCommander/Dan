@@ -149,7 +149,7 @@ class CommandManager
             return false;
         }
 
-        if ($this->checkRate($user, $command)) {
+        if ($this->checkRate($connection, $user, $command)) {
             controlLog("[ <red>Rate Limiter</red> ] <cyan>{$user->nick}</cyan> attempted to use the command <i>{$name}</i> - Rate Limit exceeded.");
 
             if ($this->isSpamming($user) && $channel->getUser($connection->user)->hasPermissionTo('kick')) {
