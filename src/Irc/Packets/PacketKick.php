@@ -30,6 +30,8 @@ class PacketKick extends Packet
             $this->connection->removeChannel($data[0]);
         }
 
+        logger()->logNetworkChannelItem($this->connection->getName(), $channel, "{$data[0]} was kicked by {$from[0]}");
+
         if (!config('dan.debug')) {
             console("[<magenta>{$this->connection->getName()}</magenta>] <yellow>{$data[0]}</yellow> was kicked from <cyan>{$data[0]}</cyan> by <yellow>{$from[0]}</yellow>");
         }

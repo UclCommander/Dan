@@ -23,6 +23,8 @@ class PacketQuit extends Packet
         ]);
 
         foreach ($this->connection->channels() as $channel) {
+            logger()->logNetworkChannelItem($this->connection->getName(), $channel, 'left the network', $from[0]);
+
             $channel->removeUser($user);
         }
 

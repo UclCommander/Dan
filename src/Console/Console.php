@@ -182,6 +182,8 @@ class Console
      */
     public function info($string)
     {
+        logger()->info($string);
+        
         $this->connection->write("[<cyan>INFO</cyan>] <info>$string</info>");
     }
 
@@ -194,6 +196,8 @@ class Console
      */
     public function line($string)
     {
+        logger()->log($string);
+        
         $this->connection->write($string);
     }
 
@@ -209,6 +213,8 @@ class Console
         if (!config('dan.debug')) {
             return;
         }
+
+        logger()->debug($string);
 
         $this->connection->write("[<magenta>DEBUG</magenta>] <debug>$string</debug>");
     }
@@ -246,6 +252,8 @@ class Console
      */
     public function error($string)
     {
+        logger()->error($string);
+        
         $this->connection->write("[<red>ERROR</red>] <error>$string</error>");
     }
 
@@ -258,6 +266,8 @@ class Console
      */
     public function warn($string)
     {
+        logger()->warning($string);
+        
         $this->connection->write("[<yellow>WARN</yellow>] <warning>$string</warning>");
     }
 
@@ -270,6 +280,8 @@ class Console
      */
     public function success($string)
     {
+        logger()->log($string);
+        
         $this->connection->write("[<green>OK</green>] <success>$string</success>");
     }
 
@@ -281,6 +293,8 @@ class Console
      */
     public function message($message, $styles = [])
     {
+        logger()->log($message);
+        
         $this->connection->write($message);
     }
 
@@ -291,6 +305,8 @@ class Console
      */
     public function action($message)
     {
+        logger()->action($message);
+        
         $this->warn($message);
     }
 
@@ -301,6 +317,8 @@ class Console
      */
     public function notice($message)
     {
+        logger()->notice($message);
+        
         $this->info($message);
     }
 
@@ -309,6 +327,8 @@ class Console
      */
     public function exception(Throwable $exception)
     {
+        logger()->exception($exception);
+
         $this->error('Exception was thrown.');
         $this->error($exception->getMessage());
         $this->error("On line {$exception->getLine()}");

@@ -18,12 +18,12 @@ class PacketMode extends Packet
     public function handle(array $from, array $data)
     {
         $location = $data[0];
-        $modes = $data[1];
+        $modeData = $data[1];
 
         array_shift($data);
         array_shift($data);
 
-        $modes = $this->parseModes($modes, $data);
+        $modes = $this->parseModes($modeData, $data);
 
         if ($this->connection->isChannel($location)) {
             if (!$this->connection->inChannel($location)) {
@@ -31,6 +31,10 @@ class PacketMode extends Packet
             }
 
             $channel = $this->connection->getChannel($location);
+
+            $user = empty(implode(' ', $data)) ? $location : implode(' ', $data);
+
+            logger()->logNetworkChannelItem($this->connection->getName(), $location, "{$from[0]} sets mode {$modeData} on {$user}");
 
             foreach ($modes as $mode) {
                 if (!is_null($mode['option'])) {

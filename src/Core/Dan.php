@@ -3,7 +3,6 @@
 namespace Dan\Core;
 
 use Dan\Addons\AddonLoader;
-use Dan\Config\Config;
 use Dan\Config\ConfigServiceProvider;
 use Dan\Connection\Handler as ConnectionHandler;
 use Dan\Console\ConsoleServiceProvider;
@@ -14,6 +13,7 @@ use Dan\Core\Traits\Paths;
 use Dan\Database\DatabaseServiceProvider;
 use Dan\Events\EventServiceProvider;
 use Dan\Irc\IrcServiceProvider;
+use Dan\Log\Logger;
 use Dan\Setup\Setup;
 use Dan\Update\UpdateServiceProvider;
 use Illuminate\Container\Container;
@@ -70,12 +70,15 @@ class Dan extends Container implements DatabaseContract
             (new Setup($input, $output))->silentSetup();
         }
 
+        $this->instance('logger', new Logger('logger'));
         $this->instance('input', $input);
         $this->instance('output', $output);
 
         $this->bindPathsInContainer();
         $this->registerCoreAliases();
         $this->registerCoreBindings();
+
+        $this->make('logger')->beginSession(['error', 'debug', 'logger']);
 
         $this->loadProvider(ConfigServiceProvider::class);
 

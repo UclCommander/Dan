@@ -29,6 +29,8 @@ class PacketJoin extends Packet
             'connection'    => $this->connection,
         ]);
 
+        logger()->logNetworkChannelItem($this->connection->getName(), $data[0], "{$from[0]} joined the channel");
+
         if (!config('dan.debug')) {
             console()->message("[<magenta>{$this->connection->getName()}</magenta>] <yellow>{$from[0]}</yellow> <cyan>joined {$data[0]}</cyan>");
         }

@@ -476,3 +476,14 @@ if (!function_exists('noInteractionSetup')) {
         return in_array('--no-interaction-setup', $argv);
     }
 }
+
+if (!function_exists('logger')) {
+
+    /**
+     * @return \Dan\Log\Logger
+     */
+    function logger()
+    {
+        return dan('logger');
+    }
+}

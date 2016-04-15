@@ -16,7 +16,7 @@ class PacketNick extends Packet
      */
     public function handle(array $from, array $data)
     {
-        $user = new User($this->connection, $from);
+        $user = $this->makeUser($from);
         $nick = $data[0];
 
         $this->triggerEvent('irc.nick', [
@@ -34,6 +34,8 @@ class PacketNick extends Packet
         foreach ($this->connection->channels as $channel) {
             /** @var Channel $channel */
             if ($channel->hasUser($user) != null) {
+                logger()->logNetworkChannelItem($this->connection->getName(), $channel, "{$from[0]} is now known as {$nick}");
+
                 $channel->addUser($nick);
                 $channel->getUser($nick)->setRawModes($channel->getUser($user)->modes());
                 $channel->removeUser($user);

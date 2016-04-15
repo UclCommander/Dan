@@ -26,7 +26,7 @@ class ExceptionServiceProvider extends ServiceProvider
                     return;
                 }
 
-                $to['channel']->message("Exception was thrown. {$exception->getMessage()} - On line {$exception->getLine()} of {$file}");
+                $to['channel']->message("Exception was thrown. {$exception->getMessage()} - On line {$exception->getLine()} of {$file} - See the latest error log for more details.");
             });
     }
 }

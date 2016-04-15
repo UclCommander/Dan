@@ -23,6 +23,8 @@ class PacketPrivmsg extends Packet
         $user = new User($this->connection, $from);
         $message = $data[1] ?? null;
 
+        logger()->logNetworkChannelItem($this->connection->getName(), $data[0], $message, $from[0]);
+
         console()->message("[<magenta>{$this->connection->getName()}</magenta>][<cyan>{$data[0]}</cyan>][<yellow>{$from[0]}</yellow>] {$message}");
 
         if ($this->isIgnored($user)) {
