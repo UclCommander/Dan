@@ -9,10 +9,14 @@ $messageHandler = function (Channel $channel, User $user) {
         return;
     }
 
-    $total = $channel->getData("stats.messages.{$user->id}", 0);
-    $total++;
-    $channel->setData("stats.messages.{$user->id}", $total);
-    $channel->save();
+    try {
+        $total = $channel->getData("stats.messages.{$user->id}", 0);
+        $total++;
+        $channel->setData("stats.messages.{$user->id}", $total);
+        $channel->save();
+    } catch (Exception $e) {
+        console()->exception($e);
+    }
 
     $total = $user->getData('stats.messages', 0);
     $total++;
