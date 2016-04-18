@@ -14,8 +14,8 @@ command(['fgtlist', 'fgts'])
     ->handler(function (User $user) {
         $list = [
             'Chris',
+            'Jinxed',
             'Mirz <3',
-            'RoboDash',
         ];
 
         foreach ($list as $fgt) {
