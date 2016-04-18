@@ -5,6 +5,10 @@ use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
 $messageHandler = function (Channel $channel, User $user) {
+    if (!is_null($user->id)) {
+        return;
+    }
+
     $total = $channel->getData("stats.messages.{$user->id}", 0);
     $total++;
     $channel->setData("stats.messages.{$user->id}", $total);

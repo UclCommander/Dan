@@ -134,7 +134,11 @@ class Event
             $func = [$this->function, 'run'];
         }
 
-        return dan()->call($func, $args);
+        try {
+            return dan()->call($func, $args);
+        } catch (\Exception $e) {
+            console()->exception($e);
+        }
     }
 
     /**
