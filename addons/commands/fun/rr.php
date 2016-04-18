@@ -16,7 +16,12 @@ command(['roulette', 'rr'])
         $location = $channel ?? $user;
 
         $round = $location->getData('rr.round', 0);
-        $bullets = $location->getData('rr.bullets', [false, false, false, true, false, false]);
+        $bullets = $location->getData('rr.bullets');
+
+        if ($bullets == null) {
+            $bullets = [false, false, false, true, false, false];
+            $location->setData('rr.bullets', $bullets);
+        }
 
         $shuffle = function () use ($location, &$bullets) {
             shuffle($bullets);

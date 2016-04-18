@@ -29,7 +29,7 @@ trait Data
      */
     public function setData($key, $value = null)
     {
-        if (!is_array($value) && $value == null) {
+        if ($value === null) {
             $this->data = $key;
 
             return $this;
