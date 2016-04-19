@@ -3,6 +3,7 @@
 namespace Dan\Core;
 
 use Dan\Addons\AddonLoader;
+use Dan\Commands\CommandServiceProvider;
 use Dan\Config\ConfigServiceProvider;
 use Dan\Connection\Handler as ConnectionHandler;
 use Dan\Console\ConsoleServiceProvider;
@@ -16,6 +17,7 @@ use Dan\Irc\IrcServiceProvider;
 use Dan\Log\Logger;
 use Dan\Setup\Setup;
 use Dan\Update\UpdateServiceProvider;
+use Dan\Web\WebServiceProvider;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\ServiceProvider;
@@ -43,6 +45,8 @@ class Dan extends Container implements DatabaseContract
         EventServiceProvider::class,
         ExceptionServiceProvider::class,
         UpdateServiceProvider::class,
+        CommandServiceProvider::class,
+        WebServiceProvider::class,
     ];
 
     /**
@@ -102,6 +106,9 @@ class Dan extends Container implements DatabaseContract
         $this->loadProvider(IrcServiceProvider::class);
     }
 
+    /**
+     * Starts the connection reader.
+     */
     public function run()
     {
         $this->make('addons')->loadAll();
@@ -162,8 +169,8 @@ class Dan extends Container implements DatabaseContract
         $providers = config('dan.providers', []);
 
         foreach ($providers as $provider) {
-            if ($provider == IrcServiceProvider::class) {
-                console()->warn('IrcServiceProvider is in the providers array. Please remove it.');
+            if (in_array($provider, [IrcServiceProvider::class, CommandServiceProvider::class, WebServiceProvider::class])) {
+                console()->warn("{{$provider} is in the providers array. Please remove it.");
                 continue;
             }
 

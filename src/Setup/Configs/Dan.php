@@ -58,11 +58,7 @@ class Dan implements ConfigSetupContract
                 ],
                 'owners'    => [],
                 'admins'    => [],
-                'providers' => [
-                    \Dan\Commands\CommandServiceProvider::class,
-                    \Dan\Web\WebServiceProvider::class,
-                    \Dan\Irc\IrcServiceProvider::class,
-                ],
+                'providers' => [],
                 'use_short_links' => true,
                 'short_link_api'  => Links::class,
                 'network_console' => 'network:#channel',
