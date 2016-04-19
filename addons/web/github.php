@@ -160,7 +160,7 @@ route('github.event')
             $title = $request->get('pull_request.title');
             $message = $this->cleanString($request->get('pull_request.body')) ?? '(no description)';
             $author = $request->get('pull_request.user.login');
-            $url = shortLink($request->get('pull_request.url'));
+            $url = shortLink($request->get('pull_request.html_url'));
             $by = $request->get('sender.login');
 
             $message = substr($message, 0, 64);
