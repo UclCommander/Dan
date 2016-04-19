@@ -32,19 +32,24 @@ command(['ignore'])
         }
 
         $table = $connection->database('ignore');
-
-        if (strpos($message, '-') === 0) {
-            $table->where('mask', substr($message, 1))->delete();
-
-            $user->notice('This user is no longer ignored.');
-
-            return;
-        }
-
         $query = $connection->database('users')->where('nick', $message);
 
         if ($query->count() != 0) {
             $message = '*@'.$query->first()->get('host');
+        }
+
+        if (strpos($message, '-') === 0) {
+
+            if (!$table->where('mask', $message)->count()) {
+                $user->notice('This user is not ignored.');
+
+                return;
+            }
+
+            $table->where('mask', substr($message, 1))->delete();
+            $user->notice('This user is no longer ignored.');
+
+            return;
         }
 
         if ($table->where('mask', $message)->count()) {
