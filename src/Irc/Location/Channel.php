@@ -197,7 +197,7 @@ class Channel extends Location implements Savable, Arrayable
                 continue;
             }
 
-            if ((new Carbon())->diffInMinutes(new Carbon($atom), false) < 0) {
+            if ((new Carbon())->diffInMinutes(new Carbon($atom), false) <= 0) {
                 $this->unmute($this->getUserById($id));
             }
         }
