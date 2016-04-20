@@ -124,7 +124,6 @@ if (!function_exists('configPath')) {
      *
      * @param string $path
      *
-     * @return mixed
      */
     function configPath($path = '')
     {
@@ -485,6 +484,35 @@ if (!function_exists('logger')) {
     function logger()
     {
         return dan('logger');
+    }
+}
+
+if (!function_exists('makeMask')) {
+
+    /**
+     * Makes a host mask from the given partial mask
+     *
+     * @param $partial
+     *
+     * @return string
+     */
+    function makeMask($partial)
+    {
+        $mask = ['*', '*', '*'];
+
+        $data = explode('!', $partial);
+
+        if (count($data) > 1 || (strpos($partial, '!') === false && strpos($partial, '@') === false)) {
+            $mask[0] = $data[0];
+            array_shift($data);
+        }
+
+        $data = explode('@', $data[0]);
+
+        $mask[1] = $data[0] ?? '*';
+        $mask[2] = $data[1] ?? '*';
+
+        return "{$mask[0]}!{$mask[1]}@{$mask[2]}";
     }
 }
 

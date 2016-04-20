@@ -130,6 +130,8 @@ class Connection implements ConnectionContract, DatabaseContract
         return database($this->name);
     }
 
+    //region connection handlers
+
     /**
      * Connects to the connection.
      *
@@ -312,6 +314,10 @@ class Connection implements ConnectionContract, DatabaseContract
         return false;
     }
 
+    //endregion
+
+    //region irc handler
+
     /**
      * Sends the required USER and NICK for login.
      */
@@ -342,6 +348,10 @@ class Connection implements ConnectionContract, DatabaseContract
         $this->quitting = true;
         $this->send('QUIT', $reason);
     }
+
+    //endregion
+
+    //region channel methods
 
     /**
      * Joins a channel.
@@ -457,6 +467,10 @@ class Connection implements ConnectionContract, DatabaseContract
 
         $this->channels->forget($name);
     }
+
+    //endregion
+
+    //region messaging
 
     /**
      * Sends a message (PRIVMSG) to the given location.
@@ -575,4 +589,66 @@ class Connection implements ConnectionContract, DatabaseContract
     {
         $this->write($line);
     }
+
+    //endregion
+
+    //region ignore things
+
+    /**
+     * @param $user
+     *
+     * @return bool
+     */
+    public function ignore($user)
+    {
+        $mask = $this->getIgnoreMask($user);
+
+        if ($this->database('ignore')->where('mask', $mask)->count()) {
+            return false;
+        }
+
+        $this->database('ignore')->insert(['mask' => $mask]);
+
+        return true;
+    }
+
+    /**
+     * @param $user
+     *
+     * @return bool
+     */
+    public function unignore($user)
+    {
+        $mask = $this->getIgnoreMask($user);
+
+        if (!$this->database('ignore')->where('mask', $mask)->count()) {
+            return false;
+        }
+
+        $this->database('ignore')->where('mask', $mask)->delete();
+
+        return true;
+    }
+
+    /**
+     * @param $user
+     *
+     * @return string
+     */
+    protected function getIgnoreMask($user)
+    {
+        if ($user instanceof User) {
+            return $user->mask(false);
+        }
+
+        if ($this->database('users')->where('nick', $user)->count()) {
+            $dbuser = $this->database('users')->where('nick', $user)->first();
+
+            return "*!{$dbuser->get('user', '*')}@{$dbuser->get('host', '*')}";
+        }
+
+        return makeMask($user);
+    }
+
+    //endregion
 }

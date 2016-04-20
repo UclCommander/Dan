@@ -143,8 +143,27 @@ class User extends Location implements Savable, Arrayable, UserContract
         ];
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return "{$this->nick}!{$this->user}@{$this->host}";
+    }
+
+    /**
+     * @param bool $nick
+     * @param bool $user
+     * @param bool $host
+     *
+     * @return string
+     */
+    public function mask($nick = true, $user = true, $host = true)
+    {
+        $mask[0] = $nick ? $this->nick : '*';
+        $mask[1] = $user ? $this->user : '*';
+        $mask[2] = $host ? $this->host : '*';
+
+        return "{$mask[0]}!{$mask[1]}@{$mask[2]}";
     }
 }

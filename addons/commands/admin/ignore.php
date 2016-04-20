@@ -8,21 +8,20 @@ command(['ignore'])
     ->allowConsole()
     ->requiresIrcConnection()
     ->rank('AS')
-    ->helpText('Ignores a user')
+    ->helpText('Ignores a user by nick or hostmask.')
     ->handler(function (Connection $connection, UserContract $user, $message) {
 
         if (empty($message)) {
-            $ignored = $connection->database('ignore')->get();
+            $data = $connection->database('ignore')->get();
+            $masks = [];
 
-            if (!$ignored->count()) {
-                $user->notice('No users are ignored');
+            if (!$data->count()) {
+                $user->notice('Nobody is ignored.');
 
                 return;
             }
 
-            $masks = [];
-
-            foreach ($ignored as $mask) {
+            foreach ($data as $mask) {
                 $masks[] = $mask['mask'];
             }
 
@@ -31,36 +30,47 @@ command(['ignore'])
             return;
         }
 
-        $table = $connection->database('ignore');
-        $query = $connection->database('users')->where('nick', $message);
+        if ($connection->ignore($message)) {
+            $user->notice('User has been ignored.');
 
-        if ($query->count() != 0) {
-            $message = '*@'.$query->first()->get('host');
+            return;
         }
 
-        if (strpos($message, '-') === 0) {
+        $user->notice('User is already ignored.');
+    });
 
-            if (!$table->where('mask', $message)->count()) {
-                $user->notice('This user is not ignored.');
+command(['unignore'])
+    ->allowPrivate()
+    ->allowConsole()
+    ->requiresIrcConnection()
+    ->rank('AS')
+    ->helpText('Unignores a user by nick or hostmask.')
+    ->handler(function (Connection $connection, UserContract $user, $message) {
+
+        if (empty($message)) {
+            $data = $connection->database('ignore')->get();
+            $masks = [];
+
+            if (!$data->count()) {
+                $user->notice('Nobody is ignored.');
 
                 return;
             }
 
-            $table->where('mask', substr($message, 1))->delete();
-            $user->notice('This user is no longer ignored.');
+            foreach ($data as $mask) {
+                $masks[] = $mask['mask'];
+            }
+
+            $user->notice(implode(', ', $masks));
 
             return;
         }
 
-        if ($table->where('mask', $message)->count()) {
-            $user->notice('This user is already ignored.');
+        if ($connection->unignore($message)) {
+            $user->notice('User has been un-ignored.');
 
             return;
         }
 
-        $table->insertOrUpdate(['mask', $message], [
-            'mask' => $message,
-        ]);
-
-        $user->notice('User has been ignored.');
+        $user->notice('User was not ignored in the first place.');
     });
