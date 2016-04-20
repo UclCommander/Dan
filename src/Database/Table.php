@@ -125,7 +125,7 @@ class Table
     public function delete()
     {
         foreach ($this->getItems() as $id => $data) {
-            unset($this->database->data[$id]);
+            unset($this->database->data[$this->table][$id]);
         }
 
         $this->database->save();
@@ -138,9 +138,9 @@ class Table
      * @param $is
      * @param null $value
      *
-     * @return $this
+     * @return Table
      */
-    public function where($column, $is, $value = null)
+    public function where($column, $is, $value = null) : Table
     {
         if ($value == null) {
             $value = $is;
