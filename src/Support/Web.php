@@ -69,13 +69,14 @@ class Web
      * @param array $params
      * @param array $headers
      *
-     * @return \DOMDocument
      * @throws \Exception
+     *
+     * @return \DOMDocument
      */
     public static function dom($uri, $params = [], $headers = []) : DOMDocument
     {
         $data = static::curl('get', $uri, $params, $headers);
-        
+
         if (empty($data)) {
             throw new \Exception("Unable to load from url {$uri}");
         }

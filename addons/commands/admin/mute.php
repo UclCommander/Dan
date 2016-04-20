@@ -1,6 +1,5 @@
 <?php
 
-use Carbon\Carbon;
 use Dan\Irc\Location\Channel;
 
 command(['mute'])
@@ -8,7 +7,7 @@ command(['mute'])
         'Mutes the given user with an optional timespan',
         '$mute User 30m',
         'y = year | M = months | d = days | h = hours | m = minutes',
-        'Seconds are not supported'
+        'Seconds are not supported',
     ])
     ->rank('hoaq')
     ->handler(function (Channel $channel, $message) {
@@ -25,7 +24,7 @@ command(['mute'])
 
 command(['unmute'])
     ->helpText([
-        'Unmutes the given user'
+        'Unmutes the given user',
     ])
     ->rank('hoaq')
     ->handler(function (Channel $channel, $message) {

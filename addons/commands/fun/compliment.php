@@ -10,7 +10,6 @@
  * Do not directly edit this file.
  * If you want to change the rank, see commands.permissions in the configuration.
  */
-
 use Dan\Irc\Location\Channel;
 use Dan\Support\Web;
 
@@ -20,7 +19,7 @@ command(['compliment'])
         $website = array_random([
             'http://www.chainofgood.co.uk/passiton',
             'http://toykeeper.net/programs/mad/compliments',
-            'http://www.madsci.org/cgi-bin/cgiwrap/~lynn/jardin/SCG'
+            'http://www.madsci.org/cgi-bin/cgiwrap/~lynn/jardin/SCG',
         ]);
 
         $compliment = 'You are very lovely and everyone cares about you!';

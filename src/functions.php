@@ -123,7 +123,6 @@ if (!function_exists('configPath')) {
      * Gets the config path.
      *
      * @param string $path
-     *
      */
     function configPath($path = '')
     {
@@ -490,7 +489,7 @@ if (!function_exists('logger')) {
 if (!function_exists('makeMask')) {
 
     /**
-     * Makes a host mask from the given partial mask
+     * Makes a host mask from the given partial mask.
      *
      * @param $partial
      *
@@ -532,12 +531,12 @@ if (!function_exists('intervalTimeToCarbon')) {
             'd' => 'dayz',
             'h' => 'hours',
             'm' => 'minutes',
-            's' => 'seconds'
+            's' => 'seconds',
         ];
 
-        $info   = str_split(str_replace(' ', '', $time));
+        $info = str_split(str_replace(' ', '', $time));
         $carbon = new \Carbon\CarbonInterval(null);
-        $time   = null;
+        $time = null;
 
         for ($i = 0; $i < count($info); $i++) {
             if (is_numeric($info[$i])) {
@@ -555,6 +554,3 @@ if (!function_exists('intervalTimeToCarbon')) {
         return new \Carbon\Carbon($carbon);
     }
 }
-
-
-
