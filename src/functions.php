@@ -487,3 +487,46 @@ if (!function_exists('logger')) {
         return dan('logger');
     }
 }
+
+if (!function_exists('intervalTimeToCarbon')) {
+
+    /**
+     * @param $time
+     *
+     * @return \Carbon\Carbon
+     */
+    function intervalTimeToCarbon($time)
+    {
+        $map = [
+            'y' => 'years',
+            'M' => 'months',
+            'w' => 'weeks',
+            'd' => 'dayz',
+            'h' => 'hours',
+            'm' => 'minutes',
+            's' => 'seconds'
+        ];
+
+        $info   = str_split(str_replace(' ', '', $time));
+        $carbon = new \Carbon\CarbonInterval(null);
+        $time   = null;
+
+        for ($i = 0; $i < count($info); $i++) {
+            if (is_numeric($info[$i])) {
+                $time = $info[$i];
+                continue;
+            }
+
+            if ($time == null) {
+                continue;
+            }
+
+            $carbon = $carbon->{$map[$info[$i]]}($time);
+        }
+
+        return new \Carbon\Carbon($carbon);
+    }
+}
+
+
+

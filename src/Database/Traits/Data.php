@@ -86,4 +86,16 @@ trait Data
 
         return $this;
     }
+
+    /**
+     * @param $key
+     *
+     * @return $this
+     */
+    public function forgetDataByKey($key)
+    {
+        Arr::forget($this->data, $key);
+
+        return $this;
+    }
 }

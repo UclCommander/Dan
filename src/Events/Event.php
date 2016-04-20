@@ -14,6 +14,11 @@ class Event
     /**
      * @var string
      */
+    public $id;
+
+    /**
+     * @var string
+     */
     protected $name;
 
     /**
@@ -40,6 +45,11 @@ class Event
      * @var int
      */
     protected $priority;
+
+    /**
+     * @var array
+     */
+    protected $args = [];
 
     /**
      * Event constructor.
@@ -120,6 +130,18 @@ class Event
     }
 
     /**
+     * @param array $args
+     *
+     * @return \Dan\Events\Event
+     */
+    public function with(array $args) : Event
+    {
+        $this->args = $args;
+
+        return $this;
+    }
+
+    /**
      * Calls the event.
      *
      * @param $args
@@ -133,6 +155,8 @@ class Event
         if (!($func instanceof \Closure) && !is_array($func)) {
             $func = [$this->function, 'run'];
         }
+
+        $args = array_merge($args, $this->args);
 
         try {
             return dan()->call($func, $args);

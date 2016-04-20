@@ -104,6 +104,8 @@ class Dan extends Container implements DatabaseContract
     {
         $this->registerProviders();
         $this->loadProvider(IrcServiceProvider::class);
+
+        $this->make('addons')->loadAll();
     }
 
     /**
@@ -111,8 +113,6 @@ class Dan extends Container implements DatabaseContract
      */
     public function run()
     {
-        $this->make('addons')->loadAll();
-
         $this['connections']->start();
         $this['connections']->readConnections();
     }
@@ -179,7 +179,7 @@ class Dan extends Container implements DatabaseContract
                 continue;
             }
 
-            console()->debug("Loading provider {$provider}");
+            console()->info("Loading provider {$provider}");
 
             $this->loadProvider($provider);
         }
@@ -215,6 +215,7 @@ class Dan extends Container implements DatabaseContract
         $pluginConfig = json_decode(file_get_contents("{$path}/plugin.json"), true);
 
         if (isset($pluginConfig['commands']) && $pluginConfig['commands']) {
+            console()->warn("Plugin {$name} uses an outdated addon loading method. Please use <b>addons</b> instead.");
             $this->make('addons')->addPath("{$path}/commands");
         }
 

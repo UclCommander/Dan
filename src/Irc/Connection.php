@@ -361,19 +361,24 @@ class Connection implements ConnectionContract, DatabaseContract
     }
 
     /**
-     * Joins a channel.
+     * Parts a channel.
      *
      * @param $name
      * @param string $reason
      */
     public function partChannel($name, $reason = 'Leaving')
     {
+        if ($name instanceof Channel) {
+            $name = $name->getLocation();
+        }
+
         if (!$this->inChannel($name)) {
             return;
         }
 
         $name = strtolower($name);
 
+        $this->channels->get($name)->destroy();
         $this->channels->forget($name);
 
         $this->send('PART', $name, $reason);

@@ -2,8 +2,10 @@
 
 namespace Dan\Irc\Location;
 
+use Carbon\Carbon;
 use Dan\Database\Savable;
 use Dan\Database\Traits\Data;
+use Dan\Events\Event;
 use Dan\Irc\Connection;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Collection;
@@ -23,6 +25,16 @@ class Channel extends Location implements Savable, Arrayable
     protected $users;
 
     /**
+     * @var array
+     */
+    protected $moderations = ['mute' => [], 'ban' => []];
+
+    /**
+     * @var Event[]
+     */
+    protected $events = [];
+    
+    /**
      * Channel constructor.
      *
      * @param \Dan\Irc\Connection $connection
@@ -38,22 +50,12 @@ class Channel extends Location implements Savable, Arrayable
         $this->loadCurrentData();
 
         $this->save();
+
+        $this->events[] = events()->subscribe('irc.join', [$this, 'handleJoin']);
+        $this->events[] = events()->subscribe('system.ping', [$this, 'handleSystemPing']);
     }
 
-    /**
-     * Kicks a user from the channel.
-     *
-     * @param $user
-     * @param string $reason
-     */
-    public function kick($user, $reason = 'Requested')
-    {
-        if ($user instanceof User) {
-            $user = $user->nick;
-        }
-
-        $this->connection->send('KICK', $this, $user, $reason);
-    }
+    //region users
 
     /**
      * Gets all users in the channel.
@@ -141,6 +143,22 @@ class Channel extends Location implements Savable, Arrayable
     }
 
     /**
+     * @param $id
+     *
+     * @return \Dan\Irc\Location\User|null
+     */
+    public function getUserById($id)
+    {
+        $users = $this->connection->database('users')->where('id', $id);
+
+        if ($users->count()) {
+            return $this->getUser($users->first()->get('nick'));
+        }
+
+        return null;
+    }
+
+    /**
      * Sets a mode on a user.
      *
      * @param $user
@@ -155,6 +173,92 @@ class Channel extends Location implements Savable, Arrayable
         $this->users->get(strtolower($user))->setMode($mode);
     }
 
+    //endregion
+
+    #region moderation
+
+    /**
+     * @param \Dan\Irc\Location\User $user
+     */
+    public function handleJoin(User $user)
+    {
+        if (in_array($user->id, $this->moderations['mute'])) {
+            $this->mode('-v', $user);
+        }
+    }
+
+    /**
+     *
+     */
+    public function handleSystemPing()
+    {
+        foreach ($this->getData('mute', []) as $id => $atom) {
+            if ($atom == null) {
+                continue;
+            }
+
+            if ((new Carbon())->diffInMinutes(new Carbon($atom), false) < 0) {
+                $this->unmute($this->getUserById($id));
+            }
+        }
+    }
+
+    /**
+     * Mutes a user with an optional duration.
+     *
+     * @param $user
+     * @param $duration
+     */
+    public function mute($user, $duration = null)
+    {
+        if ((!$user instanceof User)) {
+            $user = $this->getUser($user);
+        }
+
+        $this->setData("mute.{$user->id}", $duration ? intervalTimeToCarbon($duration)->toAtomString() : null)->save();
+        $this->mode('-v', $user);
+    }
+
+    /**
+     * Un-mutes a user.
+     *
+     * @param $user
+     */
+    public function unmute($user)
+    {
+        if ((!$user instanceof User)) {
+            $user = $this->getUser($user);
+        }
+
+        $this->forgetDataByKey("mute.{$user->id}")->save();
+        $this->mode('+v', $user);
+    }
+
+    /**
+     * Kicks a user from the channel.
+     *
+     * @param $user
+     * @param string $reason
+     */
+    public function kick($user, $reason = 'Requested')
+    {
+        if ($user instanceof User) {
+            $user = $user->nick;
+        }
+
+        $this->connection->send('KICK', $this, $user, $reason);
+    }
+
+    #endregion
+
+    /**
+     * @param $topic
+     */
+    public function setTopic($topic)
+    {
+        $this->connection->send('TOPIC', $this, $topic);
+    }
+
     /**
      * @param $mode
      * @param null $user
@@ -163,6 +267,8 @@ class Channel extends Location implements Savable, Arrayable
     {
         $this->connection->send('MODE', $this, $mode, $user);
     }
+
+    //region channel data
 
     /**
      * Saves the channel to the database.
@@ -190,6 +296,9 @@ class Channel extends Location implements Savable, Arrayable
         ];
     }
 
+    /**
+     * Loads currenty known channel data.
+     */
     protected function loadCurrentData()
     {
         /** @var Collection $data */
@@ -205,11 +314,25 @@ class Channel extends Location implements Savable, Arrayable
         $this->data = $data->get('data');
     }
 
+    //endregion
+
     /**
-     * @param $topic
+     * Parts the channel.
+     *
+     * @param string $message
      */
-    public function setTopic($topic)
+    public function part($message = "Requested")
     {
-        $this->connection->send('TOPIC', $this, $topic);
+        $this->connection->partChannel($this, $message);
+    }
+
+    /**
+     * Destroys all event listeners for the channel.
+     */
+    public function destroy()
+    {
+        foreach ($this->events as $event) {
+            $event->destroy();
+        }
     }
 }
