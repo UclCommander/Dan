@@ -33,7 +33,7 @@ class Channel extends Location implements Savable, Arrayable
      * @var Event[]
      */
     protected $events = [];
-    
+
     /**
      * Channel constructor.
      *
@@ -175,7 +175,7 @@ class Channel extends Location implements Savable, Arrayable
 
     //endregion
 
-    #region moderation
+    //region moderation
 
     /**
      * @param \Dan\Irc\Location\User $user
@@ -187,9 +187,6 @@ class Channel extends Location implements Savable, Arrayable
         }
     }
 
-    /**
-     *
-     */
     public function handleSystemPing()
     {
         foreach ($this->getData('mute', []) as $id => $atom) {
@@ -249,7 +246,7 @@ class Channel extends Location implements Savable, Arrayable
         $this->connection->send('KICK', $this, $user, $reason);
     }
 
-    #endregion
+    //endregion
 
     /**
      * @param $topic
@@ -321,7 +318,7 @@ class Channel extends Location implements Savable, Arrayable
      *
      * @param string $message
      */
-    public function part($message = "Requested")
+    public function part($message = 'Requested')
     {
         $this->connection->partChannel($this, $message);
     }

@@ -10,16 +10,15 @@
  * Do not directly edit this file.
  * If you want to change the rank, see commands.permissions in the configuration.
  */
-
 use Dan\Irc\Location\Channel;
 use Dan\Support\Web;
 
 command(['pickup'])
     ->helpText('Uses a snazy pickup line from the love doctor Dan himself to pick someone up.')
-    ->handler(function (Channel $channel,$message) {
+    ->handler(function (Channel $channel, $message) {
         $website = array_random([
             'http://www.pickuplinegen.com',
-            'http://toykeeper.net/programs/mad/pickup'
+            'http://toykeeper.net/programs/mad/pickup',
         ]);
 
         $pickup = "Hey baby you're so hot, you're giving me a heat stroke!";

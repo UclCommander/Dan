@@ -25,12 +25,12 @@ class Logger
     const CRITICAL = 6;
 
     protected $level = [
-        self::LOG => 'LOG',
-        self::DEBUG => 'DEBUG',
-        self::NOTICE => 'NOTICE',
-        self::INFO => 'INFO',
-        self::ERROR => 'ERROR',
-        self::WARNING => 'WARNING',
+        self::LOG      => 'LOG',
+        self::DEBUG    => 'DEBUG',
+        self::NOTICE   => 'NOTICE',
+        self::INFO     => 'INFO',
+        self::ERROR    => 'ERROR',
+        self::WARNING  => 'WARNING',
         self::CRITICAL => 'CRITICAL',
     ];
 
@@ -49,7 +49,7 @@ class Logger
      */
     public function beginSession($sessions = [])
     {
-        foreach ((array)$sessions as $session) {
+        foreach ((array) $sessions as $session) {
             if (in_array($session, $this->sessions)) {
                 continue;
             }
@@ -76,7 +76,7 @@ class Logger
             $this->beginSession($file);
         }
 
-        $this->addLine(null, ($user ? "{$user}: " : '' ).$message, $file);
+        $this->addLine(null, ($user ? "{$user}: " : '').$message, $file);
     }
 
     /**
@@ -183,6 +183,4 @@ class Logger
 
         file_put_contents(storagePath("logs/{$file}/{$date->toDateString()}.log"), "[{$date->toTimeString()}] {$line}".PHP_EOL, FILE_APPEND);
     }
-
-
 }

@@ -311,7 +311,7 @@ class CommandManager
      */
     public function canUseCommand(Connection $connection, Command $command, IrcUser $user)
     {
-        foreach(str_split($command->getRank()) as $rank) {
+        foreach (str_split($command->getRank()) as $rank) {
             if (in_array($rank, ['x', '*'])) {
                 return true;
             }
