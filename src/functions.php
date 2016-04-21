@@ -536,11 +536,11 @@ if (!function_exists('intervalTimeToCarbon')) {
 
         $info = str_split(str_replace(' ', '', $time));
         $carbon = new \Carbon\CarbonInterval(null);
-        $time = null;
+        $time = '';
 
         for ($i = 0; $i < count($info); $i++) {
             if (is_numeric($info[$i])) {
-                $time = $info[$i];
+                $time .= $info[$i];
                 continue;
             }
 
@@ -549,6 +549,7 @@ if (!function_exists('intervalTimeToCarbon')) {
             }
 
             $carbon = $carbon->{$map[$info[$i]]}($time);
+            $time = '';
         }
 
         return new \Carbon\Carbon($carbon);
