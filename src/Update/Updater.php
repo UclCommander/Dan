@@ -30,8 +30,16 @@ class Updater
             return;
         }
 
+        if (!$this->check()) {
+            return;
+        }
+
+        if (!config('dan.updates.auto_install')) {
+            return;
+        }
+
         try {
-            $this->update(console());
+            $this->update();
         } catch (\Exception $e) {
             console()->error($e->getMessage());
         }
@@ -47,7 +55,7 @@ class Updater
     public function check() : bool
     {
         if (!file_exists(rootPath('.git'))) {
-            throw new \Exception('Unable to auto update. You must setup Dan as a git clone.');
+            throw new \Exception('Unable to check for updates. You must setup Dan as a git clone.');
         }
 
         $status = shell_exec("git remote update && git status {$this->branch}");
@@ -70,11 +78,7 @@ class Updater
      */
     public function update($force = false, $callback = null) : bool
     {
-        if (!$this->check()) {
-            return false;
-        }
-
-        if (!config('dan.updates.auto_install') && !$force) {
+        if (!$force) {
             return false;
         }
 

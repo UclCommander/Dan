@@ -9,16 +9,24 @@ command(['update'])
     ->allowPrivate()
     ->rank('S')
     ->helpText('Updates the bot.')
-    ->handler(function (UserContract $user, Updater $updater, Channel $channel = null) {
+    ->handler(function (UserContract $user, Updater $updater, $message, Channel $channel = null) {
         $location = $channel ?? $user;
 
         try {
-            $update = $updater->update(true, function ($message) use ($location) {
-                $location->message($message);
-            });
-
-            if (!$update) {
+            if (!$updater->check()) {
                 $location->message('No updates found.');
+
+                return;
+            }
+            
+            if ($message == 'do') {
+                $update = $updater->update(true, function ($message) use ($location) {
+                    $location->message($message);
+                });
+
+                if (!$update) {
+                    $location->message('No updates found.');
+                }
             }
         } catch (Exception $e) {
             $location->message($e->getMessage());
