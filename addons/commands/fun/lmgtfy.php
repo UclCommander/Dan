@@ -13,10 +13,10 @@ command(['lmgtfy', 'lazy'])
     ->handler(function (Channel $channel, $message) {
 
         if (!$message) {
-            $channel->message('Can\'t get any lazier than that..');
+            $channel->message("Can't get any lazier than that..");
 
             return;
         }
 
-        $channel->message('http://lmgtfy.com/?q='.urlencode($message));
+        $channel->message(shortLink('http://lmgtfy.com/?q='.urlencode($message)));
     });

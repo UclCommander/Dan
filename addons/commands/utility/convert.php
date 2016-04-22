@@ -6,7 +6,7 @@ use Illuminate\Support\Collection;
 
 command(['convert'])
     ->helpText("Converts something to something else using DuckDuckGo")
-    ->func(function(Channel $channel, $message) {
+    ->handler(function(Channel $channel, $message) {
 
         $query = urlencode("convert {$message}");
         $request = Web::json("http://api.duckduckgo.com/?q={$query}&format=json&pretty=1");
