@@ -13,7 +13,9 @@ command(['fmylife', 'fml'])
     ->helpText('Gets a random F My Life.')
     ->handler(function (Channel $channel, $message) {
 
-        if (strpos($message, '#') === 0) {
+        if (!is_null($message)) {
+            $data = Web::api('fml/keyword', ['keyword' => $message]);
+        } else if (strpos($message, '#') === 0) {
             $data = Web::api('fml/id/'.substr($message, 1));
         } else {
             $data = Web::api('fml/random');
