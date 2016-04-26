@@ -14,11 +14,11 @@ command(['fmylife', 'fml'])
     ->handler(function (Channel $channel, $message) {
 
         if (strpos($message, '#') === 0) {
-            $data = Web::api('fml/id'.substr($message, 1));
+            $data = Web::api('fml/id/'.substr($message, 1));
         } else {
             $data = Web::api('fml/random');
         }
-        
+
         if (empty($data)) {
             $channel->message('[ <yellow>#21</yellow> | <cyan>Error fetching FML. FML </cyan>| <green>+9001</green>/<red>-420</red> ]');
 
