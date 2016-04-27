@@ -25,11 +25,17 @@ trait Data
      * @param $key
      * @param $value
      *
+     * @throws \Exception
+     *
      * @return $this
      */
     public function setData($key, $value = null)
     {
         if ($value === null) {
+            if(!is_array($key)) {
+                throw new \Exception('Value must be an array');
+            }
+
             $this->data = $key;
 
             return $this;
