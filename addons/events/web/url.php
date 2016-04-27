@@ -25,6 +25,10 @@ on('irc.message.public')
         $titles = [];
 
         foreach ($urls as $url) {
+            if (strpos($url, '.') === false) {
+                continue;
+            }
+            
             $url = Url::getFinalUrl($url);
 
             $info = parse_url($url);
