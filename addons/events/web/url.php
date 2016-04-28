@@ -70,7 +70,7 @@ on('irc.message.public')
 
                 $channel->message("[ Webpage ] {$title}");
             } elseif (strpos($mimeType, 'image') === 0) {
-                $type = $headers['content-type'];
+                $type = head(explode(';', $headers['content-type']));
 
                 if (is_array($type)) {
                     $type = reset($type);
