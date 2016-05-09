@@ -187,6 +187,9 @@ class Channel extends Location implements Savable, Arrayable
         }
     }
 
+    /**
+     * Handles the ping cron job.
+     */
     public function handleSystemPing()
     {
         foreach ($this->getData('mute', []) as $id => $atom) {
@@ -196,6 +199,12 @@ class Channel extends Location implements Savable, Arrayable
 
             if ((new Carbon())->diffInMinutes(new Carbon($atom), false) <= 0) {
                 $this->unmute($this->getUserById($id));
+            }
+        }
+
+        foreach ($this->getData('ban', []) as $id => $data) {
+            if ((new Carbon())->diffInMinutes(new Carbon($data['duration']), false) <= 0) {
+                $this->unban($id);
             }
         }
     }
@@ -229,6 +238,77 @@ class Channel extends Location implements Savable, Arrayable
 
         $this->forgetDataByKey("mute.{$user->id}")->save();
         $this->mode('+v', $user);
+    }
+
+    /**
+     * Bans a user.
+     *
+     * @param $user
+     * @param $duration
+     *
+     * @return bool
+     */
+    public function ban($user, $duration = null) : bool
+    {
+        if ($user instanceof User || $this->hasUser($user)) {
+            $user = $this->getUser($user)->host;
+        }
+
+        $mask = "*!*@{$user}";
+
+        // If duration is null, we don't need to save the ban to the database.
+        if (!is_null($duration)) {
+            $id = md5($user);
+
+            $this->setData("ban.{$id}", [
+                'duration' => ($duration ? intervalTimeToCarbon($duration)->toAtomString() : null),
+                'mask'     => $mask
+            ])->save();
+        }
+
+        $this->mode('+b', $mask);
+
+        return true;
+    }
+
+    /**
+     * Unbans a user.
+     *
+     * @param $user
+     *
+     * @return bool
+     */
+    public function unban($user) : bool
+    {
+        $id = null;
+
+        if (preg_match('/^[a-f0-9]{32}$/', $user)) {
+            $id = $user;
+            $user = $this->getData("ban.{$user}.mask");
+        }
+
+        if ($user instanceof User || $this->users->has($user)) {
+            $user = $this->getUser($user)->host;
+            $id = md5($user);
+        }
+
+        if ($id == null) {
+            $users = $this->connection->database('users')->where('nick', $user);
+
+            if (!$users->count()) {
+                return false;
+            }
+
+            $user = $users->first()->get('host');
+        }
+
+        $this->mode('-b', $user);
+
+        if ($this->hasData("ban.{$id}")) {
+            $this->forgetDataByKey("ban.{$id}")->save();
+        }
+
+        return true;
     }
 
     /**
