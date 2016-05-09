@@ -18,7 +18,7 @@ command(['update'])
 
                 return;
             }
-            
+
             if ($message == 'do') {
                 $update = $updater->update(true, function ($message) use ($location) {
                     $location->message($message);

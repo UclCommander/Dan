@@ -32,7 +32,7 @@ trait Data
     public function setData($key, $value = null)
     {
         if ($value === null) {
-            if(!is_array($key)) {
+            if (!is_array($key)) {
                 throw new \Exception('Value must be an array');
             }
 
