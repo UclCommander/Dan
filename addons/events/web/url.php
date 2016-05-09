@@ -28,7 +28,7 @@ on('irc.message.public')
             if (strpos($url, '.') === false) {
                 continue;
             }
-            
+
             $url = Url::getFinalUrl($url);
 
             $info = parse_url($url);
