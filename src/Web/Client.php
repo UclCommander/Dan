@@ -118,7 +118,17 @@ class Client
     {
         $handler = $route->getHandler();
 
-        if (!($handler instanceof \Closure)) {
+        if (is_string($handler)) {
+            if (strpos($handler, '@') !== false) {
+                list($controller, $method) = explode('@', $handler);
+
+                if (!class_exists($controller)) {
+                    return new Response("Controller class {$controller} doesn't exist.", 500);
+                }
+
+                $handler = [new $controller, $method];
+            }
+        } elseif (!($handler instanceof \Closure) && !is_array($handler)) {
             $handler = [$handler, 'run'];
         }
 
