@@ -30,8 +30,6 @@ command(['urban'])
                 $index = abs(last($data) - 1);
                 array_pop($data);
             }
-            
-            $data = implode(' ', $data);
         }
 
         $msg = urlencode(implode(' ', $data));
@@ -45,7 +43,7 @@ command(['urban'])
         }
 
         if ($json['result_type'] == 'no_results') {
-            $location->message("No definition found for {$data[0]}");
+            $location->message("No definition found for {$msg}");
 
             return;
         }
