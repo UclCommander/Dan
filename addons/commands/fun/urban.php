@@ -30,6 +30,8 @@ command(['urban'])
                 $index = abs(last($data) - 1);
                 array_pop($data);
             }
+            
+            $data = implode(' ', $data);
         }
 
         $msg = urlencode(implode(' ', $data));
