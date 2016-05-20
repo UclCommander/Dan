@@ -510,6 +510,8 @@ class Connection implements ConnectionContract, DatabaseContract
 
         $message = $formatter->format($message);
 
+        logger()->logNetworkChannelItem($this->getName(), $location, $message, $this->user->nick);
+
         $this->send('PRIVMSG', $location, $message);
     }
 
@@ -531,6 +533,8 @@ class Connection implements ConnectionContract, DatabaseContract
         }
 
         $message = $formatter->format($message);
+
+        logger()->logNetworkChannelItem($this->getName(), $location, "** {$message}", $this->user->nick);
 
         $this->send('PRIVMSG', $location, "\001ACTION $message\001");
     }

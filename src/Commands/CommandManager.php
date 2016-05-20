@@ -111,6 +111,12 @@ class CommandManager
             return true;
         }
 
+        if (!is_null($channel)) {
+            if ($channel->getData('locked', false) && !$connection->isAdminOrOwner($user)) {
+                return false;
+            }
+        }
+
         if (!($command = $this->findCommand($name))) {
             if ($connection->config->get('command_not_found_error', true)) {
                 $commands = $this->aliases->keys()->filter(function ($cmd) use ($connection, $user) {

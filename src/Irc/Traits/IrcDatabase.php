@@ -53,5 +53,15 @@ trait IrcDatabase
                     'value' => [],
                 ]);
         }
+
+        if (!database($this->name)->tableExists('remind')) {
+            database($this->name)
+                ->schema('remind')
+                ->create([
+                    'remind' => '',
+                    'when'   => 0,
+                    'what'   => '',
+                ]);
+        }
     }
 }
