@@ -12,5 +12,7 @@ command(['version', 'v'])
     ->handler(function (UserContract $user, Channel $channel = null) {
         $location = $channel ?? $user;
 
-        $location->message(Dan::VERSION.' by UclCommander - https://links.ml/XOH4');
+        $hash = dan()->versionHash();
+
+        $location->message('Dan '.Dan::VERSION.''.($hash ? " (git:{$hash})" : '').' by UclCommander - https://links.ml/XOH4');
     });

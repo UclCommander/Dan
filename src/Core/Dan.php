@@ -243,4 +243,16 @@ class Dan extends Container implements DatabaseContract
     {
         return $this->providers[$class];
     }
+
+    /**
+     * @return string
+     */
+    public function versionHash()
+    {
+        if (!file_exists(ROOT_DIR.'/.git')) {
+            return false;
+        }
+
+        return trim(shell_exec('git rev-parse --short HEAD'));
+    }
 }
