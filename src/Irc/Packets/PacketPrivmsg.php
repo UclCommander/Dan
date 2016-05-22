@@ -94,12 +94,6 @@ class PacketPrivmsg extends Packet
     {
         $ctcp = $this->parseCTCP($message);
 
-        $normalized = ucfirst(strtolower($ctcp['command']));
-
-        if (method_exists($this, 'ctcp'.$normalized)) {
-            return [$ctcp['command'], $this->{'ctcp'.$normalized}()];
-        }
-
         $response = $this->triggerEvent('irc.ctcp.'.strtolower($ctcp['command'].'.'.($channel ? 'public' : 'private')), [
             'connection' => $this->connection,
             'user'       => $user,
@@ -107,10 +101,16 @@ class PacketPrivmsg extends Packet
             'message'    => $ctcp['message'],
         ]);
 
-        if (!is_string($response)) {
-            return [];
+        if (is_string($response)) {
+            return [$ctcp['command'], $response];
         }
 
-        return [$ctcp['command'], $response];
+        $normalized = ucfirst(strtolower($ctcp['command']));
+
+        if (method_exists($this, 'ctcp'.$normalized)) {
+            return [$ctcp['command'], $this->{'ctcp'.$normalized}()];
+        }
+
+        return [];
     }
 }
