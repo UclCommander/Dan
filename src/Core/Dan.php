@@ -154,11 +154,11 @@ class Dan extends Container implements DatabaseContract
      */
     protected function registerCoreProviders()
     {
-        foreach ($this->coreProviders as $provider) {
+        loop($this->coreProviders, function($provider) {
             /** @var ServiceProvider $provider */
             $provider = new $provider($this);
             $provider->register();
-        }
+        });
     }
 
     /**

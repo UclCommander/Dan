@@ -144,7 +144,12 @@ class Handler
                 foreach ($result as $k => $v) {
                     $args[$k] = $v;
                 }
+                
                 continue;
+            }
+
+            if (!is_bool($result) && !is_null($result)) {
+                return $result;
             }
         }
 

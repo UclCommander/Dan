@@ -502,11 +502,9 @@ class Connection implements ConnectionContract, DatabaseContract
 
         $formatter = new IrcOutputFormatter(true);
 
-        if (!empty($styles)) {
-            foreach ($styles as $name => $style) {
-                $formatter->setStyle($name, new IrcOutputFormatterStyle(...$style));
-            }
-        }
+        loop($styles, function($style, $name) use ($formatter) {
+            $formatter->setStyle($name, new IrcOutputFormatterStyle(...$style));
+        });
 
         $message = $formatter->format($message);
 
@@ -526,11 +524,9 @@ class Connection implements ConnectionContract, DatabaseContract
     {
         $formatter = new IrcOutputFormatter(true);
 
-        if (!empty($styles)) {
-            foreach ($styles as $name => $style) {
-                $formatter->setStyle($name, new IrcOutputFormatterStyle(...$style));
-            }
-        }
+        loop($styles, function($style, $name) use ($formatter) {
+            $formatter->setStyle($name, new IrcOutputFormatterStyle(...$style));
+        });
 
         $message = $formatter->format($message);
 

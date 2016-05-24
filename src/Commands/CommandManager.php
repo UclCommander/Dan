@@ -111,13 +111,30 @@ class CommandManager
             return true;
         }
 
+        $eventData = [
+            'connection'     => $connection,
+            'user'           => $user,
+            'message'        => $info[1] ?? null,
+            'channel'        => $channel,
+            'command'        => $name,
+            'commandManager' => $this,
+        ];
+
         if (!is_null($channel)) {
-            if ($channel->getData('locked', false) && !$connection->isAdminOrOwner($user)) {
+            if (
+                $channel->getData('locked', false) &&
+                !$connection->isAdminOrOwner($user) &&
+                events()->fire('commands.channel.locked', $eventData) !== false
+            ) {
                 return false;
             }
         }
 
         if (!($command = $this->findCommand($name))) {
+            if (events()->fire('commands.not_found', $eventData) === false) {
+                return false;
+            }
+
             if ($connection->config->get('command_not_found_error', true)) {
                 $commands = $this->aliases->keys()->filter(function ($cmd) use ($connection, $user) {
                     return $this->canUseCommand($connection, $this->findCommand($cmd), $user);
@@ -132,14 +149,18 @@ class CommandManager
         }
 
         if (!is_null($channel)) {
-            if (in_array($name, $channel->getData('info.commands.disabled', [])) && !$connection->isAdminOrOwner($user)) {
+            if (
+                in_array($name, $channel->getData('info.commands.disabled', [])) &&
+                !$connection->isAdminOrOwner($user) &&
+                events()->fire('commands.channel.ignored', $eventData) !== false
+            ) {
                 console()->debug("Ignoring command {$name} from {$channel} because it's set to be ignored.");
 
                 return false;
             }
         }
 
-        if (!$this->canUseCommand($connection, $command, $user)) {
+        if (!$this->canUseCommand($connection, $command, $user) && events()->fire('command.permission_error', $eventData) !== false) {
             $location->message("You don't have the permissions to use this command.");
 
             $permission = implode('', $user->modes());
@@ -155,7 +176,7 @@ class CommandManager
             return false;
         }
 
-        if ($this->checkRate($connection, $user, $command)) {
+        if ($this->checkRate($connection, $user, $command) && events()->fire('commands.rate.exceeded', $eventData) !== false) {
             controlLog("[ <red>Rate Limiter</red> ] <cyan>{$user->nick}</cyan> attempted to use the command <i>{$name}</i> - Rate Limit exceeded.");
 
             if ($this->isSpamming($user) && $channel->getUser($connection->user)->hasPermissionTo('kick')) {
@@ -165,14 +186,7 @@ class CommandManager
             return false;
         }
 
-        $ran = $this->callCommand($command, [
-            'connection'     => $connection,
-            'user'           => $user,
-            'message'        => $info[1] ?? null,
-            'channel'        => $channel,
-            'command'        => $name,
-            'commandManager' => $this,
-        ]);
+        $ran = $this->callCommand($command, $eventData);
 
         if ($ran === false) {
             $this->callCommand($this->findCommand('help'), [
@@ -264,6 +278,10 @@ class CommandManager
      */
     public function callCommand(Command $command, $args)
     {
+        if (events()->fire('commands.call', $args) === false) {
+            return false;
+        }
+
         $handler = $command->getHandler();
         $func = $handler;
 

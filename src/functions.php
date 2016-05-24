@@ -7,6 +7,23 @@ use Dan\Services\ShortLinks\Links;
 use Dan\Support\DotCollection;
 use Dan\Web\Route;
 
+
+if (!function_exists('loop')) {
+
+    /**
+     * @param $items
+     * @param $func
+     */
+    function loop($items, $func)
+    {
+        foreach ($items as $key => $item) {
+            if (!is_null($func($item, $key))) {
+                return;
+            }
+        }
+    }
+}
+
 if (!function_exists('dan')) {
 
     /**
