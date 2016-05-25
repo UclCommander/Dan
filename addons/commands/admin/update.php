@@ -13,12 +13,6 @@ command(['update'])
         $location = $channel ?? $user;
 
         try {
-            if (!$updater->check()) {
-                $location->message('No updates found.');
-
-                return;
-            }
-
             if ($message == 'do') {
                 $update = $updater->update(true, function ($message) use ($location) {
                     $location->message($message);
@@ -27,7 +21,18 @@ command(['update'])
                 if (!$update) {
                     $location->message('No updates found.');
                 }
+
+                return;
             }
+
+            if ($updater->check()) {
+                $location->message("Updates found. Run <i>update do</i> to install the updates.");
+
+                return;
+            }
+
+            $location->message('No updates found.');
+
         } catch (Exception $e) {
             $location->message($e->getMessage());
         }
