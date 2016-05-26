@@ -98,14 +98,7 @@ class CommandManager
             return true;
         }
 
-        $clean = substr($message, 1);
-
-        if (empty($clean)) {
-            return true;
-        }
-
-        $info = explode(' ', $clean, 2);
-        $name = $info[0];
+        list($name, $info) = $this->getCommandName($message);
 
         if (preg_match('/[^a-zA-Z0-9:]/', $name) > 0) {
             return true;
@@ -114,24 +107,18 @@ class CommandManager
         $eventData = [
             'connection'     => $connection,
             'user'           => $user,
-            'message'        => $info[1] ?? null,
+            'message'        => $info ?? null,
             'channel'        => $channel,
             'command'        => $name,
             'commandManager' => $this,
         ];
 
-        if (!is_null($channel)) {
-            if (
-                $channel->getData('locked', false) &&
-                !$connection->isAdminOrOwner($user) &&
-                events()->fire('commands.channel.locked', $eventData) !== false
-            ) {
-                return false;
-            }
+        if ($this->isChannelLocked($channel, $eventData) && !$connection->isAdminOrOwner($user)) {
+            return false;
         }
 
         if (!($command = $this->findCommand($name))) {
-            if (events()->fire('commands.not_found', $eventData) === false) {
+            if (events()->fire('command.not_found', $eventData) === false) {
                 return false;
             }
 
@@ -148,20 +135,16 @@ class CommandManager
             return false;
         }
 
-        if (!is_null($channel)) {
-            if (
-                in_array($name, $channel->getData('info.commands.disabled', [])) &&
-                !$connection->isAdminOrOwner($user) &&
-                events()->fire('commands.channel.ignored', $eventData) !== false
-            ) {
-                console()->debug("Ignoring command {$name} from {$channel} because it's set to be ignored.");
+        if ($this->isCommandDisabled($name, $channel, $eventData) && !$connection->isAdminOrOwner($user)) {
+            console()->debug("Ignoring command {$name} from {$channel} because it's set to be ignored.");
 
-                return false;
-            }
+            return false;
         }
 
-        if (!$this->canUseCommand($connection, $command, $user) && events()->fire('command.permission_error', $eventData) !== false) {
-            $location->message("You don't have the permissions to use this command.");
+        if (!$this->canUseCommand($connection, $command, $user) && events()->fire('command.permission.check', $eventData) !== false) {
+            if (events()->fire('command.permission.error', $eventData) !== false) {
+                $location->message("You don't have the permissions to use this command.");
+            }
 
             $permission = implode('', $user->modes());
             $netChan = "{$connection->getName()}:{$channel->getLocation()}";
@@ -176,7 +159,7 @@ class CommandManager
             return false;
         }
 
-        if ($this->checkRate($connection, $user, $command) && events()->fire('commands.rate.exceeded', $eventData) !== false) {
+        if ($this->checkRate($connection, $user, $command) && events()->fire('command.rate.exceeded', $eventData) !== false) {
             controlLog("[ <red>Rate Limiter</red> ] <cyan>{$user->nick}</cyan> attempted to use the command <i>{$name}</i> - Rate Limit exceeded.");
 
             if ($this->isSpamming($user) && $channel->getUser($connection->user)->hasPermissionTo('kick')) {
@@ -278,7 +261,7 @@ class CommandManager
      */
     public function callCommand(Command $command, $args)
     {
-        if (events()->fire('commands.call', $args) === false) {
+        if (events()->fire('command.call', $args) === false) {
             return false;
         }
 
@@ -298,30 +281,6 @@ class CommandManager
         }
 
         return null;
-    }
-
-    /**
-     * Gets the required IRC connection if given.
-     *
-     * @param $param
-     *
-     * @return \Dan\Connection\Handler|\Dan\Contracts\ConnectionContract|bool
-     */
-    protected function getIrcConnection(&$param)
-    {
-        if (strpos($param, ':') === false) {
-            return false;
-        }
-
-        $data = explode(' ', $param, 2);
-        $conn = substr($data[0], 1);
-        $param = $data[1] ?? null;
-
-        if (connection()->hasConnection($conn)) {
-            return connection($conn);
-        }
-
-        return true;
     }
 
     /**
@@ -350,5 +309,88 @@ class CommandManager
         }
 
         return $user->hasOneOf($command->getRank());
+    }
+
+    /**
+     * Gets the required IRC connection if given.
+     *
+     * @param $param
+     *
+     * @return \Dan\Connection\Handler|\Dan\Contracts\ConnectionContract|bool
+     */
+    protected function getIrcConnection(&$param)
+    {
+        if (strpos($param, ':') === false) {
+            return false;
+        }
+
+        $data = explode(' ', $param, 2);
+        $conn = substr($data[0], 1);
+        $param = $data[1] ?? null;
+
+        if (connection()->hasConnection($conn)) {
+            return connection($conn);
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $message
+     *
+     * @return array|bool
+     */
+    protected function getCommandName($message)
+    {
+        $clean = substr($message, 1);
+
+        if (empty($clean)) {
+            return true;
+        }
+
+        return explode(' ', $clean, 2);
+    }
+
+    /**
+     * @param \Dan\Irc\Location\Channel $channel
+     * @param array $eventData
+     *
+     * @return bool
+     */
+    protected function isChannelLocked(Channel $channel, array $eventData)
+    {
+        if ($channel == null) {
+            return false;
+        }
+
+        if (events()->fire('command.channel.locked', $eventData) === false) {
+            return false;
+        }
+
+        return $channel->getData('locked', false);
+    }
+
+    /**
+     * @param $name
+     * @param \Dan\Irc\Location\Channel $channel
+     * @param array $eventData
+     *
+     * @return bool
+     */
+    protected function isCommandDisabled($name, Channel $channel, array $eventData)
+    {
+        if ($channel == null) {
+            return false;
+        }
+
+        if (events()->fire('command.channel.ignored', $eventData) === false) {
+            return false;
+        }
+
+        if (in_array($name, $channel->getData('info.commands.disabled', []))) {
+            return true;
+        }
+
+        return false;
     }
 }

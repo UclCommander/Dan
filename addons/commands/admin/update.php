@@ -14,7 +14,7 @@ command(['update'])
 
         try {
             if ($message == 'do') {
-                $update = $updater->update(true, function ($message) use ($location) {
+                $update = $updater->update(function ($message) use ($location) {
                     $location->message($message);
                 });
 

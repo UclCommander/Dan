@@ -22,9 +22,13 @@ if (!file_exists(ROOT_DIR . '/vendor/autoload.php')) {
 
 require(ROOT_DIR . '/vendor/autoload.php');
 
-if (file_exists(ROOT_DIR.'/plugins/autoload.php')) {
-    require(ROOT_DIR.'/plugins/autoload.php');
-}
+loop(glob('plugins/*-plugin'), function ($dir) {
+    if (!file_exists("{$dir}/vendor/autoload.php")) {
+        shell_exec("cd {$dir} && composer install");
+    }
+
+    require("{$dir}/vendor/autoload.php");
+});
 
 $app = new \Dan\Application();
 $app->run();

@@ -71,22 +71,19 @@ class Updater
     /**
      * Updates and restarts the bot.
      *
-     * @param bool $force
      * @param callable $callback
      *
      * @return bool
      */
-    public function update($force = false, $callback = null) : bool
+    public function update($callback = null) : bool
     {
-        if (!$force) {
-            return false;
-        }
-
         if (!is_callable($callback)) {
             $callback = function ($message) {
                 console()->message($message);
             };
         }
+
+        $callback('Updating bot...');
 
         $shell = shell_exec(sprintf("cd %s && git pull origin {$this->branch}", ROOT_DIR));
 
