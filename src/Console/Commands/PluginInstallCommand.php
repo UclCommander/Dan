@@ -3,8 +3,10 @@
 namespace Dan\Console\Commands;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class PluginInstallCommand extends Command
@@ -14,7 +16,8 @@ class PluginInstallCommand extends Command
         $this->setName('plugin:install')
             ->setDescription('Installs the given plugin')
             ->addArgument('repo', InputArgument::REQUIRED, 'Git repo')
-            ->addArgument('branch', InputArgument::OPTIONAL, 'Git branch', 'dev-master');
+            ->addArgument('branch', InputArgument::OPTIONAL, 'Git branch', 'dev-master')
+            ->addOption('enable', 'e', InputOption::VALUE_NONE, 'Automatically enable the plugin');
     }
 
     /**
@@ -27,36 +30,42 @@ class PluginInstallCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $composer = ROOT_DIR.'/plugins/composer.json';
+        $repo = $input->getArgument('repo');
 
-        if (!file_exists($composer)) {
-            file_put_contents($composer, json_encode($this->composerJson(), JSON_PRETTY_PRINT));
+        if (!file_exists(ROOT_DIR.'/plugins/plugins.json')) {
+            file_put_contents(ROOT_DIR.'/plugins/plugins.json', json_encode(['repositories' => []], JSON_PRETTY_PRINT));
         }
 
-        $repo = $input->getArgument('repo');
+        $installed = json_decode(file_get_contents(ROOT_DIR.'/plugins/plugins.json'), true);
+
+        if (strpos($repo, '/') === false && strpos($repo, 'danthebot') === false){
+            $repo = "danthebot/{$repo}";
+        }
 
         if (strpos($repo, 'git@') === false) {
             $repo = "git@github.com:{$repo}.git";
         }
 
-        $name = rtrim(last(explode(':', $repo)), '.git');
-        $json = json_decode(file_get_contents($composer), true);
-
-        foreach ($json['repositories'] as $repository) {
-            if ($repository['url'] == $repo) {
+        foreach ($installed['repositories'] as $repository) {
+            if ($repository == $repo) {
                 throw new \Exception('This plugin is already installed');
             }
         }
+        
+        $installed['repositories'][] = $repo;
+        $name = last(explode('/', rtrim(last(explode(':', $repo)), '.git')));
 
-        $json['repositories'][] = [
-            'type'  => 'vcs',
-            'url'   => $repo,
-        ];
-        $json['require'][$name] = $input->getArgument('branch');
+        file_put_contents(ROOT_DIR.'/plugins/plugins.json', json_encode($installed, JSON_PRETTY_PRINT));
+        shell_exec('cd '.ROOT_DIR."/plugins && git clone {$repo} && cd {$name} && composer install");
 
-        file_put_contents($composer, json_encode($json, JSON_PRETTY_PRINT));
-
-        shell_exec('cd '.ROOT_DIR.'/plugins && composer install');
+        if ($input->getOption('enable')) {
+            $this->getApplication()
+                ->find('plugin:enable')
+                ->run(new ArrayInput([
+                    'command' => 'plugin:enable',
+                    'name'    => $name,
+                ]), $output);
+        }
     }
 
     /**

@@ -26,6 +26,8 @@ class PluginEnableCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $output->writeln('Enabling plugin...');
+
         $file = ROOT_DIR.'/config/dan.json';
         $config = json_decode(file_get_contents($file), true);
         $name = $input->getArgument('name');
@@ -43,5 +45,7 @@ class PluginEnableCommand extends Command
         $config['providers'][] = $plugin['provider'];
 
         file_put_contents($file, json_encode($config, JSON_PRETTY_PRINT));
+        
+        $output->writeln('Enabled');
     }
 }
