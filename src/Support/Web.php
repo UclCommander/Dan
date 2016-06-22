@@ -14,10 +14,11 @@ class Web
      * @param $url
      * @param array $params
      * @param array $headers
+     * @param array $opts
      *
      * @return mixed
      */
-    public static function curl($type, $url, $params = [], $headers = [])
+    public static function curl($type, $url, $params = [], $headers = [], $opts = [])
     {
         $curl = curl_init();
 
@@ -33,6 +34,10 @@ class Web
         if (isset($headers['User-Agent'])) {
             curl_setopt($curl, CURLOPT_USERAGENT, $headers['User-Agent']);
             unset($headers['User-Agent']);
+        }
+
+        foreach ($opts as $opt => $value) {
+            curl_setopt($curl, $opt, $value);
         }
 
         curl_setopt($curl, CURLOPT_URL, $url);
@@ -68,14 +73,15 @@ class Web
      * @param $uri
      * @param array $params
      * @param array $headers
+     * @param array $opts
      *
      * @throws \Exception
      *
      * @return \DOMDocument
      */
-    public static function dom($uri, $params = [], $headers = []) : DOMDocument
+    public static function dom($uri, $params = [], $headers = [], $opts = []) : DOMDocument
     {
-        $data = static::curl('get', $uri, $params, $headers);
+        $data = static::curl('get', $uri, $params, $headers, $opts);
 
         if (empty($data)) {
             throw new \Exception("Unable to load from url {$uri}");
@@ -94,12 +100,13 @@ class Web
      * @param $uri
      * @param array $params
      * @param array $headers
+     * @param array $opts
      *
      * @return \DOMXPath
      */
-    public static function xpath($uri, $params = [], $headers = []) : \DOMXPath
+    public static function xpath($uri, $params = [], $headers = [], $opts = []) : \DOMXPath
     {
-        return new \DOMXPath(static::dom($uri, $params, $headers));
+        return new \DOMXPath(static::dom($uri, $params, $headers, $opts));
     }
 
     /**
@@ -108,12 +115,13 @@ class Web
      * @param $uri
      * @param array $params
      * @param array $headers
+     * @param array $opts
      *
      * @return mixed
      */
-    public static function get($uri, $params = [], $headers = [])
+    public static function get($uri, $params = [], $headers = [], $opts = [])
     {
-        return static::curl('get', $uri, $params, $headers);
+        return static::curl('get', $uri, $params, $headers, $opts);
     }
 
     /**
@@ -122,12 +130,13 @@ class Web
      * @param $uri
      * @param array $params
      * @param array $headers
+     * @param array $opts
      *
      * @return mixed
      */
-    public static function post($uri, $params = [], $headers = [])
+    public static function post($uri, $params = [], $headers = [], $opts = [])
     {
-        return static::curl('post', $uri, $params, $headers);
+        return static::curl('post', $uri, $params, $headers, $opts);
     }
 
     /**
@@ -137,16 +146,17 @@ class Web
      * @param array $params
      * @param array $headers
      * @param bool  $xmlRequest
+     * @param array $opts
      *
      * @return mixed
      */
-    public static function json($uri, $params = [], $headers = [], $xmlRequest = true)
+    public static function json($uri, $params = [], $headers = [], $xmlRequest = true, $opts = [])
     {
         if ($xmlRequest) {
             $headers = array_merge(['X-Requested-With: XMLHttpRequest'], (array) $headers);
         }
 
-        return json_decode(static::get($uri, $params, $headers), true);
+        return json_decode(static::get($uri, $params, $headers, $opts), true);
     }
 
     /**

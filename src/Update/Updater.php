@@ -115,7 +115,7 @@ class Updater
             $callback('Core files changed, restarting bot.');
             connection()->disconnectFromAll();
 
-            pcntl_exec(ROOT_DIR.'/dan', ['--no-interaction-setup']);
+            pcntl_exec('cd '.ROOT_DIR.' && php dan', ['--no-interaction-setup']);
 
             return true;
         }

@@ -26,3 +26,8 @@ Tis' so simple.
 
 
 #### More docs to come as I do this stuff.
+
+
+### Need more help?
+
+Join our irc network! Connect to `irc.byteirc.org` and join `#UclCommander`
