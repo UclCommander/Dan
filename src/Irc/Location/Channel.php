@@ -262,7 +262,7 @@ class Channel extends Location implements Savable, Arrayable
 
             $this->setData("ban.{$id}", [
                 'duration' => ($duration ? intervalTimeToCarbon($duration)->toAtomString() : null),
-                'mask'     => $mask
+                'mask'     => $mask,
             ])->save();
         }
 

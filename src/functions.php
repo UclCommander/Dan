@@ -7,7 +7,6 @@ use Dan\Services\ShortLinks\Links;
 use Dan\Support\DotCollection;
 use Dan\Web\Route;
 
-
 if (!function_exists('loop')) {
 
     /**

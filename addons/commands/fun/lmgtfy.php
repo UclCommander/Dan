@@ -11,7 +11,6 @@ use Dan\Irc\Location\Channel;
 command(['lmgtfy', 'lazy'])
     ->helpText('For those lazy people.')
     ->handler(function (Channel $channel, $message) {
-
         if (!$message) {
             $channel->message("Can't get any lazier than that..");
 

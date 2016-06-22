@@ -26,13 +26,12 @@ command(['update'])
             }
 
             if ($updater->check()) {
-                $location->message("Updates found. Run <i>update do</i> to install the updates.");
+                $location->message('Updates found. Run <i>update do</i> to install the updates.');
 
                 return;
             }
 
             $location->message('No updates found.');
-
         } catch (Exception $e) {
             $location->message($e->getMessage());
         }

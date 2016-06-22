@@ -45,7 +45,7 @@ class PluginEnableCommand extends Command
         $config['providers'][] = $plugin['provider'];
 
         file_put_contents($file, json_encode($config, JSON_PRETTY_PRINT));
-        
+
         $output->writeln('Enabled');
     }
 }

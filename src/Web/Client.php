@@ -126,7 +126,7 @@ class Client
                     return new Response("Controller class {$controller} doesn't exist.", 500);
                 }
 
-                $handler = [new $controller, $method];
+                $handler = [new $controller(), $method];
             }
         } elseif (!($handler instanceof \Closure) && !is_array($handler)) {
             $handler = [$handler, 'run'];

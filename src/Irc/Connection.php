@@ -506,7 +506,7 @@ class Connection implements ConnectionContract, DatabaseContract
 
         $formatter = new IrcOutputFormatter(true);
 
-        loop($styles, function($style, $name) use ($formatter) {
+        loop($styles, function ($style, $name) use ($formatter) {
             $formatter->setStyle($name, new IrcOutputFormatterStyle(...$style));
         });
 
@@ -528,7 +528,7 @@ class Connection implements ConnectionContract, DatabaseContract
     {
         $formatter = new IrcOutputFormatter(true);
 
-        loop($styles, function($style, $name) use ($formatter) {
+        loop($styles, function ($style, $name) use ($formatter) {
             $formatter->setStyle($name, new IrcOutputFormatterStyle(...$style));
         });
 

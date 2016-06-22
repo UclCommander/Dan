@@ -20,7 +20,7 @@ command(['prefix'])
             return;
         }
 
-        $prefix = substr(trim($message), 0 ,1);
+        $prefix = substr(trim($message), 0, 1);
 
         config()->set("irc.servers.{$connection->getName()}.command_prefix", $prefix);
 

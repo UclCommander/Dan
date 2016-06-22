@@ -10,7 +10,6 @@ command(['ignore'])
     ->rank('AS')
     ->helpText('Ignores a user by nick or hostmask.')
     ->handler(function (Connection $connection, UserContract $user, $message) {
-
         if (empty($message)) {
             $data = $connection->database('ignore')->get();
             $masks = [];
@@ -46,7 +45,6 @@ command(['unignore'])
     ->rank('AS')
     ->helpText('Unignores a user by nick or hostmask.')
     ->handler(function (Connection $connection, UserContract $user, $message) {
-
         if (empty($message)) {
             $data = $connection->database('ignore')->get();
             $masks = [];

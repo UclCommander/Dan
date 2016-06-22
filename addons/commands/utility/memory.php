@@ -15,5 +15,4 @@ command(['memory'])
         $location = $channel ?? $user;
 
         $location->message("[ <cyan>Memory Usage:</cyan> <yellow>{$memory}</yellow> | <cyan>Peak Usage:</cyan> <yellow>{$peak}</yellow> ]");
-
     });

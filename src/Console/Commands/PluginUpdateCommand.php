@@ -25,8 +25,8 @@ class PluginUpdateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         loop(glob('plugins/*-plugin'), function ($dir) use ($output) {
-            $output->writeln('Updating plugin' . basename($dir));
-            
+            $output->writeln('Updating plugin'.basename($dir));
+
             shell_exec("cd {$dir} && git pull && composer install");
         });
     }

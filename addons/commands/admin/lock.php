@@ -14,7 +14,6 @@ command(['lock'])
         $location = $channel ?? $user;
 
         if (!empty($message)) {
-
             if (!$connection->inChannel($message)) {
                 $location->message("I'm not in that channel!");
             }
@@ -37,7 +36,6 @@ command(['unlock'])
         $location = $channel ?? $user;
 
         if (!empty($message)) {
-
             if (!$connection->inChannel($message)) {
                 $location->message("I'm not in that channel!");
             }
