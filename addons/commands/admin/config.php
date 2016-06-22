@@ -22,8 +22,10 @@ command(['config'])
          */
         protected $protected = [
             'irc.servers.*.user.pass',
-            'irc.servers.*.control_channel',
-            'irc.servers.*.channels'
+            'irc.servers.*.channels',
+            'dan.network_console',
+            'web.host',
+            'web.port',
         ];
 
         /**
