@@ -38,9 +38,9 @@ class Config extends Repository implements Arrayable
     public function set($key, $value = null)
     {
         $old = $this->get($key);
-        
+
         parent::set($key, $value);
-        
+
         $this->triggerEvent('config.set', [
             'key'   => $key,
             'value' => $value,

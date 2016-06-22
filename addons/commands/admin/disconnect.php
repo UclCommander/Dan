@@ -9,7 +9,6 @@ command(['disconnect'])
     ->rank('S')
     ->helpText('Connects to a network')
     ->handler(function (UserContract $user, $message, Channel $channel = null) {
-
         $location = $channel ?? $user;
 
         try {

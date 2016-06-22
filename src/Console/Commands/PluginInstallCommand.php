@@ -38,7 +38,7 @@ class PluginInstallCommand extends Command
 
         $installed = json_decode(file_get_contents(ROOT_DIR.'/plugins/plugins.json'), true);
 
-        if (strpos($repo, '/') === false && strpos($repo, 'danthebot') === false){
+        if (strpos($repo, '/') === false && strpos($repo, 'danthebot') === false) {
             $repo = "danthebot/{$repo}";
         }
 
@@ -51,7 +51,7 @@ class PluginInstallCommand extends Command
                 throw new \Exception('This plugin is already installed');
             }
         }
-        
+
         $installed['repositories'][] = $repo;
         $name = last(explode('/', rtrim(last(explode(':', $repo)), '.git')));
 

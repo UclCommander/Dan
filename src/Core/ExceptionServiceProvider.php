@@ -17,7 +17,6 @@ class ExceptionServiceProvider extends ServiceProvider
         events()->subscribe('console.exception')
             ->priority(Event::VeryHigh)
             ->handler(function (\Throwable $exception) {
-
                 $to = formatLocation(config('dan.network_console'));
 
                 $file = relativePath($exception->getFile());

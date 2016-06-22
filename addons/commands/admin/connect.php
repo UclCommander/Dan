@@ -13,8 +13,12 @@ command(['connect'])
 
         try {
             if (empty($message)) {
-                $location->message('Connected Networks: '.implode(', ', array_filter(array_keys(config('irc.servers')), function ($x) { return connection()->hasConnection($x); })));
-                $location->message('Available Networks: '.implode(', ', array_filter(array_keys(config('irc.servers')), function ($x) { return !connection()->hasConnection($x); })));
+                $location->message('Connected Networks: '.implode(', ', array_filter(array_keys(config('irc.servers')), function ($x) {
+                    return connection()->hasConnection($x);
+                })));
+                $location->message('Available Networks: '.implode(', ', array_filter(array_keys(config('irc.servers')), function ($x) {
+                    return !connection()->hasConnection($x);
+                })));
 
                 return;
             }

@@ -144,7 +144,7 @@ class Handler
                 foreach ($result as $k => $v) {
                     $args[$k] = $v;
                 }
-                
+
                 continue;
             }
 

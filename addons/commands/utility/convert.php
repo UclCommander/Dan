@@ -6,7 +6,6 @@ use Dan\Support\Web;
 command(['convert'])
     ->helpText('Converts something to something else using DuckDuckGo')
     ->handler(function (Channel $channel, $message) {
-
         $query = urlencode("convert {$message}");
         $request = Web::json("http://api.duckduckgo.com/?q={$query}&format=json&pretty=1");
 
