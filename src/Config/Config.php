@@ -32,6 +32,23 @@ class Config extends Repository implements Arrayable
     }
 
     /**
+     * @param array|string $key
+     * @param null $value
+     */
+    public function set($key, $value = null)
+    {
+        $old = $this->get($key);
+        
+        parent::set($key, $value);
+        
+        $this->triggerEvent('config.set', [
+            'key'   => $key,
+            'value' => $value,
+            'old'   => $old,
+        ]);
+    }
+
+    /**
      * Gets the items as an array.
      *
      * @return array

@@ -100,6 +100,10 @@ class Connection implements ConnectionContract, DatabaseContract
                 $this->send('NICK', $this->config->get('user.nick'));
             }
         }, Event::VeryHigh);
+
+        events()->subscribe('config.set', function ($key, $value) {
+            $this->config = dotcollect(config("irc.servers.{$this->name}"));
+        }, Event::VeryHigh);
     }
 
     /**
