@@ -3,6 +3,7 @@
 namespace Dan\Core;
 
 use Dan\Addons\AddonLoader;
+use Dan\Commands\CommandManager;
 use Dan\Commands\CommandServiceProvider;
 use Dan\Config\ConfigServiceProvider;
 use Dan\Connection\Handler as ConnectionHandler;
@@ -126,6 +127,7 @@ class Dan extends Container implements DatabaseContract
             'dan'           => [self::class, Container::class],
             'filesystem'    => ['Illuminate\Filesystem\Filesystem', 'Illuminate\Contracts\Filesystem\Filesystem'],
             'connections'   => [ConnectionHandler::class],
+            'commands'      => [CommandManager::class],
         ];
 
         foreach ($aliases as $key => $list) {

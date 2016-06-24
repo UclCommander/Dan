@@ -22,7 +22,7 @@ class Packet332 extends Packet
 
         $channel = $this->connection->getChannel($data[1]);
 
-        $this->triggerEvent('irc.currentTopic', [
+        $this->triggerEvent('irc.topic.current', [
             'connection'    => $this->connection,
             'channel'       => $channel,
             'topic'         => $data[2],
