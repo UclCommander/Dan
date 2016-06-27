@@ -113,15 +113,18 @@ class Url
      * Returns $url itself if it isn't a redirect.
      *
      * @param string $url
+     * @param array $redirects
      *
      * @return string
      */
-    public static function getFinalUrl($url)
+    public static function getFinalUrl($url, &$redirects = [])
     {
-        $redirects = static::getAllRedirects($url);
+        $all = static::getAllRedirects($url);
 
-        if (count($redirects) > 0) {
-            return array_pop($redirects);
+        $redirects = array_merge([$url], $all);
+
+        if (count($all) > 0) {
+            return array_pop($all);
         }
 
         return $url;
