@@ -126,6 +126,8 @@ class Updater
             dan()->make('addons')->loadAll();
         }
 
+        $callback('Update complete. Now on version '.dan()->versionHash());
+
         return true;
     }
 }
