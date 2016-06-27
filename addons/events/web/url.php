@@ -5,7 +5,7 @@ use Dan\Support\Url;
 use Dan\Support\Web;
 
 $ignored = [
-    '*speedtest.net', '*youtube.*', 'youtu.be', '*newegg.com', 'twitter.com',
+    '*speedtest.net', '*youtube.*', 'youtu.be', '*newegg.com', 'twitter.com', 'store.steampowered.com',
 ];
 
 $mime = [
