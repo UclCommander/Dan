@@ -10,5 +10,5 @@ command(['flip'])
     ->handler(function (User $user, Channel $channel = null) {
         $location = $channel ?? $user;
 
-        $location->action('flips an coin and got <b>'.array_random(['heads', 'tails']).'</b>');
+        $location->action('flips a coin and got <b>'.array_random(['heads', 'tails']).'</b>');
     });
