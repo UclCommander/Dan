@@ -348,7 +348,10 @@ class CommandManager
             return true;
         }
 
-        return explode(' ', $clean, 2);
+        $info = explode(' ', $clean, 2);
+        $info[0] = strtolower($info[0]);
+
+        return array_pad($info, 2, '');
     }
 
     /**
