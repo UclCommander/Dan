@@ -222,7 +222,7 @@ class IrcOutputFormatter implements OutputFormatterInterface
             return false;
         }
 
-        $style = new OutputFormatterStyle();
+        $style = new IrcOutputFormatterStyle();
         foreach ($matches as $match) {
             array_shift($match);
 

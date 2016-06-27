@@ -30,15 +30,24 @@ class IrcOutputFormatterStyle implements OutputFormatterStyleInterface
     ];
 
     private static $availableBackgroundColors = [
-        'black'     => ['set' => 40, 'unset' => ''],
-        'red'       => ['set' => 41, 'unset' => ''],
-        'green'     => ['set' => 42, 'unset' => ''],
-        'yellow'    => ['set' => 43, 'unset' => ''],
-        'blue'      => ['set' => 44, 'unset' => ''],
-        'magenta'   => ['set' => 45, 'unset' => ''],
-        'cyan'      => ['set' => 46, 'unset' => ''],
-        'white'     => ['set' => 47, 'unset' => ''],
-        'default'   => ['set' => 49, 'unset' => ''],
+        'error'         => ['set' => '04', 'unset' => ''],
+        'white'         => ['set' => '00', 'unset' => ''],
+        'black'         => ['set' => '01', 'unset' => ''],
+        'blue'          => ['set' => '02', 'unset' => ''],
+        'green'         => ['set' => '03', 'unset' => ''],
+        'red'           => ['set' => '04', 'unset' => ''],
+        'maroon'        => ['set' => '05', 'unset' => ''],
+        'purple'        => ['set' => '06', 'unset' => ''],
+        'orange'        => ['set' => '07', 'unset' => ''],
+        'yellow'        => ['set' => '08', 'unset' => ''],
+        'light_green'   => ['set' => '09', 'unset' => ''],
+        'cyan'          => ['set' => '10', 'unset' => ''],
+        'light_cyan'    => ['set' => '11', 'unset' => ''],
+        'light_blue'    => ['set' => '12', 'unset' => ''],
+        'pink'          => ['set' => '13', 'unset' => ''],
+        'gray'          => ['set' => '14', 'unset' => ''],
+        'light_gray'    => ['set' => '15', 'unset' => ''],
+        'default'       => ['set' => '', 'unset' => ''],
     ];
     private static $availableOptions = [
         'bold'      => ['set' => "\x02", 'unset' => ''],
@@ -212,7 +221,7 @@ class IrcOutputFormatterStyle implements OutputFormatterStyleInterface
         }
 
         if ($this->background !== null) {
-            $setCodes[] = $this->char.$this->background['set'];
+            $setCodes[] = ($this->background === null ? $this->char : '').$this->background['set'];
             $unsetCodes[] = $this->background['unset'];
         }
 
