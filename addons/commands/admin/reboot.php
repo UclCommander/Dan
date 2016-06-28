@@ -17,13 +17,19 @@ command(['reboot', 'restart'])
             return;
         }
 
-        $location->message('Bye!');
+        if (!is_executable(ROOT_DIR.'/dan')) {
+            $location->message("Restart failed because the dan file isn't executable.");
 
+            return;
+        }
+        
         if (!connection()->disconnectFromAll(true)) {
             $location->message('Unable to disconnect from all the connections.');
 
             return;
         }
+
+        $location->message('Bye!');
 
         pcntl_exec(ROOT_DIR.'/dan');
     });

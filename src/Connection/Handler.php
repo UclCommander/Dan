@@ -3,6 +3,7 @@
 namespace Dan\Connection;
 
 use Dan\Contracts\ConnectionContract;
+use Dan\Irc\Connection as IrcConnection;
 use Illuminate\Support\Collection;
 
 class Handler
@@ -57,6 +58,11 @@ class Handler
 
         /** @var ConnectionContract $connection */
         $connection = $this->connections->get($name);
+
+        if ($connection instanceof IrcConnection) {
+            $connection->quit('Restarting bot');
+        }
+
         if (!$connection->disconnect()) {
             return false;
         }

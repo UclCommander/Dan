@@ -16,6 +16,10 @@ date_default_timezone_set("UTC");
 
 define("ROOT_DIR", __DIR__);
 
+if (!is_executable(ROOT_DIR.'/dan')) {
+    shell_exec('chmod +x dan');
+}
+
 if (!file_exists(ROOT_DIR . '/vendor/autoload.php')) {
     shell_exec('composer install');
 }

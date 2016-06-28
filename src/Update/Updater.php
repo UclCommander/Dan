@@ -112,10 +112,19 @@ class Updater
                 return true;
             }
 
+            // Lets try to chmod +x now
+            shell_exec('chmod +x '.ROOT_DIR.'/dan');
+
+            if (!is_executable(ROOT_DIR.'/dan')) {
+                $callback("Core files have been changed, but was unable to restart. The dan file isn't executable. Please <i>chmod +x dan</i> for automatic restarts.");
+
+                return true;
+            }
+
             $callback('Core files changed, restarting bot.');
             connection()->disconnectFromAll();
 
-            pcntl_exec('cd '.ROOT_DIR.' && php dan', ['--no-interaction-setup']);
+            pcntl_exec(ROOT_DIR.'/dan', ['--no-interaction-setup']);
 
             return true;
         }
