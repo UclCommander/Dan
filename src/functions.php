@@ -3,6 +3,8 @@
 use Dan\Commands\Command;
 use Dan\Core\Dan;
 use Dan\Events\Event;
+use Dan\Irc\Connection;
+use Dan\Irc\Location\Channel;
 use Dan\Services\ShortLinks\Links;
 use Dan\Support\DotCollection;
 use Dan\Web\Route;
@@ -426,6 +428,20 @@ if (!function_exists('formatLocation')) {
             'connection' => $connection,
             'channel'    => $channel,
         ];
+    }
+}
+
+if (!function_exists('createLocation')) {
+
+    /**
+     * @param \Dan\Irc\Location\Channel $channel
+     * @param \Dan\Irc\Connection $connection
+     *
+     * @return mixed
+     */
+    function createLocation(Channel $channel, Connection $connection)
+    {
+       return "{$connection->getName()}:{$channel->getLocation()}";
     }
 }
 
