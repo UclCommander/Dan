@@ -30,6 +30,8 @@ class Application extends SymfonyApplication
         if (!Setup::isSetup() && !noInteractionSetup()) {
             $defaultCommands[] = new SetupCommand();
 
+            define('SETUP', true);
+
             return $defaultCommands;
         }
 

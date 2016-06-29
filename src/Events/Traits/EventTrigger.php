@@ -12,6 +12,10 @@ trait EventTrigger
      */
     public function triggerEvent($name, $args = [])
     {
+        if (defined('SETUP')) {
+            return false;
+        }
+
         try {
             return events()->fire($name, $args);
         } catch (\ReflectionException $e) {
