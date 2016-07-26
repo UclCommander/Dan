@@ -5,7 +5,7 @@ use Dan\Irc\Location\Channel;
 use Dan\Irc\Location\User;
 
 $messageHandler = function (Channel $channel, User $user) {
-    if (!is_null($user->id)) {
+    if (is_null($user->id)) {
         return;
     }
 
