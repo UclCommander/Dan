@@ -220,8 +220,22 @@ class CommandManager
         $irc = null;
 
         if ($command->begsForIrcConnection()) {
-            if (($irc = $this->getIrcConnection($param)) === false) {
+            $irc = $this->getIrcConnection($param);
+
+            if ($irc === false) {
                 console()->info('This command requires an IRC connection. <yellow>/command <red>:ircname</red> arguments</yellow> to specify one.');
+
+                return false;
+            }
+
+            if (is_null($irc)) {
+                $func = function ($x) {
+                    return connection()->hasConnection($x);
+                };
+
+                $networks = implode(', ', array_filter(array_keys(config('irc.servers')), $func));
+
+                console()->info("We're not connected to this network. Please choose one of the following: {$networks}");
 
                 return false;
             }
@@ -332,7 +346,7 @@ class CommandManager
             return connection($conn);
         }
 
-        return true;
+        return null;
     }
 
     /**
