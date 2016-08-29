@@ -14,7 +14,7 @@ use Dan\Support\Web;
 
 command(['insult'])
     ->helpText('Insults someone.')
-    ->handler(function (Channel $channel, $message) {
+    ->handler(function (Connection $connection, User $user, Channel $channel, $message) {
         $insult = Web::xpath('http://www.insultgenerator.org/');
         $insult = trim($insult->query('//*[@class="wrap"]')->item(0)->textContent);
 
@@ -28,6 +28,10 @@ command(['insult'])
             $channel->message("I can't insult someone who isn't here!");
 
             return;
+        }
+            
+        if (strtolower($message) == strtolower($connection->user->nick)) {
+            $message = $user->nick;
         }
 
         $channel->message("{$message}: {$insult}");
