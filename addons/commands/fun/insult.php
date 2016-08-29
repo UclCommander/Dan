@@ -9,10 +9,10 @@
  * Do not directly edit this file.
  * If you want to change the rank, see commands.permissions in the configuration.
  */
- 
+
 use Dan\Irc\Connection;
-use Dan\Irc\Location\User;
 use Dan\Irc\Location\Channel;
+use Dan\Irc\Location\User;
 use Dan\Support\Web;
 
 command(['insult'])
@@ -32,7 +32,7 @@ command(['insult'])
 
             return;
         }
-            
+
         if (strtolower($message) == strtolower($connection->user->nick)) {
             $message = $user->nick;
         }

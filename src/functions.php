@@ -441,7 +441,7 @@ if (!function_exists('createLocation')) {
      */
     function createLocation(Channel $channel, Connection $connection)
     {
-       return "{$connection->getName()}:{$channel->getLocation()}";
+        return "{$connection->getName()}:{$channel->getLocation()}";
     }
 }
 

@@ -16,7 +16,7 @@ command(['rsg'])
             $items = $fetcher->fetchRandomGame();
         } catch (Exception $e) {
             console()->exception($e);
-            
+
             $location->message($e->getMessage());
 
             return;
