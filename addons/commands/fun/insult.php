@@ -9,6 +9,9 @@
  * Do not directly edit this file.
  * If you want to change the rank, see commands.permissions in the configuration.
  */
+ 
+use Dan\Irc\Connection;
+use Dan\Irc\Location\User;
 use Dan\Irc\Location\Channel;
 use Dan\Support\Web;
 
