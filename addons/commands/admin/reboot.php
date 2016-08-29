@@ -22,7 +22,7 @@ command(['reboot', 'restart'])
 
             return;
         }
-        
+
         if (!connection()->disconnectFromAll(true)) {
             $location->message('Unable to disconnect from all the connections.');
 

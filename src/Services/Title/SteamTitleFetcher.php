@@ -10,8 +10,9 @@ use DOMXPath;
 class SteamTitleFetcher implements TitleFetcherContract
 {
     /**
-     * @return array|void
      * @throws \Exception
+     *
+     * @return array|void
      */
     public function fetchRandomGame() : array
     {
@@ -29,7 +30,7 @@ class SteamTitleFetcher implements TitleFetcherContract
         }
 
         if (!$game) {
-            throw new \Exception("Error fetching random steam game");
+            throw new \Exception('Error fetching random steam game');
         }
 
         return $this->fetchTitle($game);
@@ -38,12 +39,13 @@ class SteamTitleFetcher implements TitleFetcherContract
     /**
      * @param $url
      *
-     * @return array
      * @throws \Exception
+     *
+     * @return array
      */
     public function fetchTitle($url) : array
     {
-        $cookie = "birthtime=28801; path=/; domain=store.steampowered.com";
+        $cookie = 'birthtime=28801; path=/; domain=store.steampowered.com';
 
         if (ends_with($url, 'agecheck')) {
             $game = str_replace('agecheck', '', $url);
@@ -101,20 +103,20 @@ class SteamTitleFetcher implements TitleFetcherContract
         $items = $xpath->query('//a[@class="app_tag"]');
 
         if ($items->length) {
-            for($i = 0; $i < min(3, $items->length); $i++) {
+            for ($i = 0; $i < min(3, $items->length); $i++) {
                 $tagList[] = trim($items->item($i)->textContent);
             }
         }
 
         $colors = [
             'overwhelmingly-positive' => 'light_green',
-            'very-positive' => 'light_green',
-            'positive' => 'green',
-            'mostly-positive' => 'green',
-            'mixed' => 'orange',
-            'mostly-negative' => 'red',
-            'negative' => 'red',
-            'very-negative' => 'maroon',
+            'very-positive'           => 'light_green',
+            'positive'                => 'green',
+            'mostly-positive'         => 'green',
+            'mixed'                   => 'orange',
+            'mostly-negative'         => 'red',
+            'negative'                => 'red',
+            'very-negative'           => 'maroon',
             'overwhelmingly-negative' => 'maroon',
         ];
 
@@ -128,12 +130,12 @@ class SteamTitleFetcher implements TitleFetcherContract
 
         return [
             "<cyan>{$title}</cyan>",
-            ($price ? "<light_cyan>{$price}</light_cyan>" . ($discount ? " <lord_gaben_has_spoken> {$discount} </lord_gaben_has_spoken>" : '') : ''),
+            ($price ? "<light_cyan>{$price}</light_cyan>".($discount ? " <lord_gaben_has_spoken> {$discount} </lord_gaben_has_spoken>" : '') : ''),
             ($rating ? "<{$colors[str_slug($rating)]}>{$rating}</{$colors[str_slug($rating)]}>" : ''),
             ($releaseDate ? "<light_blue>{$releaseDate}</light_blue>" : ''),
             ($tags ? "<fg=purple;options=bold>{$tags}</>" : ''),
             $description,
-            shortLink($url)
+            shortLink($url),
         ];
     }
 }
