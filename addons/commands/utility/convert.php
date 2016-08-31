@@ -15,6 +15,5 @@ command(['convert'])
             return;
         }
 
-        $answerData = $request['Answer']['data'];
-        $channel->message("[ <yellow>{$answerData['markup_input']} {$answerData['left_unit']}</yellow> is <cyan>{$answerData['raw_answer']} {$answerData['right_unit']}</cyan> ]");
+        $channel->message("[ <cyan>{$request['Answer']}</cyan> ]");
     });
