@@ -26,5 +26,7 @@ command(['fmylife', 'fml'])
             return;
         }
 
-        $channel->message("[ <yellow>#{$data['id']}</yellow> | <cyan>{$data['text']}</cyan> | <green>+{$data['sucks']}</green>/<red>-{$data['deserved']}</red> ]");
+        $link = shortLink($data['url']);
+
+        $channel->message("[ <yellow>#{$data['id']}</yellow> | <cyan>{$data['text']}</cyan> | <green>+{$data['sucks']}</green>/<red>-{$data['deserved']}</red> - {$link} ]");
     });
