@@ -15,12 +15,11 @@ class WebServiceProvider extends ServiceProvider
     {
         $config = config('web');
 
-        if (!$config['enabled']) {
-            return;
-        }
-
         $listener = new Listener($config);
-        connection()->addConnection($listener);
         $this->app->instance('web', $listener);
+
+        if ($config['enabled']) {
+            connection()->addConnection($listener);
+        }
     }
 }
