@@ -32,6 +32,7 @@ command(['geoip'])
         }
 
         $data = [
+            "<cyan>Hostname:</cyan> <yellow>{$data['hostname']}</yellow>",
             "<cyan>Country:</cyan> <yellow>{$data['country']}</yellow>",
             "<cyan>Continent:</cyan> <yellow>{$data['continent']}</yellow>",
             "<cyan>Lat:</cyan> <yellow>{$data['latitude']}</yellow>",
